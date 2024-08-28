@@ -108,6 +108,23 @@ module.exports = {
                 error: "An error occurred when trying to search for customers."
             });
         }
-    }
+    },
+    async getCustomerById(req, res) {
+        try { 
+            console.log('id',req.params.customerId)
+            const customer = await Customer.findByPk(req.params.customerId)
+            if (!customer) {
+                return res.status(403).send({
+                    error: "Customer not found."
+                })
+            }
+            console.log(customer)
+            res.send(customer)
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get an user."
+            })
+        }
+    },
 
 }

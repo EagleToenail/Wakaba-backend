@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       katakana_name:       DataTypes.STRING,
       phone_number:        DataTypes.STRING,
       address:             DataTypes.TEXT,
-      tigger:              DataTypes.TEXT, 
+      trigger:              DataTypes.TEXT, 
       shop:                DataTypes.TEXT,
     })
     // User.associate = function (models) {

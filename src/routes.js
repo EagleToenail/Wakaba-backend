@@ -43,6 +43,7 @@ module.exports = (app) => {
     app.post("/api/customer/updateCustomer", CustomerController.updateCustomer)
     app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
     app.post("/api/customer/search", CustomerController.searchCustomer)
+    app.get("/api/customer/getUserByCustomer/:customerId", CustomerController.getCustomerById)
     // //============sales
     app.get("/api/sales/getSalesList", SalesController.getSalesList)
     app.post("/api/sales/createSales", SalesController.createSales)
