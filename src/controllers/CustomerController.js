@@ -67,8 +67,8 @@ module.exports = {
        
         const { name, address, tel } = req.body.params;
         const phone_number = tel;
-        console.log(req.body)
-        console.log("name",phone_number)
+        // console.log(req.body)
+        // console.log("name",phone_number)
         try {
             // Construct the search query
             const whereClause = [];
@@ -88,18 +88,18 @@ module.exports = {
                     phone_number: { [Op.like]: `%${phone_number}%` } 
                });
             }
-            console.log('ccc',whereClause.length)
+            // console.log('ccc',whereClause.length)
             if(whereClause.length!=0){
                 const customers = await Customer.findAll({
                     where: {
                         [Op.or]: whereClause
                     }
                 });
-                console.log(customers)
+                // console.log(customers)
                 res.send(customers);
             }else{
                 const customers = await Customer.findAll();
-                console.log(customers)
+                // console.log(customers)
                 res.send(customers);
             }
 
@@ -111,14 +111,14 @@ module.exports = {
     },
     async getCustomerById(req, res) {
         try { 
-            console.log('id',req.params.customerId)
+            // console.log('id',req.params.customerId)
             const customer = await Customer.findByPk(req.params.customerId)
             if (!customer) {
                 return res.status(403).send({
                     error: "Customer not found."
                 })
             }
-            console.log(customer)
+            // console.log(customer)
             res.send(customer)
         } catch (err) {
             res.status(500).send({

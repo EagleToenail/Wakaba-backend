@@ -1,4 +1,5 @@
 const { Sales } = require('../models')
+const { Op } = require('sequelize');
 
 module.exports = {
 	async createSales(req, res) {
@@ -13,46 +14,25 @@ module.exports = {
 	},
     async getSalesList(req, res) {
         try {
-            const salesList = await Sales.findAll({
-                attributes: [
-                    "id",
-                    "no",
-                    "date",
-                    "purchasing_officer",
-                    "customer_name",
-                    "reading",
-                    "telephone_number",
-                    "address",
-                    "visit_type",
-                    "brand_type",
-                    "store_name",
-                    "card_distribution",
-                    "card_collection",
-                    "product_type_one",
-                    "product_type_two",
-                    "merchandise",
-                    "number",
-                    "Denomination",
-                    "g_face_value",
-                    "purchase_price",
-                    "sales_amount",
-                    "gross_profit",
-                    "wholesale_date",
-                    "deposit_date",
-                    "single_day_purchase_amount",
-                    "single_gross_profit",
-                    "current_month_gross_profit",
-                    "safe_deposit_extra",
-                    "valance",
-                    "incoming_call",
-                    "visit",
-                    "hitter",
-                    "wholesaler",
-                    "remarks",
-                    "note_two",
-                    "state_flage",
-                ]
+            const salesList = await Sales.findAll()
+            // console.log('saleList',salesList);
+            res.send(salesList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
             })
+        }
+    },
+    async getSalesFilter(req, res) {
+        const value = req.body.value;
+        // console.log('zxczxczcx',value)
+        try {
+            const salesList = await Sales.findAll({
+                where:  {
+                    [Op.or]:{product_type_one: { [Op.like]: `%${value}%` } }
+                }
+            })
+            console.log('saleList',salesList);
             res.send(salesList);
         } catch (err) {
             res.status(500).send({
