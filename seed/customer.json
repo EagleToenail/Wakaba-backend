@@ -1,0 +1,83 @@
+[
+    {
+      "full_name": "田中 太郎",
+      "katakana_name": "タナカ タロウ",
+      "phone_number": "080-1234-5678",
+      "address": "東京都港区芝公園4-2-8",
+      "tigger": "新規顧客",
+      "shop": "東京店"
+    },
+    {
+      "full_name": "鈴木 花子",
+      "katakana_name": "スズキ ハナコ",
+      "phone_number": "090-2345-6789",
+      "address": "大阪府大阪市北区梅田3-1-1",
+      "tigger": "リピーター",
+      "shop": "大阪店"
+    },
+    {
+      "full_name": "佐藤 次郎",
+      "katakana_name": "サトウ ジロウ",
+      "phone_number": "070-3456-7890",
+      "address": "愛知県名古屋市中区栄3-5-5",
+      "tigger": "VIP",
+      "shop": "名古屋店"
+    },
+    {
+      "full_name": "高橋 美咲",
+      "katakana_name": "タカハシ ミサキ",
+      "phone_number": "080-4567-8901",
+      "address": "福岡県福岡市中央区天神1-1-1",
+      "tigger": "新規顧客",
+      "shop": "福岡店"
+    },
+    {
+      "full_name": "伊藤 直樹",
+      "katakana_name": "イトウ ナオキ",
+      "phone_number": "090-5678-9012",
+      "address": "北海道札幌市中央区大通西2-1-1",
+      "tigger": "リピーター",
+      "shop": "札幌店"
+    },
+    {
+      "full_name": "渡辺 由美",
+      "katakana_name": "ワタナベ ユミ",
+      "phone_number": "070-6789-0123",
+      "address": "神奈川県横浜市西区みなとみらい2-3-1",
+      "tigger": "VIP",
+      "shop": "横浜店"
+    },
+    {
+      "full_name": "中村 健",
+      "katakana_name": "ナカムラ ケン",
+      "phone_number": "080-7890-1234",
+      "address": "広島県広島市中区基町6-27",
+      "tigger": "新規顧客",
+      "shop": "広島店"
+    },
+    {
+      "full_name": "小林 由紀",
+      "katakana_name": "コバヤシ ユキ",
+      "phone_number": "090-8901-2345",
+      "address": "京都府京都市中京区錦小路通烏丸東入ル",
+      "tigger": "リピーター",
+      "shop": "京都店"
+    },
+    {
+      "full_name": "山本 誠",
+      "katakana_name": "ヤマモト マコト",
+      "phone_number": "070-9012-3456",
+      "address": "兵庫県神戸市中央区三宮町1-1-1",
+      "tigger": "VIP",
+      "shop": "神戸店"
+    },
+    {
+      "full_name": "松本 彩",
+      "katakana_name": "マツモト アヤ",
+      "phone_number": "080-0123-4567",
+      "address": "静岡県静岡市葵区紺屋町10-2",
+      "tigger": "新規顧客",
+      "shop": "静岡店"
+    }
+  ]
+  
