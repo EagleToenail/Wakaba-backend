@@ -1,4 +1,5 @@
 const { Customer } = require('../models')
+const { Op } = require('sequelize');
 
 module.exports = {
 	async createCustomer(req, res) {
@@ -14,15 +15,15 @@ module.exports = {
     async getCustomerList(req, res) {
         try {
             const customerList = await Customer.findAll({
-                attributes: [
-                    "id",
-                    "full_anme",
-                    "katakana_name",
-                    "phone_number",
-                    "address",
-                    "trigger",
-                    "shop",
-                ]
+                // attributes: [
+                //     "id",
+                //     "full_name",
+                //     "katakana_name",
+                //     "phone_number",
+                //     "address",
+                //     "trigger",
+                //     "shop",
+                // ]
             })
             res.send(customerList);
         } catch (err) {
@@ -38,7 +39,7 @@ module.exports = {
                     id: req.body.id
                 }
             })
-            res.send(customer);
+            res.send({"customer":customer});
         } catch (err) {
             res.status(500).send({
                 error: "An error occured when trying to update customer information"
@@ -62,5 +63,51 @@ module.exports = {
 			})
 		}
 	},
+    async searchCustomer(req, res) {
+       
+        const { name, address, tel } = req.body.params;
+        const phone_number = tel;
+        console.log(req.body)
+        console.log("name",phone_number)
+        try {
+            // Construct the search query
+            const whereClause = [];
+
+            if (name!='') {
+                whereClause.push ({
+                     name: { [Op.like]: `%${name}%` } 
+                });
+            }
+            if (address!='') {
+                whereClause.push ({
+                    address: { [Op.like]: `%${address}%` } 
+               });
+            }
+            if (phone_number!='') {
+                whereClause.push ({
+                    phone_number: { [Op.like]: `%${phone_number}%` } 
+               });
+            }
+            console.log('ccc',whereClause.length)
+            if(whereClause.length!=0){
+                const customers = await Customer.findAll({
+                    where: {
+                        [Op.or]: whereClause
+                    }
+                });
+                console.log(customers)
+                res.send(customers);
+            }else{
+                const customers = await Customer.findAll();
+                console.log(customers)
+                res.send(customers);
+            }
+
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occurred when trying to search for customers."
+            });
+        }
+    }
 
 }

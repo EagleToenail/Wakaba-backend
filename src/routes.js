@@ -41,7 +41,8 @@ module.exports = (app) => {
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
     app.post("/api/customer/createCustomer", CustomerController.createCustomer)
     app.post("/api/customer/updateCustomer", CustomerController.updateCustomer)
-    app.get("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
+    app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
+    app.post("/api/customer/search", CustomerController.searchCustomer)
     // //============sales
     app.get("/api/sales/getSalesList", SalesController.getSalesList)
     app.post("/api/sales/createSales", SalesController.createSales)

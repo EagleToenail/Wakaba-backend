@@ -1,8 +1,11 @@
 // const { sequelize, Company, User, Showcase, Category, SubCategory, SubSubCategory, Order, OrderItem, Product, Review, Wishlist } = require('../src/models')
+const { sequelize, User,Customer,Sales } = require('../src/models')
 
-// const Promise = require('bluebird')
+const Promise = require('bluebird')
+const users = require('./users.json')
+const customers = require('./customer.json')
+const sales = require('./sales.json')
 // const companies = require('./companies.json')
-// const users = require('./users.json')
 // const showcases = require('./showcases.json')
 // const categories = require('./categories.json')
 // const orders = require('./orders.json')
@@ -13,16 +16,26 @@
 // const reviews = require('./reviews.json')
 // const wishlists = require('./wishlists.json')
 
-// sequelize.sync({ force: true })
-// 	.then(async () => {
+sequelize.sync({ force: true })
+	.then(async () => {
+        await Promise.all(
+			users.map(user => {
+				User.create(user)
+			})
+		)
+        await Promise.all(
+			customers.map(customer => {
+				Customer.create(customer)
+			})
+		)
+        await Promise.all(
+			sales.map(sale => {
+				Sales.create(sale)
+			})
+		)
 // 		await Promise.all(
 // 			companies.map(company => {
 // 				Company.create(company)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			users.map(user => {
-// 				User.create(user)
 // 			})
 // 		)
 // 		await Promise.all(
@@ -69,6 +82,6 @@
 // 			wishlists.map(wishlistItem => {
 // 				Wishlist.create(wishlistItem)
 // 			})
-// 		)
-// 	})
+		// )
+	})
 
