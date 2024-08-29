@@ -72,10 +72,11 @@ module.exports = {
 
     async login(req, res) {
         try {
-            const { email, password } = req.body
+            console.log(req.body)
+            const { ID, password } = req.body
             const user = await User.findOne({
                 where: {
-                    email: email
+                    id: ID
                 }
             })
             // if (!user) {
@@ -121,22 +122,16 @@ module.exports = {
             console.log('=============user=========',password)
             if (correctPassword != password) {
                 return res.status(403).send({
+                    status:false,
                     error: 'Incorrect login information.'
                 })
             }
             const newUser = {
                 id: user.id,
-                username: user.username,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                userType: user.userType,
-                variant: user.variant,
-                profileImage: user.profileImage,
-                priority: user.priority,
-                CompanyId: user.CompanyId
+                username: user.full_name,
             }
             res.send({
+                status:true,
                 user: newUser,
                 token: jwtSignUser(newUser)
             })

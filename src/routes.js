@@ -14,13 +14,13 @@ const SalesController = require("./controllers/SalesController")
 // const OrderItemController = require("./controllers/OrderItemController")
 // const SubCategoryController = require("./controllers/SubCategoryController")
 // const SubSubCategoryController = require("./controllers/SubSubCategoryController")
-// const AuthenticationController = require("./controllers/AuthenticationController")
+const AuthenticationController = require("./controllers/AuthenticationController")
 // const AuthenticationControllerPolicy = require("./policies/AuthenticationControllerPolicy");
 
 module.exports = (app) => {
   // =========authentication
   // app.post("/api/auth/register", AuthenticationControllerPolicy.register, AuthenticationController.register)
-  // app.post("/api/auth/login", AuthenticationController.login)
+  app.post("/api/auth/login", AuthenticationController.login)
   // app.get("/api/auth/verifyPassword/:password", isAuthenticated, AuthenticationController.verifyPassword)
   // app.post("/api/auth/updatePassword",isAuthenticated,AuthenticationControllerPolicy.updatePassword,AuthenticationController.updatePassword)
   // app.post("/api/auth/requestPasswordToken", AuthenticationController.requestPasswordToken)
