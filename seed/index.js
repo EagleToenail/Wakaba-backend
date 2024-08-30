@@ -1,20 +1,12 @@
-// const { sequelize, Company, User, Showcase, Category, SubCategory, SubSubCategory, Order, OrderItem, Product, Review, Wishlist } = require('../src/models')
-const { sequelize, User,Customer,Sales } = require('../src/models')
+
+const { sequelize, User,Customer,Sales,Profile } = require('../src/models')
 
 const Promise = require('bluebird')
 const users = require('./users.json')
 const customers = require('./customer.json')
 const sales = require('./sales.json')
-// const companies = require('./companies.json')
-// const showcases = require('./showcases.json')
-// const categories = require('./categories.json')
-// const orders = require('./orders.json')
-// const orderItems = require('./orderItems.json')
-// const subCategories = require('./subCategories.json')
-// const subSubCategories = require('./subSubCategories.json')
-// const products = require('./products.json')
-// const reviews = require('./reviews.json')
-// const wishlists = require('./wishlists.json')
+const profiles = require('./profile.json')
+
 
 sequelize.sync({ force: true })
 	.then(async () => {
@@ -33,55 +25,11 @@ sequelize.sync({ force: true })
 				Sales.create(sale)
 			})
 		)
-// 		await Promise.all(
-// 			companies.map(company => {
-// 				Company.create(company)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			showcases.map(showcase => {
-// 				Showcase.create(showcase)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			categories.map(category => {
-// 				Category.create(category)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			subCategories.map(subCategory => {
-// 				SubCategory.create(subCategory)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			subSubCategories.map(subSubCategory => {
-// 				SubSubCategory.create(subSubCategory)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			products.map(product => {
-// 				Product.create(product)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			reviews.map(review => {
-// 				Review.create(review)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			orders.map(order => {
-// 				Order.create(order)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			orderItems.map(orderItem => {
-// 				OrderItem.create(orderItem)
-// 			})
-// 		)
-// 		await Promise.all(
-// 			wishlists.map(wishlistItem => {
-// 				Wishlist.create(wishlistItem)
-// 			})
-		// )
+        await Promise.all(
+			profiles.map(profile => {
+				Profile.create(profile)
+			})
+		)
+
 	})
 

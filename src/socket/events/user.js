@@ -1,0 +1,53 @@
+const ProfileModel = require('../../models/Profile');
+
+module.exports = (socket) => {
+  // user connect
+  socket.on('user/connect', async (userId) => {
+    socket.join(userId);
+    socket.broadcast.to(userId).emit('user/inactivate', true);
+
+    /* eslint-disable */
+    // store userId in socket object
+    socket.userId = userId;
+    /* eslint-enable */
+
+    // await ProfileModel.updateOne({ userId }, { $set: { online: true } });
+    //socket.broadcast.emit('user/connect', userId);
+    try {
+      // Update user's online status in the database
+      await Profile.update({ online: true }, {
+        where: { userId }
+      });
+
+      // Notify other clients about the user connection
+      socket.broadcast.emit('user/connect', userId);
+    } catch (error) {
+      console.error('Error updating user status on connect:', error);
+    }
+
+  });
+
+  socket.on('disconnect', async () => {
+    const { userId } = socket;
+    // await ProfileModel.updateOne({ userId }, { $set: { online: false } });
+    // socket.broadcast.emit('user/disconnect', userId);
+    try {
+      // Update user's online status in the database
+      await Profile.update({ online: false }, {
+        where: { userId }
+      });
+
+      // Notify other clients about the user disconnection
+      socket.broadcast.emit('user/disconnect', userId);
+    } catch (error) {
+      console.error('Error updating user status on explicit disconnect:', error);
+    }
+  });
+
+  socket.on('user/disconnect', async () => {
+    const { userId } = socket;
+    await ProfileModel.updateOne({ userId }, { $set: { online: false } });
+
+    socket.broadcast.emit('user/disconnect', userId);
+  });
+};

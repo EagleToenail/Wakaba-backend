@@ -1,0 +1,28 @@
+module.exports = (sequelize, DataTypes) => {
+    const Contact = sequelize.define('Contact', {
+        id: {
+          type:             DataTypes.INTEGER,
+          allowNull:        false,
+          primaryKey:       true,
+          autoIncrement:    true
+        },
+        userId: {
+          
+            type: DataTypes.STRING,
+            allowNull: false,
+          },
+          roomId: {
+            type: DataTypes.STRING,
+            allowNull: false,
+          },
+          friendId: {
+            type: DataTypes.STRING,
+            allowNull: false,
+          },
+  
+    }, {
+        tableName: 'contacts', // Optional: specify table name if you want to use a custom name
+        timestamps: false,     // Optional: disable timestamps if you don't have createdAt/updatedAt fields
+      })
+    return Contact
+  }

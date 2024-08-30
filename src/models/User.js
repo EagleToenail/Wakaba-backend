@@ -6,28 +6,20 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey:       true,
       autoIncrement:    true
     },
-    store_name:          DataTypes.STRING,
-    store_type:          DataTypes.STRING,
-    full_name:           DataTypes.STRING,
-    katakana_name:       DataTypes.STRING,
-    profile_image:       DataTypes.STRING,
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+      trim: true,
+      required: true,
+      minLength: 3,
+      maxLength: 24,
+    },
     email: {
       type:              DataTypes.STRING,
       unique:             true
     },
-    phone_number:        DataTypes.STRING,
     password:            DataTypes.STRING,
-    birtday:             DataTypes.STRING, 
-    idcard_image:        DataTypes.STRING,
-    card_type:           DataTypes.STRING,
-    prefectures:         DataTypes.STRING,
-    city:                DataTypes.STRING,
-    address:             DataTypes.TEXT,
-    resume:              DataTypes.STRING,
-    job_description:     DataTypes.STRING,
-    guarantor:           DataTypes.STRING,
-    pledge_image:        DataTypes.STRING,
-    staff_terms:         DataTypes.TEXT,
+
   })
   // User.associate = function (models) {
   //   User.belongsTo(models.Company)

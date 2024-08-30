@@ -8,23 +8,15 @@ const sequelize = new Sequelize(config.db.database, config.db.user, config.db.pa
 
 const db = {}
 db.User           = require("./User")(sequelize, Sequelize.DataTypes);
+db.Profile           = require("./Profile")(sequelize, Sequelize.DataTypes);
 db.Customer           = require("./Customer")(sequelize, Sequelize.DataTypes);
 db.Sales           = require("./Sales")(sequelize, Sequelize.DataTypes);
-// db.Company        = require("./Company")(sequelize, Sequelize.DataTypes);
-// db.Showcase       = require("./Showcase")(sequelize, Sequelize.DataTypes);
-// db.Category       = require("./Category")(sequelize, Sequelize.DataTypes);
-// db.SubCategory    = require("./SubCategory")(sequelize, Sequelize.DataTypes);
-// db.SubSubCategory = require("./SubSubCategory")(sequelize, Sequelize.DataTypes);
-// db.OrderItem      = require("./OrderItem")(sequelize, Sequelize.DataTypes);
-// db.Wishlist       = require("./Wishlist")(sequelize, Sequelize.DataTypes);
-// db.Product        = require("./Product")(sequelize, Sequelize.DataTypes);
-// db.Review         = require("./Review")(sequelize, Sequelize.DataTypes);
-// db.Order          = require("./Order")(sequelize, Sequelize.DataTypes);
 
-// db.Address          = require("./Address")(sequelize, Sequelize.DataTypes);
-// db.Otp          = require("./Otp")(sequelize, Sequelize.DataTypes);
-// db.Vendor         = require("./Vendor")(sequelize, Sequelize.DataTypes);
-// db.VendorPayment          = require("./VendorPayment")(sequelize, Sequelize.DataTypes);
+db.Chat           = require("./Chat")(sequelize, Sequelize.DataTypes);
+db.Contact           = require("./Contact")(sequelize, Sequelize.DataTypes);
+db.File           = require("./File")(sequelize, Sequelize.DataTypes);
+db.Group           = require("./Group")(sequelize, Sequelize.DataTypes);
+db.Inbox           = require("./Inbox")(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {

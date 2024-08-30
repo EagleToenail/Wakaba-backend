@@ -9,5 +9,8 @@ module.exports = {
     },
     authentication: {
         jwtSecret : process.env.JWT_SECRET || 'secret'
-    }
+    },
+    cors: {
+        origin: ['http://localhost:8081'],
+      },
 }
