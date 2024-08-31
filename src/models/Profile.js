@@ -83,8 +83,11 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true, // Optional: Use snake_case for column names in the database
         version: false // Disable versioning as in Mongoose
     })
-    // User.associate = function (models) {
-    //   User.belongsTo(models.Company)
-    //}
+
+    Profile.associate = (models) => {
+      Profile.hasMany(models.Chat, { foreignKey: 'userId' });
+      Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
+    };
+
     return Profile
   }

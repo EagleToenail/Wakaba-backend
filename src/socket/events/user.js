@@ -13,7 +13,7 @@ module.exports = (socket) => {
 
     try {
       // Update user's online status in the database
-      await Profile.update({ online: true }, {
+      await ProfileModel.update({ online: true }, {
         where: { userId }
       });
 
@@ -29,7 +29,7 @@ module.exports = (socket) => {
     const { userId } = socket;
     try {
       // Update user's online status in the database
-      await Profile.update({ online: false }, {
+      await ProfileModel.update({ online: false }, {
         where: { userId }
       });
 
@@ -44,7 +44,7 @@ module.exports = (socket) => {
     const { userId } = socket;
     try {
       // Update user's online status in the database
-      await Profile.update({ online: false }, {
+      await ProfileModel.update({ online: false }, {
         where: { userId }
       });
 

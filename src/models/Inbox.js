@@ -49,5 +49,10 @@ module.exports = (sequelize, DataTypes) => {
           tableName: 'inboxes', // Optional: specify table name if you want to use a custom name
           timestamps: false,    // Optional: disable timestamps if you don't have createdAt/updatedAt fields
         })
+        Inbox.associate = (models) => {
+          Inbox.belongsTo(models.Profile, { foreignKey: 'ownersId', as: 'owners' });
+          Inbox.belongsTo(models.Group, { foreignKey: 'roomId', as: 'group' });
+          Inbox.belongsTo(models.File, { foreignKey: 'fileId', as: 'file' });
+        };
     return Inbox
   }

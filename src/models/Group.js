@@ -40,5 +40,10 @@ module.exports = (sequelize, DataTypes) => {
           tableName: 'groups', // Optional: specify table name if you want to use a custom name
           timestamps: true,    // Enable timestamps to automatically create `createdAt` and `updatedAt` fields
         })
+
+        Group.associate = (models) => {
+          Group.hasMany(models.Inbox, { foreignKey: 'roomId', as: 'inboxes' });
+        };
+        
     return Group
   }

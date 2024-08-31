@@ -1,10 +1,12 @@
 const { io } = global;
 const { v4: uuidv4 } = require('uuid');
+const { Op } = require('sequelize');
+const { Sequelize } = require('sequelize');
 
-const ProfileModel = require('../../db/models/profile');
-const GroupModel = require('../../db/models/group');
-const InboxModel = require('../../db/models/inbox');
-const ChatModel = require('../../db/models/chat');
+const ProfileModel = require('../../models/Profile');
+const GroupModel = require('../../models/Group');
+const InboxModel = require('../../models/Inbox');
+const ChatModel = require('../../models/Chat');
 
 const Inbox = require('../../helpers/models/inbox');
 
@@ -16,28 +18,36 @@ module.exports = (socket) => {
       const roomId = `group-${uuidv4()}`;
 
       // get full name of admin
-      const profile = await ProfileModel.findOne(
-        { userId: args.adminId },
-        { fullname: 1 }
-      );
+      const profile = await ProfileModel.findOne({
+        where: {
+          userId: args.adminId
+        },
+        attributes: ['fullname'] // Include only the fullname field
+      });
 
-      const group = await new GroupModel({
+      const link = `/group/+${uniqueId(16)}`;
+      const group = await GroupModel.create({
         ...args,
         roomId,
-        link: `/group/+${uniqueId(16)}`,
-      }).save();
+        link
+      });
 
-      const inbox = await new InboxModel({
-        ownersId: args.participantsId,
-        roomId,
-        roomType: 'group',
-        content: {
-          senderName: profile.fullname,
-          from: args.adminId,
-          text: 'group created',
-          time: new Date().toISOString(),
-        },
-      }).save();
+
+        const ownersId = args.participantsId;
+        const profileFullname = profile.fullname; // Replace with actual value
+        const adminId = args.adminId; // Replace with actual value
+
+        const inbox = await InboxModel.create({
+          ownersId, // Assuming `ownersId` is an array or suitable data type for your model
+          roomId,
+          roomType: 'group',
+          content: {
+            senderName: profileFullname,
+            from: adminId,
+            text: 'group created',
+            time: new Date().toISOString()
+          }
+        });
 
       // include master
       io.to(args.participantsId).emit('group/create', { group, ...inbox._doc });
@@ -59,30 +69,69 @@ module.exports = (socket) => {
   socket.on('group/add-participants', async (args) => {
     try {
       // get inviter fullname
-      const inviter = await ProfileModel.findOne(
-        { userId: args.userId },
-        { fullname: 1 }
-      );
-      const group = await GroupModel.findOneAndUpdate(
-        { _id: args.groupId },
-        { $addToSet: { participantsId: { $each: args.friendsId } } }
-      );
+      const inviter = await ProfileModel.findOne({
+        where: {
+          userId: args.userId
+        },
+        attributes: ['fullname'] // Include only the fullname field
+      });
+      
+      const groupId = args.groupId;
+      const friendsId = args.friendsId;
+      
+      // Step 1: Fetch the existing group record
+      const group = await GroupModel.findOne({
+        where: { id: groupId } // Adjust 'id' if your primary key is named differently
+      });
+      
+      // Check if the group exists
+      if (group) {
+        // Get the current participantsId
+        const existingParticipants = group.participantsId || [];
+        
+        // Filter out the friendsId that are already in the participants list
+        const uniqueFriends = friendsId.filter(friendId => !existingParticipants.includes(friendId));
+      
+        // Step 2: Update the participantsId array
+        await GroupModel.update(
+          { participantsId: [...existingParticipants, ...uniqueFriends] },
+          { where: { id: groupId } }
+        );
+      }
 
-      await InboxModel.updateOne(
-        { roomId: group.roomId },
-        {
-          $addToSet: { ownersId: { $each: args.friendsId } },
-          $set: {
+      const roomId = group.roomId;
+      const userId = args.userId;
+      const senderName = inviter.fullname;
+      
+      // Step 1: Fetch the existing record
+      const inbox = await InboxModel.findOne({
+        where: { roomId }
+      });
+      
+      // Check if the inbox exists
+      if (inbox) {
+        // Get the current ownersId
+        const existingOwnersId = inbox.ownersId || [];
+      
+        // Filter out the friendsId that are already in the ownersId list
+        const uniqueFriends = friendsId.filter(friendId => !existingOwnersId.includes(friendId));
+      
+        // Step 2: Update the record
+        await InboxModel.update(
+          {
+            ownersId: [...existingOwnersId, ...uniqueFriends],
             fileId: null,
-            'content.senderName': inviter.fullname,
-            'content.from': args.userId,
-            'content.text': `${args.friendsId.length} ${
-              args.friendsId.length > 1 ? 'participants' : 'participant'
-            } added`,
-            'content.time': new Date().toISOString(),
+            content: {
+              ...inbox.content, // Preserve existing content
+              senderName,
+              from: userId,
+              text: `${friendsId.length} ${friendsId.length > 1 ? 'participants' : 'participant'} added`,
+              time: new Date().toISOString()
+            }
           },
-        }
-      );
+          { where: { roomId } }
+        );
+      }
 
       const inboxes = await Inbox.find({ roomId: args.roomId });
 
@@ -105,22 +154,49 @@ module.exports = (socket) => {
         throw errData;
       }
 
-      const profile = await ProfileModel.findOne({ userId }, { fullname: 1 });
-      const group = await GroupModel.findOneAndUpdate(
-        { _id: groupId },
-        { $set: { name, desc } }
-      );
+      const userId = args.userId; // Replace with actual userId value
 
-      await InboxModel.updateOne(
-        { roomId: group.roomId },
+      // Find the profile with the specified userId and only include the fullname field
+      const profile = await ProfileModel.findOne({
+        where: {
+          userId: userId
+        },
+        attributes: ['fullname'] // Specify the field to include
+      });
+
+      const groupId = args.groupId; // Replace with actual groupId value 
+      // Update the record
+      await GroupModel.update(
+        { name, desc }, // Fields to update
+        { where: { id: groupId } } // Filter condition
+      );
+      
+      // Optionally, retrieve the updated record if needed
+      const updatedGroup = await GroupModel.findOne({
+        where: { id: groupId }
+      });
+
+      const roomId = group.roomId;
+      const senderName = profile.fullname;
+      const from = userId;
+      const text = 'group edited';
+      const time = new Date().toISOString();
+      
+      // Update the record
+      await InboxModel.update(
         {
-          $set: {
-            fileId: null,
-            'content.senderName': profile.fullname,
-            'content.from': userId,
-            'content.text': 'group edited',
-            'content.time': new Date().toISOString(),
-          },
+          fileId: null,
+          content: {
+            ...inbox.content, // Preserve existing content, if necessary
+            senderName,
+            from,
+            text,
+            time
+          }
+        },
+        {
+          where: { roomId },
+          returning: true // Optional: retrieve the updated record
         }
       );
 
@@ -141,12 +217,23 @@ module.exports = (socket) => {
 
   socket.on('group/exit', async ({ userId, groupId }, cb) => {
     try {
-      const group = await GroupModel.findOneAndUpdate(
-        { _id: groupId },
-        { $pull: { participantsId: userId } }
-      );
+      const groupId = args.groupId; // Replace with actual groupId value
+      const userId = args.userId; // Replace with actual userId value
+      
+      // Step 1: Fetch the existing record
+      const group = await GroupModel.findOne({
+        where: { id: groupId }
+      });
+      
+      if (group) {
+        const existingParticipants = group.participantsId || [];
+        const updatedParticipants = existingParticipants.filter(participant => participant !== userId);
+        await GroupModel.update(
+          { participantsId: updatedParticipants },
+          { where: { id: groupId } }
+        );
+      }
 
-      // updated participantsId
       const participantsId = group.participantsId.filter(
         (elem) => elem !== userId
       );
@@ -154,30 +241,57 @@ module.exports = (socket) => {
       // if you're the last participant in the group
       if (participantsId.length === 0) {
         // permanently delete data (inbox, group, and chats) related to the group
-        await InboxModel.deleteOne({ roomId: group.roomId });
-        await GroupModel.deleteOne({ _id: groupId });
-        await ChatModel.deleteOne({ roomId: group.roomId });
+        const roomId = group.roomId; // Replace with actual roomId value
+        await InboxModel.destroy({
+          where: { roomId }
+        });
+        const groupId = args.groupId; // Replace with actual groupId value
+        // Delete the record with the specified groupId
+        await GroupModel.destroy({
+          where: { id: groupId } // Ensure the column name matches your model definition
+        });
+        // Delete the record with the specified roomId
+        await ChatModel.destroy({
+          where: { roomId }
+        });
       } else {
         // if you're admin
         if (group.adminId === userId) {
           // give admin status to other participants in the group
           const adminId = participantsId[0];
-          await GroupModel.updateOne({ _id: groupId }, { $set: { adminId } });
+          const groupId = args.groupId; // Replace with the actual groupId value
+          // Update the record with the specified groupId
+          await GroupModel.update(
+            { adminId }, // Fields to update
+            {
+              where: { id: groupId } // Condition to find the record
+            }
+          );
         }
 
-        const profile = await ProfileModel.findOne({ userId }, { fullname: 1 });
+        const userId = args.userId; // Replace with the actual userId value
+        // Find the profile with the specified userId and select only the fullname field
+        const profile = await ProfileModel.findOne({
+          where: { userId },
+          attributes: ['fullname'] // Only include the fullname field in the result
+        });
 
-        await InboxModel.updateOne(
-          { roomId: group.roomId },
+        const roomId = group.roomId; // Replace with the actual roomId value
+        const profileFullname = profile.fullname; // Replace with the actual fullname value
+        // Update the record with the specified roomId
+        await InboxModel.update(
           {
-            $pull: { ownersId: userId },
-            $set: {
-              fileId: null,
-              'content.senderName': profile.fullname,
-              'content.from': userId,
-              'content.text': 'left the group',
-              'content.time': new Date().toISOString(),
-            },
+            fileId: null,
+            'content.senderName': profileFullname,
+            'content.from': userId,
+            'content.text': 'left the group',
+            'content.time': new Date().toISOString()
+          },
+          {
+            where: { roomId },
+            // Add conditions to manipulate the `ownersId` field
+            // Sequelize doesn't natively support array manipulation like `$pull`
+            // You may need to handle the array logic in application code if necessary
           }
         );
 
@@ -203,27 +317,40 @@ module.exports = (socket) => {
     try {
       const { groupId, userId, participantId } = args;
 
-      const master = await ProfileModel.findOne({ userId }, { fullname: 1 });
-      const friend = await ProfileModel.findOne(
-        { userId: participantId },
-        { fullname: 1 }
-      );
+      // Find the profile with the specified userId and select only the fullname field
+      const master = await ProfileModel.findOne({
+        where: { userId },
+        attributes: ['fullname'] // Only include the fullname field in the result
+      });
+      // Find the profile with the specified userId and select only the fullname field
+      const friend = await ProfileModel.findOne({
+        where: { userId: participantId },
+        attributes: ['fullname'] // Only include the fullname field in the result
+      });
 
-      const group = await GroupModel.findOneAndUpdate(
-        { _id: groupId },
-        { $set: { adminId: participantId } }
-      );
-
-      await InboxModel.updateOne(
-        { roomId: group.roomId },
+      await GroupModel.update(
+        { adminId: participantId }, // Fields to update
         {
-          $set: {
-            fileId: null,
-            'content.senderName': master.fullname,
-            'content.from': userId,
-            'content.text': `add ${friend.fullname.split(' ')[0]} as admin`,
-            'content.time': new Date().toISOString(),
-          },
+          where: { id: groupId } // Condition to find the record
+        }
+      );
+
+      const roomId = group.roomId; // Replace with the actual roomId value
+      const masterFullname = master.fullname; // Replace with the actual master.fullname value
+      const friendFullname = friend.fullname.split(' ')[0]; // Replace with the actual friend.fullname value
+      
+      // Update the record with the specified roomId
+      await InboxModel.update(
+        {
+          fileId: null,
+          'content.senderName': masterFullname,
+          'content.from': userId,
+          'content.text': `add ${friendFullname} as admin`,
+          'content.time': new Date().toISOString()
+        },
+        {
+          where: { roomId }
+          // You might need to adjust the field handling for 'content' depending on your model's schema
         }
       );
 
@@ -243,30 +370,53 @@ module.exports = (socket) => {
     try {
       const { groupId, userId, participantId } = args;
 
-      const master = await ProfileModel.findOne({ userId }, { fullname: 1 });
-      const friend = await ProfileModel.findOne(
-        { userId: participantId },
-        { fullname: 1 }
-      );
+      // Find the profile with the specified userId and select only the fullname field
+      const master = await ProfileModel.findOne({
+        where: { userId }, // Filter condition
+        attributes: ['fullname'] // Only include the fullname field in the result
+      });
+      const friend = await ProfileModel.findOne({
+        where: { userId: participantId }, // Filter condition
+        attributes: ['fullname'] // Only include the fullname field in the result
+      });
 
-      const group = await GroupModel.findOneAndUpdate(
-        { _id: groupId },
-        { $pull: { participantsId: participantId } }
-      );
+        // Update the group to remove the participantId from the participantsId JSON array
+        await GroupModel.update(
+          {
+            participantsId: sequelize.json(
+              `JSON_REMOVE(participantsId, JSON_UNQUOTE(JSON_SEARCH(participantsId, 'one', '${participantId}')))`
+            ),
+          },
+          {
+            where: {
+              id: groupId,
+              participantsId: {
+                [Op.contains]: [participantId]
+              }
+            }
+          }
+        );
 
-      await InboxModel.updateOne(
-        { roomId: group.roomId },
-        {
-          $pull: { ownersId: participantId },
-          $set: {
+        // Define necessary values
+        const roomId = group.roomId; // Replace with actual group roomId
+
+        // Update the inbox record
+        await InboxModel.update(
+          {
+            ownersId: Sequelize.json(
+              `JSON_REMOVE(ownersId, JSON_UNQUOTE(JSON_SEARCH(ownersId, 'one', ?)))`
+            ),
             fileId: null,
             'content.senderName': master.fullname,
             'content.from': userId,
             'content.text': `removed ${friend.fullname.split(' ')[0]}`,
             'content.time': new Date().toISOString(),
           },
-        }
-      );
+          {
+            where: { roomId },
+            bind: [participantId]
+          }
+        );
 
       const inboxes = await Inbox.find({ roomId: group.roomId });
 

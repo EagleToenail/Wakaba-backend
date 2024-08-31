@@ -1,53 +1,25 @@
-const ChatModel = require('../../db/models/chat');
+const { Chat, Profile, File } = require('../../models');
 
 exports.find = async (roomId, { skip = 0, limit = 20 }) => {
-  const chats = await ChatModel.aggregate([
-    { $match: { roomId } },
-    {
-      $lookup: {
-        from: 'profiles',
-        localField: 'userId',
-        foreignField: 'userId',
-        as: 'profile',
+  const chats = await Chat.findAll({
+    where: { roomId },
+    include: [
+      {
+        model: Profile,
+        attributes: {
+          exclude: ['username', 'email', 'bio', 'phone', 'dialCode', 'online', 'createdAt', 'updatedAt']
+        }
       },
-    },
-    {
-      $unwind: {
-        path: '$profile',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: 'files',
-        localField: 'fileId',
-        foreignField: 'fileId',
-        as: 'file',
-      },
-    },
-    {
-      $unwind: {
-        path: '$file',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $project: {
-        'profile.username': 0,
-        'profile.email': 0,
-        'profile.bio': 0,
-        'profile.phone': 0,
-        'profile.dialCode': 0,
-        'profile.online': 0,
-        'profile.createdAt': 0,
-        'profile.updatedAt': 0,
-      },
-    },
-    { $sort: { createdAt: -1 } },
-    { $skip: Number(skip) },
-    { $limit: Number(limit) },
-    { $sort: { createdAt: 1 } },
-  ]);
+      {
+        model: File
+      }
+    ],
+    order: [['createdAt', 'DESC']], // Initial sort
+    offset: Number(skip),
+    limit: Number(limit),
+    subQuery: false // Ensure the order is respected when using `offset` and `limit`
+  });
 
-  return chats;
+  // Reverse the order to match `$sort: { createdAt: 1 }`
+  return chats.reverse();
 };

@@ -1,63 +1,49 @@
-const InboxModel = require('../models/inbox');
+const { Inbox, Profile, Group, File } = require('../../models');
 
 exports.find = async (queries, search = '') => {
-  const inboxes = await InboxModel.aggregate([
-    { $match: queries },
-    {
-      $lookup: {
-        from: 'profiles',
-        localField: 'ownersId',
-        foreignField: 'userId',
+  const inboxes = await Inbox.findAll({
+    where: queries,
+    include: [
+      {
+        model: Profile,
         as: 'owners',
+        attributes: {
+          exclude: [] // Adjust if you want to exclude specific fields
+        }
       },
-    },
-    {
-      $lookup: {
-        from: 'groups',
-        localField: 'roomId',
-        foreignField: 'roomId',
+      {
+        model: Group,
         as: 'group',
+        attributes: {
+          exclude: [] // Adjust if you want to exclude specific fields
+        }
       },
-    },
-    {
-      $unwind: {
-        path: '$group',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: 'files',
-        localField: 'fileId',
-        foreignField: 'fileId',
+      {
+        model: File,
         as: 'file',
-      },
+        attributes: {
+          exclude: [] // Adjust if you want to exclude specific fields
+        }
+      }
+    ],
+    where: {
+      [Op.or]: [
+        {
+          roomType: 'private',
+          '$owners.fullname$': {
+            [Op.iLike]: `%${search}%`
+          }
+        },
+        {
+          roomType: 'group',
+          '$group.name$': {
+            [Op.iLike]: `%${search}%`
+          }
+        }
+      ]
     },
-    {
-      $unwind: {
-        path: '$file',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $match: {
-        $or: [
-          {
-            roomType: 'private',
-            owners: {
-              $elemMatch: {
-                fullname: { $regex: new RegExp(search), $options: 'i' },
-              },
-            },
-          },
-          {
-            roomType: 'group',
-            'group.name': { $regex: new RegExp(search), $options: 'i' },
-          },
-        ],
-      },
-    },
-  ]).sort({ 'content.time': -1 });
+    order: [['content', 'time', 'DESC']]
+  });
 
   return inboxes;
 };
