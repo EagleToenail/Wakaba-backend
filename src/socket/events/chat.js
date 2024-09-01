@@ -2,12 +2,12 @@ const { io } = global;
 const cloud = require('cloudinary').v2;
 const { Op, Sequelize } = require('sequelize');
 
-const InboxModel = require('../../models/Inbox');
-const ChatModel = require('../../models/Chat');
-const FileModel = require('../../models/File');
-const ProfileModel = require('../../models/Profile');
+const {Inbox} = require('../../models');
+const {Chat} = require('../../models');
+const {File} = require('../../models');
+const {Profile} = require('../../models');
 
-const Inbox = require('../../helpers/models/inbox');
+const InboxJoin = require('../../helpers/models/inbox');
 const uniqueId = require('../../helpers/uniqueId');
 
 module.exports = (socket) => {
@@ -30,7 +30,7 @@ module.exports = (socket) => {
 
         fileId = upload.public_id;
 
-        file = await FileModel.create({
+        file = await File.create({
           fileId,
           url: upload.url,
           originalname: args.file.originalname,
@@ -41,8 +41,8 @@ module.exports = (socket) => {
         
       }
 
-      const chat = await ChatModel.create({ ...args, fileId });
-      const profile = await ProfileModel.findOne({
+      const chat = await Chat.create({ ...args, fileId });
+      const profile = await Profile.findOne({
         where: { userId: args.userId },
         attributes: ['userId', 'avatar', 'fullname']
       });
@@ -51,7 +51,7 @@ module.exports = (socket) => {
       async function upsertInbox(args, profile, chat, file) {
         try {
           // Find the record by roomId
-          let inbox = await InboxModel.findOne({
+          let inbox = await Inbox.findOne({
             where: { roomId: args.roomId }
           });
       
@@ -74,7 +74,7 @@ module.exports = (socket) => {
             });
           } else {
             // If the record does not exist, create a new one
-            await InboxModel.create({
+            await Inbox.create({
               roomId: args.roomId,
               unreadMessage: 1,
               ownersId: args.ownersId,
@@ -95,7 +95,7 @@ module.exports = (socket) => {
         }
       }
 
-      const inboxes = await Inbox.find({ ownersId: { $all: args.ownersId } });
+      const inboxes = await InboxJoin.find({ ownersId: { $all: args.ownersId } });
 
       io.to(args.roomId).emit('chat/insert', { ...chat._doc, profile, file });
       // send the latest inbox data to be merge with old inbox data
@@ -110,7 +110,7 @@ module.exports = (socket) => {
     try {
       const ownersIdArray = args.ownersId;
 
-      await InboxModel.update(
+      await Inbox.update(
         { unreadMessage: 0 },
         {
           where: {
@@ -124,7 +124,7 @@ module.exports = (socket) => {
         }
       );
 
-      await ChatModel.update(
+      await Chat.update(
         { readed: true }, // The fields to update
         {
           where: {
@@ -134,7 +134,7 @@ module.exports = (socket) => {
         }
       );
 
-      const inboxes = await Inbox.find({ ownersId: { $all: args.ownersId } });
+      const inboxes = await InboxJoin.find({ ownersId: { $all: args.ownersId } });
 
       io.to(args.ownersId).emit('inbox/read', inboxes[0]);
       io.to(args.roomId).emit('chat/read', true);
@@ -149,7 +149,7 @@ module.exports = (socket) => {
 
     const isGroup = roomType === 'group';
     const typer = isGroup
-      ? await ProfileModel.findOne({ userId }, { fullname: 1 })
+      ? await Profile.findOne({ userId }, { fullname: 1 })
       : null;
 
     socket.broadcast
@@ -171,7 +171,7 @@ module.exports = (socket) => {
       try {
         // delete attached files
         const handleDeleteFiles = async (query = {}) => {
-          const chats = await ChatModel.findAll({
+          const chats = await Chat.findAll({
             where: {
               _id: {
                 [Op.in]: chatsId // Filter by IDs in chatsId array
@@ -187,7 +187,7 @@ module.exports = (socket) => {
             .map((elem) => elem.fileId);
 
           if (filesId.length > 0) {
-            await FileModel.destroy({
+            await File.destroy({
               where: {
                 roomId, // Filter by roomId
                 fileId: {
@@ -209,7 +209,7 @@ module.exports = (socket) => {
         if (deleteForEveryone) {
           await handleDeleteFiles({});
 
-          await ChatModel.destroy({
+          await Chat.destroy({
             where: {
               roomId, // Filter by roomId
               _id: {
@@ -220,7 +220,7 @@ module.exports = (socket) => {
 
           io.to(roomId).emit('chat/delete', { userId, chatsId });
         } else {
-        await ChatModel.update(
+        await Chat.update(
           {
             deletedBy: Sequelize.json('JSON_ARRAY_APPEND(deletedBy, "$", :userId)') // Appends userId to the JSON array
           },
@@ -237,7 +237,7 @@ module.exports = (socket) => {
 
           // delete permanently if this message has been
           // deleted by all room participants
-          const inbox = await InboxModel.findOne({
+          const inbox = await Inbox.findOne({
             where: {
               roomId // Filter by roomId
             },
@@ -249,7 +249,7 @@ module.exports = (socket) => {
           await handleDeleteFiles({ deletedBy: { $size: ownersId.length } });
 
           const minDeletedByCount = ownersId.length; // Calculate the minimum count from ownersId
-          await ChatModel.destroy({
+          await Chat.destroy({
             where: {
               roomId,
               [Sequelize.literal('JSON_LENGTH(deletedBy)')]: {

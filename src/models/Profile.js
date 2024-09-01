@@ -7,49 +7,49 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey:       true,
         autoIncrement:    true
       },
-        userId: {
-          type: DataTypes.STRING,
-          required: true,
-        },
-        username: {
-          type: DataTypes.STRING,
-          unique: true,
-          trim: true,
-          required: true,
-          minLength: 3,
-          maxLength: 24,
-        },
-        email: {
-          type: DataTypes.STRING,
-          unique: true,
-          required: true,
-        },
-        fullname: {
-          type: DataTypes.STRING,
-          trim: true,
-          required: true,
-          minLength: 3,
-          maxLength: 32,
-        },
-        avatar: {
-          type: DataTypes.STRING,
-          default: null,
-        },
-        bio: {
-          type: DataTypes.STRING,
-          trim: true,
-          default: '',
-        },
-        phone: {
-          type: DataTypes.STRING,
-          trim: true,
-          default: '',
-        },
-        dialCode: {
-          type: DataTypes.STRING,
-          trim: true,
-          default: '',
-        },
+      user_id: {
+        type: DataTypes.STRING,
+        required: true,
+      },
+      username: {
+        type: DataTypes.STRING,
+        unique: true,
+        trim: true,
+        required: true,
+        minLength: 3,
+        maxLength: 24,
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+        required: true,
+      },
+      fullname: {
+        type: DataTypes.STRING,
+        trim: true,
+        required: true,
+        minLength: 3,
+        maxLength: 32,
+      },
+      avatar: {
+        type: DataTypes.STRING,
+        default: null,
+      },
+      bio: {
+        type: DataTypes.STRING,
+        trim: true,
+        default: '',
+      },
+      phone: {
+        type: DataTypes.STRING,
+        trim: true,
+        default: '',
+      },
+      dialCode: {
+        type: DataTypes.STRING,
+        trim: true,
+        default: '',
+      },
       //=========
       store_name:          DataTypes.STRING,
       store_type:          DataTypes.STRING,

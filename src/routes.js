@@ -5,10 +5,11 @@ const SalesController = require("./controllers/SalesController")
 // const ImageController = require("./controllers/ImageController")
 const AuthenticationController = require("./controllers/AuthenticationController")
 // const AuthenticationControllerPolicy = require("./middleware/AuthenticationControllerPolicy");
+const SettingController = require("./controllers/SettingController")
 
 module.exports = (app) => {
   // =========authentication
-  // app.post("/api/auth/register", AuthenticationControllerPolicy.register, AuthenticationController.register)
+  app.post("/api/auth/register", AuthenticationController.register)
   app.post("/api/auth/login", AuthenticationController.login)
   // app.get("/api/auth/verifyPassword/:password", isAuthenticated, AuthenticationController.verifyPassword)
   // app.post("/api/auth/updatePassword",isAuthenticated,AuthenticationControllerPolicy.updatePassword,AuthenticationController.updatePassword)
@@ -22,7 +23,7 @@ module.exports = (app) => {
     // // ==============user
     app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
     app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
-    app.get("/api/user/getUserById/:userId", UserController.getUserById)
+    app.post("/api/users", UserController.find)
     app.get("/api/user/getUserList",  UserController.getUserList)
     app.post("/api/user/updateUser", UserController.updateUser)
     app.get("/api/user/getUserByEmail/:email",UserController.getUserByEmail)
@@ -39,8 +40,9 @@ module.exports = (app) => {
     app.post("/api/sales/createSales", SalesController.createSales)
     app.post("/api/sales/updateSales", SalesController.updateSales)
     app.get("/api/sales/deleteSales", SalesController.deleteSales)
-
-
+    //=============setting
+    app.post("/api/settings", SettingController.find)
+    app.put("/api/settings", SettingController.update)
   // app.post("/api/products/createProduct",ImageController.uploadProductImage, ProductsController.createProduct)
 
 }

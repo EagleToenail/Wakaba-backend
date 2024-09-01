@@ -52,8 +52,6 @@ module.exports = (sequelize, DataTypes) => {
         },
 
     })
-    // Sales.associate = function (models) {
-    //   Sales.belongsTo(models.Company)
-    // }
+
     return Sales
 }

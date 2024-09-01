@@ -3,12 +3,12 @@ const { v4: uuidv4 } = require('uuid');
 const { Op } = require('sequelize');
 const { Sequelize } = require('sequelize');
 
-const ProfileModel = require('../../models/Profile');
-const GroupModel = require('../../models/Group');
-const InboxModel = require('../../models/Inbox');
-const ChatModel = require('../../models/Chat');
+const {Profile} = require('../../models');
+const {Group} = require('../../models');
+const {Inbox} = require('../../models');
+const {Chat} = require('../../models');
 
-const Inbox = require('../../helpers/models/inbox');
+const InboxJoin = require('../../helpers/models/inbox');
 
 const uniqueId = require('../../helpers/uniqueId');
 
@@ -18,7 +18,7 @@ module.exports = (socket) => {
       const roomId = `group-${uuidv4()}`;
 
       // get full name of admin
-      const profile = await ProfileModel.findOne({
+      const profile = await Profile.findOne({
         where: {
           userId: args.adminId
         },
@@ -26,7 +26,7 @@ module.exports = (socket) => {
       });
 
       const link = `/group/+${uniqueId(16)}`;
-      const group = await GroupModel.create({
+      const group = await Group.create({
         ...args,
         roomId,
         link
@@ -37,7 +37,7 @@ module.exports = (socket) => {
         const profileFullname = profile.fullname; // Replace with actual value
         const adminId = args.adminId; // Replace with actual value
 
-        const inbox = await InboxModel.create({
+        const inbox = await Inbox.create({
           ownersId, // Assuming `ownersId` is an array or suitable data type for your model
           roomId,
           roomType: 'group',
@@ -69,7 +69,7 @@ module.exports = (socket) => {
   socket.on('group/add-participants', async (args) => {
     try {
       // get inviter fullname
-      const inviter = await ProfileModel.findOne({
+      const inviter = await Profile.findOne({
         where: {
           userId: args.userId
         },
@@ -80,7 +80,7 @@ module.exports = (socket) => {
       const friendsId = args.friendsId;
       
       // Step 1: Fetch the existing group record
-      const group = await GroupModel.findOne({
+      const group = await Group.findOne({
         where: { id: groupId } // Adjust 'id' if your primary key is named differently
       });
       
@@ -93,7 +93,7 @@ module.exports = (socket) => {
         const uniqueFriends = friendsId.filter(friendId => !existingParticipants.includes(friendId));
       
         // Step 2: Update the participantsId array
-        await GroupModel.update(
+        await Group.update(
           { participantsId: [...existingParticipants, ...uniqueFriends] },
           { where: { id: groupId } }
         );
@@ -104,7 +104,7 @@ module.exports = (socket) => {
       const senderName = inviter.fullname;
       
       // Step 1: Fetch the existing record
-      const inbox = await InboxModel.findOne({
+      const inbox = await Inbox.findOne({
         where: { roomId }
       });
       
@@ -117,7 +117,7 @@ module.exports = (socket) => {
         const uniqueFriends = friendsId.filter(friendId => !existingOwnersId.includes(friendId));
       
         // Step 2: Update the record
-        await InboxModel.update(
+        await Inbox.update(
           {
             ownersId: [...existingOwnersId, ...uniqueFriends],
             fileId: null,
@@ -133,7 +133,7 @@ module.exports = (socket) => {
         );
       }
 
-      const inboxes = await Inbox.find({ roomId: args.roomId });
+      const inboxes = await InboxJoin.find({ roomId: args.roomId });
 
       io.to(inboxes[0].ownersId).emit('inbox/find', inboxes[0]);
     } catch (error0) {
@@ -157,7 +157,7 @@ module.exports = (socket) => {
       const userId = args.userId; // Replace with actual userId value
 
       // Find the profile with the specified userId and only include the fullname field
-      const profile = await ProfileModel.findOne({
+      const profile = await Profile.findOne({
         where: {
           userId: userId
         },
@@ -166,13 +166,13 @@ module.exports = (socket) => {
 
       const groupId = args.groupId; // Replace with actual groupId value 
       // Update the record
-      await GroupModel.update(
+      await Group.update(
         { name, desc }, // Fields to update
         { where: { id: groupId } } // Filter condition
       );
       
       // Optionally, retrieve the updated record if needed
-      const updatedGroup = await GroupModel.findOne({
+      const updatedGroup = await Group.findOne({
         where: { id: groupId }
       });
 
@@ -183,7 +183,7 @@ module.exports = (socket) => {
       const time = new Date().toISOString();
       
       // Update the record
-      await InboxModel.update(
+      await Inbox.update(
         {
           fileId: null,
           content: {
@@ -200,7 +200,7 @@ module.exports = (socket) => {
         }
       );
 
-      const inboxes = await Inbox.find({ roomId: group.roomId });
+      const inboxes = await InboxJoin.find({ roomId: group.roomId });
 
       // update group profile
       io.to(group.roomId).emit('group/edit', form);
@@ -221,14 +221,14 @@ module.exports = (socket) => {
       const userId = args.userId; // Replace with actual userId value
       
       // Step 1: Fetch the existing record
-      const group = await GroupModel.findOne({
+      const group = await Group.findOne({
         where: { id: groupId }
       });
       
       if (group) {
         const existingParticipants = group.participantsId || [];
         const updatedParticipants = existingParticipants.filter(participant => participant !== userId);
-        await GroupModel.update(
+        await Group.update(
           { participantsId: updatedParticipants },
           { where: { id: groupId } }
         );
@@ -242,16 +242,16 @@ module.exports = (socket) => {
       if (participantsId.length === 0) {
         // permanently delete data (inbox, group, and chats) related to the group
         const roomId = group.roomId; // Replace with actual roomId value
-        await InboxModel.destroy({
+        await Inbox.destroy({
           where: { roomId }
         });
         const groupId = args.groupId; // Replace with actual groupId value
         // Delete the record with the specified groupId
-        await GroupModel.destroy({
+        await Group.destroy({
           where: { id: groupId } // Ensure the column name matches your model definition
         });
         // Delete the record with the specified roomId
-        await ChatModel.destroy({
+        await Chat.destroy({
           where: { roomId }
         });
       } else {
@@ -261,7 +261,7 @@ module.exports = (socket) => {
           const adminId = participantsId[0];
           const groupId = args.groupId; // Replace with the actual groupId value
           // Update the record with the specified groupId
-          await GroupModel.update(
+          await Group.update(
             { adminId }, // Fields to update
             {
               where: { id: groupId } // Condition to find the record
@@ -271,7 +271,7 @@ module.exports = (socket) => {
 
         const userId = args.userId; // Replace with the actual userId value
         // Find the profile with the specified userId and select only the fullname field
-        const profile = await ProfileModel.findOne({
+        const profile = await Profile.findOne({
           where: { userId },
           attributes: ['fullname'] // Only include the fullname field in the result
         });
@@ -279,7 +279,7 @@ module.exports = (socket) => {
         const roomId = group.roomId; // Replace with the actual roomId value
         const profileFullname = profile.fullname; // Replace with the actual fullname value
         // Update the record with the specified roomId
-        await InboxModel.update(
+        await Inbox.update(
           {
             fileId: null,
             'content.senderName': profileFullname,
@@ -295,7 +295,7 @@ module.exports = (socket) => {
           }
         );
 
-        const inboxs = await Inbox.find({ roomId: group.roomId });
+        const inboxs = await InboxJoin.find({ roomId: group.roomId });
         // update data in broadcast client
         socket.broadcast.to(participantsId).emit('group/exit', {
           groupId,
@@ -318,17 +318,17 @@ module.exports = (socket) => {
       const { groupId, userId, participantId } = args;
 
       // Find the profile with the specified userId and select only the fullname field
-      const master = await ProfileModel.findOne({
+      const master = await Profile.findOne({
         where: { userId },
         attributes: ['fullname'] // Only include the fullname field in the result
       });
       // Find the profile with the specified userId and select only the fullname field
-      const friend = await ProfileModel.findOne({
+      const friend = await Profile.findOne({
         where: { userId: participantId },
         attributes: ['fullname'] // Only include the fullname field in the result
       });
 
-      await GroupModel.update(
+      await Group.update(
         { adminId: participantId }, // Fields to update
         {
           where: { id: groupId } // Condition to find the record
@@ -340,7 +340,7 @@ module.exports = (socket) => {
       const friendFullname = friend.fullname.split(' ')[0]; // Replace with the actual friend.fullname value
       
       // Update the record with the specified roomId
-      await InboxModel.update(
+      await Inbox.update(
         {
           fileId: null,
           'content.senderName': masterFullname,
@@ -354,7 +354,7 @@ module.exports = (socket) => {
         }
       );
 
-      const inboxes = await Inbox.find({ roomId: group.roomId });
+      const inboxes = await InboxJoin.find({ roomId: group.roomId });
 
       io.to(group.participantsId).emit('inbox/find', inboxes[0]);
       io.to(group.roomId).emit('group/add-admin', {
@@ -371,17 +371,17 @@ module.exports = (socket) => {
       const { groupId, userId, participantId } = args;
 
       // Find the profile with the specified userId and select only the fullname field
-      const master = await ProfileModel.findOne({
+      const master = await Profile.findOne({
         where: { userId }, // Filter condition
         attributes: ['fullname'] // Only include the fullname field in the result
       });
-      const friend = await ProfileModel.findOne({
+      const friend = await Profile.findOne({
         where: { userId: participantId }, // Filter condition
         attributes: ['fullname'] // Only include the fullname field in the result
       });
 
         // Update the group to remove the participantId from the participantsId JSON array
-        await GroupModel.update(
+        await Group.update(
           {
             participantsId: sequelize.json(
               `JSON_REMOVE(participantsId, JSON_UNQUOTE(JSON_SEARCH(participantsId, 'one', '${participantId}')))`
@@ -401,7 +401,7 @@ module.exports = (socket) => {
         const roomId = group.roomId; // Replace with actual group roomId
 
         // Update the inbox record
-        await InboxModel.update(
+        await Inbox.update(
           {
             ownersId: Sequelize.json(
               `JSON_REMOVE(ownersId, JSON_UNQUOTE(JSON_SEARCH(ownersId, 'one', ?)))`
@@ -418,7 +418,7 @@ module.exports = (socket) => {
           }
         );
 
-      const inboxes = await Inbox.find({ roomId: group.roomId });
+      const inboxes = await InboxJoin.find({ roomId: group.roomId });
 
       // refresh inbox
       socket.broadcast

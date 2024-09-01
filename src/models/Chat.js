@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     Chat.associate = (models) => {
-      Chat.belongsTo(models.Profile, { foreignKey: 'userId' });
+      Chat.belongsTo(models.Profile, { foreignKey: 'user_id' });
       Chat.belongsTo(models.File, { foreignKey: 'fileId' });
     };
     

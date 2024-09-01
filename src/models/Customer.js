@@ -13,8 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       trigger:              DataTypes.TEXT, 
       shop:                DataTypes.TEXT,
     })
-    // User.associate = function (models) {
-    //   User.belongsTo(models.Company)
-    //}
+
     return Customer
   }

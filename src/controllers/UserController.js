@@ -1,4 +1,5 @@
 const { User } = require('../models')
+const response = require('../helpers/response');
 
 module.exports = {
     async checkUserName(req, res) {
@@ -48,42 +49,29 @@ module.exports = {
             })
         }
     },
-    async getUserById(req, res) {
+    async find(req, res) {
         try {
-            const user = await User.findByPk(req.params.userId, {
-                attributes: [
-                    "id",
-                    "store_name",
-                    "store_type",
-                    "full_anme",
-                    "katakana_name",
-                    "profile_image",
-                    "email",
-                    "phone_number",
-                    "pasword",
-                    "birthday",
-                    "idcard_image",
-                    "card_type",
-                    "prefectures",
-                    "city",
-                    "address",
-                    "resume",
-                    "job_description",
-                    "guarantor",
-                    "pledge_image",
-                    "staff_terms",
-                ]
+            console.log("=======userid========",req.body.userId);
+            const userId = req.body.userId;
+            const user = await User.findOne( {
+                where: { id: userId}
             })
             if (!user) {
                 return res.status(403).send({
                     error: "User not found."
                 })
             }
-            res.send(user)
-        } catch (err) {
-            res.status(500).send({
-                error: "An error occured when trying to get an user."
-            })
+            response({
+                res,
+                payload: user,
+            });
+        } catch (error0) {
+            response({
+                res,
+                statusCode: error0.statusCode || 500,
+                success: false,
+                message: error0.message,
+            });
         }
     },
     async getUserList(req, res) {

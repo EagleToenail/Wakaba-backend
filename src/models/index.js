@@ -17,6 +17,7 @@ db.Contact           = require("./Contact")(sequelize, Sequelize.DataTypes);
 db.File           = require("./File")(sequelize, Sequelize.DataTypes);
 db.Group           = require("./Group")(sequelize, Sequelize.DataTypes);
 db.Inbox           = require("./Inbox")(sequelize, Sequelize.DataTypes);
+db.Setting           = require("./Setting")(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {

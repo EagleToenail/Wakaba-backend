@@ -1,4 +1,4 @@
-const ProfileModel = require('../../models/Profile');
+const {Profile} = require('../../models');
 
 module.exports = (socket) => {
   // user connect
@@ -13,7 +13,7 @@ module.exports = (socket) => {
 
     try {
       // Update user's online status in the database
-      await ProfileModel.update({ online: true }, {
+      await Profile.update({ online: true }, {
         where: { userId }
       });
 
@@ -29,7 +29,7 @@ module.exports = (socket) => {
     const { userId } = socket;
     try {
       // Update user's online status in the database
-      await ProfileModel.update({ online: false }, {
+      await Profile.update({ online: false }, {
         where: { userId }
       });
 
@@ -44,7 +44,7 @@ module.exports = (socket) => {
     const { userId } = socket;
     try {
       // Update user's online status in the database
-      await ProfileModel.update({ online: false }, {
+      await Profile.update({ online: false }, {
         where: { userId }
       });
 
