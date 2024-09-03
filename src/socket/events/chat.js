@@ -102,7 +102,7 @@ module.exports = (socket) => {
                 REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
           LEFT JOIN files AS file ON Inbox.fileId = file.id 
           WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
-          GROUP BY user_id;
+          GROUP BY profiles.user_id;
           `;
 
       
@@ -145,7 +145,7 @@ module.exports = (socket) => {
                 REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
           LEFT JOIN files AS file ON Inbox.fileId = file.id 
           WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
-          GROUP BY user_id;
+          GROUP BY profiles.user_id;
           `;
 
     const inboxes=await db.sequelize.query(query);      
