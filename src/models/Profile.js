@@ -84,12 +84,12 @@ module.exports = (sequelize, DataTypes) => {
         version: false // Disable versioning as in Mongoose
     })
 
-    Profile.associate = (models) => {
-      Profile.hasMany(models.Chat, { foreignKey: 'userId',as: 'chats' });
-      Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
-      Profile.hasMany(models.Contact, { foreignKey: 'friendId', as: 'contacts' });
+    // Profile.associate = (models) => {
+    //   Profile.hasMany(models.Chat, { foreignKey: 'userId',as: 'chats' });
+    //   Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
+    //   Profile.hasMany(models.Contact, { foreignKey: 'friendId', as: 'contacts' });
 
-    };
+    // };
 
     return Profile
   }

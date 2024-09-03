@@ -26,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: false,     // Optional: disable timestamps if you don't have createdAt/updatedAt fields
       },
     )
-    Contact.associate = (models) => {
-      Contact.belongsTo(models.Profile, { foreignKey: 'friendId', as: 'profile' });
-    };
+    // Contact.associate = (models) => {
+    //   Contact.belongsTo(models.Profile, { foreignKey: 'friendId', as: 'profile' });
+    // };
     return Contact
   }
