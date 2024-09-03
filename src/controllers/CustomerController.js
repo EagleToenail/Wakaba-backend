@@ -24,8 +24,8 @@ module.exports = {
 	async createCustomer(req, res) {
 		try {
             console.log("customer create",req.body)
-            const {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address } = req.body;
-            const createFields = {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address};
+            const {opportunity, full_name, katakana_name, phone_number, birthday, job,age, gender, cardType, prefeature, city, address ,shop,trigger} = req.body;
+            const createFields = {opportunity, full_name, katakana_name, phone_number,job, birthday,age, gender, cardType, prefeature, city, address,shop,trigger};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 createFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -57,8 +57,8 @@ module.exports = {
     async updateCustomer(req, res) {
         try {
             // console.log("customer update",req.body)
-            const {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address } = req.body;
-            const updateFields = {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address};
+            const {opportunity, full_name, katakana_name, phone_number,job, birthday,age, gender, cardType, prefeature, city, address } = req.body;
+            const updateFields = {opportunity, full_name, katakana_name, phone_number, job, birthday,age, gender, cardType, prefeature, city, address};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 updateFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
