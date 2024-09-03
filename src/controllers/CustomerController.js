@@ -23,7 +23,19 @@ const upload = multer({ storage });
 module.exports = {
 	async createCustomer(req, res) {
 		try {
-			const customer = await Customer.create(req.body)
+            console.log("customer create",req.body)
+            const {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address } = req.body;
+            const createFields = {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address};
+            if (req.files['avatarimage']) {
+                const avatarImage = req.files['avatarimage'][0];
+                createFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
+                }
+            if (req.files['idcard']) {
+            const idCard = req.files['idcard'][0];
+            createFields.idCard_url = idCard.filename; // Adjust field name based on your model
+            }
+            console.log("cusotmer data",createFields)
+			const customer = await Customer.create(createFields)
 			res.send(customer)
 		} catch (err) {
 			res.status(500).send({

@@ -32,7 +32,10 @@ module.exports = (app) => {
     app.get("/api/user/getUserByEmail/:email",UserController.getUserByEmail)
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
-    app.post("/api/customer/createCustomer", CustomerController.createCustomer)
+    app.post("/api/customer/createCustomer",  CustomerController.upload.fields([
+      { name: 'avatarimage', maxCount: 1 },
+      { name: 'idcard', maxCount: 1 }
+    ]),CustomerController.createCustomer)
     app.post("/api/customer/updateCustomer", CustomerController.upload.fields([
       { name: 'avatarimage', maxCount: 1 },
       { name: 'idcard', maxCount: 1 }
