@@ -1,83 +1,152 @@
 [
-    {
-      "full_name": "田中 太郎",
-      "katakana_name": "タナカ タロウ",
-      "phone_number": "080-1234-5678",
-      "address": "東京都港区芝公園4-2-8",
-      "tigger": "新規顧客",
-      "shop": "東京店"
-    },
-    {
-      "full_name": "鈴木 花子",
-      "katakana_name": "スズキ ハナコ",
-      "phone_number": "090-2345-6789",
-      "address": "大阪府大阪市北区梅田3-1-1",
-      "tigger": "リピーター",
-      "shop": "大阪店"
-    },
-    {
-      "full_name": "佐藤 次郎",
-      "katakana_name": "サトウ ジロウ",
-      "phone_number": "070-3456-7890",
-      "address": "愛知県名古屋市中区栄3-5-5",
-      "tigger": "VIP",
-      "shop": "名古屋店"
-    },
-    {
-      "full_name": "高橋 美咲",
-      "katakana_name": "タカハシ ミサキ",
-      "phone_number": "080-4567-8901",
-      "address": "福岡県福岡市中央区天神1-1-1",
-      "tigger": "新規顧客",
-      "shop": "福岡店"
-    },
-    {
-      "full_name": "伊藤 直樹",
-      "katakana_name": "イトウ ナオキ",
-      "phone_number": "090-5678-9012",
-      "address": "北海道札幌市中央区大通西2-1-1",
-      "tigger": "リピーター",
-      "shop": "札幌店"
-    },
-    {
-      "full_name": "渡辺 由美",
-      "katakana_name": "ワタナベ ユミ",
-      "phone_number": "070-6789-0123",
-      "address": "神奈川県横浜市西区みなとみらい2-3-1",
-      "tigger": "VIP",
-      "shop": "横浜店"
-    },
-    {
-      "full_name": "中村 健",
-      "katakana_name": "ナカムラ ケン",
-      "phone_number": "080-7890-1234",
-      "address": "広島県広島市中区基町6-27",
-      "tigger": "新規顧客",
-      "shop": "広島店"
-    },
-    {
-      "full_name": "小林 由紀",
-      "katakana_name": "コバヤシ ユキ",
-      "phone_number": "090-8901-2345",
-      "address": "京都府京都市中京区錦小路通烏丸東入ル",
-      "tigger": "リピーター",
-      "shop": "京都店"
-    },
-    {
-      "full_name": "山本 誠",
-      "katakana_name": "ヤマモト マコト",
-      "phone_number": "070-9012-3456",
-      "address": "兵庫県神戸市中央区三宮町1-1-1",
-      "tigger": "VIP",
-      "shop": "神戸店"
-    },
-    {
-      "full_name": "松本 彩",
-      "katakana_name": "マツモト アヤ",
-      "phone_number": "080-0123-4567",
-      "address": "静岡県静岡市葵区紺屋町10-2",
-      "tigger": "新規顧客",
-      "shop": "静岡店"
-    }
-  ]
-  
+  {
+    "full_name": "田中 太郎",
+    "katakana_name": "タナカ タロウ",
+    "phone_number": "090-1234-5678",
+    "address": "東京都渋谷区1-2-3",
+    "trigger": "初回訪問",
+    "shop": "渋谷店",
+    "occupation": "エンジニア",
+    "job": "ソフトウェア開発者",
+    "idCard_url": "https://example.com/idcard1.jpg",
+    "cardType": "クレジットカード",
+    "avatar_url": "https://example.com/avatar1.jpg",
+    "prefeature": "東京都",
+    "city": "渋谷区"
+  },
+  {
+    "full_name": "鈴木 一郎",
+    "katakana_name": "スズキ イチロウ",
+    "phone_number": "080-2345-6789",
+    "address": "大阪府大阪市北区4-5-6",
+    "trigger": "新規顧客",
+    "shop": "大阪店",
+    "occupation": "教師",
+    "job": "中学校教師",
+    "idCard_url": "https://example.com/idcard2.jpg",
+    "cardType": "デビットカード",
+    "avatar_url": "https://example.com/avatar2.jpg",
+    "prefeature": "大阪府",
+    "city": "大阪市北区"
+  },
+  {
+    "full_name": "佐藤 美咲",
+    "katakana_name": "サトウ ミサキ",
+    "phone_number": "070-3456-7890",
+    "address": "北海道札幌市中央区7-8-9",
+    "trigger": "再訪問",
+    "shop": "札幌店",
+    "occupation": "医師",
+    "job": "内科医",
+    "idCard_url": "https://example.com/idcard3.jpg",
+    "cardType": "銀行カード",
+    "avatar_url": "https://example.com/avatar3.jpg",
+    "prefeature": "北海道",
+    "city": "札幌市中央区"
+  },
+  {
+    "full_name": "中村 大輔",
+    "katakana_name": "ナカムラ ダイスケ",
+    "phone_number": "090-4567-8901",
+    "address": "福岡県福岡市博多区10-11-12",
+    "trigger": "キャンペーン参加",
+    "shop": "福岡店",
+    "occupation": "弁護士",
+    "job": "企業弁護士",
+    "idCard_url": "https://example.com/idcard4.jpg",
+    "cardType": "クレジットカード",
+    "avatar_url": "https://example.com/avatar4.jpg",
+    "prefeature": "福岡県",
+    "city": "福岡市博多区"
+  },
+  {
+    "full_name": "渡辺 直樹",
+    "katakana_name": "ワタナベ ナオキ",
+    "phone_number": "080-5678-9012",
+    "address": "愛知県名古屋市中区13-14-15",
+    "trigger": "定期訪問",
+    "shop": "名古屋店",
+    "occupation": "デザイナー",
+    "job": "グラフィックデザイナー",
+    "idCard_url": "https://example.com/idcard5.jpg",
+    "cardType": "デビットカード",
+    "avatar_url": "https://example.com/avatar5.jpg",
+    "prefeature": "愛知県",
+    "city": "名古屋市中区"
+  },
+  {
+    "full_name": "高橋 陽子",
+    "katakana_name": "タカハシ ヨウコ",
+    "phone_number": "070-6789-0123",
+    "address": "神奈川県横浜市西区16-17-18",
+    "trigger": "紹介",
+    "shop": "横浜店",
+    "occupation": "看護師",
+    "job": "病棟看護師",
+    "idCard_url": "https://example.com/idcard6.jpg",
+    "cardType": "銀行カード",
+    "avatar_url": "https://example.com/avatar6.jpg",
+    "prefeature": "神奈川県",
+    "city": "横浜市西区"
+  },
+  {
+    "full_name": "伊藤 翔太",
+    "katakana_name": "イトウ ショウタ",
+    "phone_number": "090-7890-1234",
+    "address": "京都府京都市左京区19-20-21",
+    "trigger": "サービス利用",
+    "shop": "京都店",
+    "occupation": "大学教授",
+    "job": "経済学教授",
+    "idCard_url": "https://example.com/idcard7.jpg",
+    "cardType": "クレジットカード",
+    "avatar_url": "https://example.com/avatar7.jpg",
+    "prefeature": "京都府",
+    "city": "京都市左京区"
+  },
+  {
+    "full_name": "山本 優子",
+    "katakana_name": "ヤマモト ユウコ",
+    "phone_number": "080-8901-2345",
+    "address": "兵庫県神戸市中央区22-23-24",
+    "trigger": "新規登録",
+    "shop": "神戸店",
+    "occupation": "マーケティング",
+    "job": "マーケティングマネージャー",
+    "idCard_url": "https://example.com/idcard8.jpg",
+    "cardType": "デビットカード",
+    "avatar_url": "https://example.com/avatar8.jpg",
+    "prefeature": "兵庫県",
+    "city": "神戸市中央区"
+  },
+  {
+    "full_name": "森田 仁",
+    "katakana_name": "モリタ ジン",
+    "phone_number": "070-9012-3456",
+    "address": "広島県広島市南区25-26-27",
+    "trigger": "オンライン登録",
+    "shop": "広島店",
+    "occupation": "研究者",
+    "job": "物理学研究者",
+    "idCard_url": "https://example.com/idcard9.jpg",
+    "cardType": "銀行カード",
+    "avatar_url": "https://example.com/avatar9.jpg",
+    "prefeature": "広島県",
+    "city": "広島市南区"
+  },
+  {
+    "full_name": "小林 さくら",
+    "katakana_name": "コバヤシ サクラ",
+    "phone_number": "090-0123-4567",
+    "address": "沖縄県那覇市28-29-30",
+    "trigger": "紹介",
+    "shop": "那覇店",
+    "occupation": "翻訳者",
+    "job": "日本語翻訳者",
+    "idCard_url": "https://example.com/idcard10.jpg",
+    "cardType": "クレジットカード",
+    "avatar_url": "https://example.com/avatar10.jpg",
+    "prefeature": "沖縄県",
+    "city": "那覇市"
+  }
+]

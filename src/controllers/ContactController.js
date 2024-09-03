@@ -72,7 +72,6 @@ async find (req, res) {
         const {userId} = req.body;
         const setting = await Setting.findOne({
             where: { userId: userId },
-            order: [['sortContactByName', 'ASC']] // Adjust 'ASC' or 'DESC' as needed
           });
             const contacts = await Contact.findAll({
               where: { userId: userId },
@@ -81,9 +80,9 @@ async find (req, res) {
                 as: 'profile',
                 attributes: ['fullname', 'updated_at'], // Include only necessary fields
               },
+              logging: console.log, // This will log all SQL queries to the console
+
             });
-
-
 
         response({
           res,

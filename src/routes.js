@@ -33,7 +33,10 @@ module.exports = (app) => {
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
     app.post("/api/customer/createCustomer", CustomerController.createCustomer)
-    app.post("/api/customer/updateCustomer", CustomerController.updateCustomer)
+    app.post("/api/customer/updateCustomer", CustomerController.upload.fields([
+      { name: 'avatarimage', maxCount: 1 },
+      { name: 'idcard', maxCount: 1 }
+    ]), CustomerController.updateCustomer)
     app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
     app.post("/api/customer/search", CustomerController.searchCustomer)
     app.get("/api/customer/getUserByCustomer/:customerId", CustomerController.getCustomerById)

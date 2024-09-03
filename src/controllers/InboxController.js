@@ -15,11 +15,6 @@ module.exports = {
       
    
       const inboxes=await db.sequelize.query(query)
-      console.log("=======inboxes========", 
-
-        inboxes
-      );
-
 
       response({
         res,

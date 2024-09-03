@@ -1,5 +1,24 @@
 const { Customer } = require('../models')
 const { Op } = require('sequelize');
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = path.join(__dirname, '../uploads/customer');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir);
+      }
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}_${file.originalname}`);
+    }
+  });
+  
+const upload = multer({ storage });
 
 module.exports = {
 	async createCustomer(req, res) {
@@ -14,17 +33,8 @@ module.exports = {
 	},
     async getCustomerList(req, res) {
         try {
-            const customerList = await Customer.findAll({
-                // attributes: [
-                //     "id",
-                //     "full_name",
-                //     "katakana_name",
-                //     "phone_number",
-                //     "address",
-                //     "trigger",
-                //     "shop",
-                // ]
-            })
+            const customerList = await Customer.findAll({})
+            // console.log("customerList",customerList)
             res.send(customerList);
         } catch (err) {
             res.status(500).send({
@@ -34,7 +44,19 @@ module.exports = {
     },
     async updateCustomer(req, res) {
         try {
-            const customer = await Customer.update(req.body, {
+            // console.log("customer update",req.body)
+            const {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address } = req.body;
+            const updateFields = {opportunity, name, katakana_name, phone_number, birthday,age, gender, cardType, prefecture, city, address};
+            if (req.files['avatarimage']) {
+                const avatarImage = req.files['avatarimage'][0];
+                updateFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
+              }
+              if (req.files['idcard']) {
+                const idCard = req.files['idcard'][0];
+                updateFields.idCard_url = idCard.filename; // Adjust field name based on your model
+              }
+            // console.log("customer file",updateFields)
+            const customer = await Customer.update(updateFields, {
                 where: {
                     id: req.body.id
                 }
@@ -48,7 +70,14 @@ module.exports = {
     },
     async deleteCustomer(req, res) {
 		try {
-			const customer = await Customer.findByPk(req.params.customerId)
+            const customerId = req.body.customerId;
+            console.log(customerId,'customerId')
+			const customer = await Customer.findOne({
+                where: {
+                    id: customerId // Condition to match the record
+                  }
+            })
+            console.log(customer,'customer')
 			if (!customer) {
 				return res.status(403).send({
 					error: 'No customer to delete.'
@@ -127,4 +156,5 @@ module.exports = {
         }
     },
 
+    upload
 }
