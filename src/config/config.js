@@ -11,7 +11,7 @@ module.exports = {
         jwtSecret : process.env.JWT_SECRET || 'secret'
     },
     cors: {
-        origin: ['http://3.14.245.186:3000', 'http://localhost:3000'],
+        origin: ['http:///172.31.0.201:3000', 'http://localhost:3000'],
         methods: 'GET,POST'
     },
 }
