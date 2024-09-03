@@ -30,5 +30,6 @@ global.io = new SocketServer(server, {cors: config.cors });
 
   sequelize.sync({ force: false })
 	.then(() => {
-		server.listen(config.port, '172.31.0.201',() => console.log(`Express server running on port ${config.port}`));
+		server.listen(config.port,() => console.log(`Express server running on port ${config.port}`));//development
+		//server.listen(config.port, '172.31.0.201',() => console.log(`Express server running on port ${config.port}`));//production
 	})
