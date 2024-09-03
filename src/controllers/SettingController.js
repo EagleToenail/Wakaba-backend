@@ -6,14 +6,14 @@ const response = require('../helpers/response');
 module.exports = {
 async find (req, res) {
     try {
-        console.log("=======userid========",req.body.userId);
+        // console.log("=======userid========",req.body.userId);
         const userId = req.body.userId;
-        console.log(Setting, "user id aaaaa")
-       console.log(typeof(userId)) 
+    //     console.log(Setting, "user id aaaaa")
+    //    console.log(typeof(userId)) 
         const setting = await Setting.findOne({
             where: { userId: userId}
           });
-        console.log("=======setting========",setting);
+        // console.log("=======setting========",setting);
         response({
         res,
         payload: setting,
@@ -31,9 +31,10 @@ async find (req, res) {
 async update (req, res) {
   try {
     console.log("=======userid========",req.body.userId);
+    console.log("=======settingupdate========",req.body.update);
     const userId = req.body.userId;
     await Setting.update(
-        req.body, // Data to update
+        req.body.update, // Data to update
         {
           where: {
             userId: userId // Condition to match the record

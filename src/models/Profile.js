@@ -33,31 +33,31 @@ module.exports = (sequelize, DataTypes) => {
       },
       avatar: {
         type: DataTypes.STRING,
-        default: null,
+        defaultValue: null,
       },
       bio: {
         type: DataTypes.STRING,
         trim: true,
-        default: '',
+        defaultValue: '',
       },
       phone: {
         type: DataTypes.STRING,
         trim: true,
-        default: '',
+        defaultValue: '',
       },
       dialCode: {
         type: DataTypes.STRING,
         trim: true,
-        default: '',
+        defaultValue: '',
       },
       //=========
       store_name:          DataTypes.STRING,
       store_type:          DataTypes.STRING,
       katakana_name:       DataTypes.STRING,
-      email: {
-        type:              DataTypes.STRING,
-        unique:             true
-      },
+      // email: {
+      //   type:              DataTypes.STRING,
+      //   unique:             true
+      // },
       birtday:             DataTypes.STRING, 
       idcard_image:        DataTypes.STRING,
       card_type:           DataTypes.STRING,
@@ -73,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM,
         values: ['false', 'true'], // Enum values
         required:       true,
-        default:       'false'
+        defaultValue:       'false'
       },
 
     },
@@ -85,8 +85,10 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     Profile.associate = (models) => {
-      Profile.hasMany(models.Chat, { foreignKey: 'userId' });
+      Profile.hasMany(models.Chat, { foreignKey: 'userId',as: 'chats' });
       Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
+      Profile.hasMany(models.Contact, { foreignKey: 'friendId', as: 'contacts' });
+
     };
 
     return Profile

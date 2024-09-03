@@ -6,6 +6,9 @@ const SalesController = require("./controllers/SalesController")
 const AuthenticationController = require("./controllers/AuthenticationController")
 // const AuthenticationControllerPolicy = require("./middleware/AuthenticationControllerPolicy");
 const SettingController = require("./controllers/SettingController")
+const InboxController = require("./controllers/InboxController")
+const ContactController = require("./controllers/ContactController")
+const ChatController = require("./controllers/ChatController")
 
 module.exports = (app) => {
   // =========authentication
@@ -42,7 +45,16 @@ module.exports = (app) => {
     app.get("/api/sales/deleteSales", SalesController.deleteSales)
     //=============setting
     app.post("/api/settings", SettingController.find)
-    app.put("/api/settings", SettingController.update)
+    app.post("/api/settings/update", SettingController.update)
+    //=============Inbox
+    app.post("/api/inboxes", InboxController.find)
+    //============contacts
+    app.post("/api/contacts", ContactController.insert)
+    app.post("/api/contacts/find", ContactController.find)
   // app.post("/api/products/createProduct",ImageController.uploadProductImage, ProductsController.createProduct)
+      //=============chat      
+    app.get('/api/chats/:roomId',  ChatController.findByRoomId);
+    app.delete('/api/chats/:roomId',  ChatController.deleteByRoomId);
+
 
 }

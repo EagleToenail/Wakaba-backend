@@ -6,7 +6,6 @@ const room = require('./events/room');
 const group = require('./events/group');
 
 io.on('connection', (socket) => {
-  // console.log("socket connection start")
   user(socket);
   room(socket);
   chat(socket);

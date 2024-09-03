@@ -7,14 +7,14 @@ exports.find = async (roomId, { skip = 0, limit = 20 }) => {
       {
         model: Profile,
         attributes: {
-          exclude: ['username', 'email', 'bio', 'phone', 'dialCode', 'online', 'createdAt', 'updatedAt']
+          exclude: ['username', 'email', 'bio', 'phone', 'dialCode', 'online', 'created_at', 'updated_at']
         }
       },
-      {
-        model: File
-      }
+      // {
+      //   model: File
+      // }
     ],
-    order: [['createdAt', 'DESC']], // Initial sort
+    order: [['updatedAt', 'DESC']], // Initial sort
     offset: Number(skip),
     limit: Number(limit),
     subQuery: false // Ensure the order is respected when using `offset` and `limit`

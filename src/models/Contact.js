@@ -1,3 +1,4 @@
+
 module.exports = (sequelize, DataTypes) => {
     const Contact = sequelize.define('Contact', {
         id: {
@@ -23,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         tableName: 'contacts', // Optional: specify table name if you want to use a custom name
         timestamps: false,     // Optional: disable timestamps if you don't have createdAt/updatedAt fields
-      })
+      },
+    )
+    Contact.associate = (models) => {
+      Contact.belongsTo(models.Profile, { foreignKey: 'friendId', as: 'profile' });
+    };
     return Contact
   }

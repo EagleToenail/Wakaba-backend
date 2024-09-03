@@ -14,7 +14,7 @@ module.exports = (socket) => {
     try {
       // Update user's online status in the database
       await Profile.update({ online: true }, {
-        where: { userId }
+        where: { user_id:userId }
       });
 
       // Notify other clients about the user connection
@@ -30,7 +30,7 @@ module.exports = (socket) => {
     try {
       // Update user's online status in the database
       await Profile.update({ online: false }, {
-        where: { userId }
+        where: { user_id:userId }
       });
 
       // Notify other clients about the user disconnection
@@ -45,7 +45,7 @@ module.exports = (socket) => {
     try {
       // Update user's online status in the database
       await Profile.update({ online: false }, {
-        where: { userId }
+        where: { user_id: userId }
       });
 
       // Notify other clients about the user disconnection

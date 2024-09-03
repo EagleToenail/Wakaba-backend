@@ -1,4 +1,4 @@
-const { BOOLEAN } = require("sequelize")
+
 
 module.exports = (sequelize, DataTypes) => {
     const Chat = sequelize.define('Chat', {
@@ -18,29 +18,30 @@ module.exports = (sequelize, DataTypes) => {
       },
       text: {
         type: DataTypes.STRING,
-        default: '',
+        defaultValue: '',
       },
       readed: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.ENUM,
+        values: ["true","false"],
         required: true,
-        default: false,
+        defaultValue: "false",
       },
       replyTo: {
         type: DataTypes.STRING, // -> target chat._id
-        default: null,
+        defaultValue: null,
       },
       deletedBy: {
         type: DataTypes.JSON, // -> userId
-        default: [],
+        defaultValue: [],
       },
       fileId: {
         type: DataTypes.STRING,
-        default: null,
+        defaultValue: null,
       },
     })
 
     Chat.associate = (models) => {
-      Chat.belongsTo(models.Profile, { foreignKey: 'user_id' });
+      Chat.belongsTo(models.Profile, { foreignKey: 'userId' });
       Chat.belongsTo(models.File, { foreignKey: 'fileId' });
     };
     

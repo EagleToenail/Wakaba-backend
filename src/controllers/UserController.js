@@ -51,7 +51,7 @@ module.exports = {
     },
     async find(req, res) {
         try {
-            console.log("=======userid========",req.body.userId);
+            // console.log("=======userid========",req.body.userId);
             const userId = req.body.userId;
             const user = await User.findOne( {
                 where: { id: userId}

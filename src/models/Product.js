@@ -36,10 +36,10 @@ module.exports = (sequelize, DataTypes) => {
     addedDate:         DataTypes.DATE,
 
   })
-  Product.associate = function (models) {
-    Product.belongsTo(models.Category)
-    Product.belongsTo(models.SubCategory)
-    Product.belongsTo(models.SubSubCategory)
-  }
+  // Product.associate = function (models) {
+  //   Product.belongsTo(models.Category)
+  //   Product.belongsTo(models.SubCategory)
+  //   Product.belongsTo(models.SubSubCategory)
+  // }
   return Product
 }

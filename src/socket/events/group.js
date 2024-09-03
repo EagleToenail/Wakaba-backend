@@ -8,7 +8,7 @@ const {Group} = require('../../models');
 const {Inbox} = require('../../models');
 const {Chat} = require('../../models');
 
-const InboxJoin = require('../../helpers/models/inbox');
+const InboxJoin = require('../../helpers/models/inboxJoin');
 
 const uniqueId = require('../../helpers/uniqueId');
 

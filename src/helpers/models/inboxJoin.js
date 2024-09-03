@@ -1,4 +1,5 @@
 const { Inbox, Profile, Group, File } = require('../../models');
+const { Op } = require('sequelize');
 
 exports.find = async (queries, search = '') => {
   const inboxes = await Inbox.findAll({
@@ -6,14 +7,7 @@ exports.find = async (queries, search = '') => {
     include: [
       {
         model: Profile,
-        as: 'owners',
-        attributes: {
-          exclude: [] // Adjust if you want to exclude specific fields
-        }
-      },
-      {
-        model: Group,
-        as: 'group',
+        as: 'profiles',
         attributes: {
           exclude: [] // Adjust if you want to exclude specific fields
         }
@@ -30,20 +24,17 @@ exports.find = async (queries, search = '') => {
       [Op.or]: [
         {
           roomType: 'private',
-          '$owners.fullname$': {
-            [Op.iLike]: `%${search}%`
+          ownersId: {
+            [Op.like]: `%${profileId}%` // Use LIKE if JSON is stored as a string
           }
         },
-        {
-          roomType: 'group',
-          '$group.name$': {
-            [Op.iLike]: `%${search}%`
-          }
-        }
+
       ]
     },
-    order: [['content', 'time', 'DESC']]
+    // order: [['updatedAt', 'DESC']], // Initial sort
   });
-
+  
   return inboxes;
 };
+
+// order: [['content', 'time', 'DESC']]

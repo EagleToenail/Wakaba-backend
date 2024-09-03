@@ -1,14 +1,16 @@
 const { io } = global;
 const cloud = require('cloudinary').v2;
-const { Op, Sequelize } = require('sequelize');
+const { Op, literal , Sequelize } = require('sequelize');
 
 const {Inbox} = require('../../models');
 const {Chat} = require('../../models');
 const {File} = require('../../models');
 const {Profile} = require('../../models');
 
-const InboxJoin = require('../../helpers/models/inbox');
+const InboxJoin = require('../../helpers/models/inboxJoin');
 const uniqueId = require('../../helpers/uniqueId');
+const { text } = require('express');
+const db=require("../../models/index");
 
 module.exports = (socket) => {
   // event when user sends message
@@ -40,21 +42,19 @@ module.exports = (socket) => {
         });
         
       }
-
       const chat = await Chat.create({ ...args, fileId });
       const profile = await Profile.findOne({
-        where: { userId: args.userId },
-        attributes: ['userId', 'avatar', 'fullname']
+        where: { user_id: args.userId },
+        attributes: ['user_id', 'avatar', 'fullname']
       });
 
       // create a new inbox if it doesn't exist and update it if exists
-      async function upsertInbox(args, profile, chat, file) {
+      // async function upsertInbox(args, profile, chat, file) {
         try {
           // Find the record by roomId
           let inbox = await Inbox.findOne({
             where: { roomId: args.roomId }
           });
-      
           // If the record exists, update it
           if (inbox) {
             await inbox.update({
@@ -72,7 +72,9 @@ module.exports = (socket) => {
                 time: chat.createdAt,
               },
             });
+       
           } else {
+       
             // If the record does not exist, create a new one
             await Inbox.create({
               roomId: args.roomId,
@@ -89,17 +91,27 @@ module.exports = (socket) => {
                 time: chat.createdAt,
               },
             });
+
           }
         } catch (error) {
           console.error('Error upserting inbox:', error);
         }
-      }
+        const query = `SELECT *
+          FROM inboxes AS Inbox
+          LEFT JOIN profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
+                REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
+          LEFT JOIN files AS file ON Inbox.fileId = file.id 
+          WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
+          GROUP BY user_id;
+          `;
 
-      const inboxes = await InboxJoin.find({ ownersId: { $all: args.ownersId } });
+      
+      const inboxes=await db.sequelize.query(query)        
+        const chatData = chat.toJSON();
 
-      io.to(args.roomId).emit('chat/insert', { ...chat._doc, profile, file });
+        io.to(args.roomId).emit('chat/insert', { profile, file,  text: chatData.text ,userId: args.userId});
       // send the latest inbox data to be merge with old inbox data
-      io.to(args.ownersId).emit('inbox/find', inboxes[0]);
+      io.to(args.ownersId).emit('inbox/find', inboxes);
     } catch (error0) {
       console.log(error0.message);
     }
@@ -107,22 +119,16 @@ module.exports = (socket) => {
 
   // event when a friend join to chat room and reads your message
   socket.on('chat/read', async (args) => {
-    try {
-      const ownersIdArray = args.ownersId;
+    try {   
 
       await Inbox.update(
         { unreadMessage: 0 },
         {
           where: {
-            roomId: args.roomId,
-            [Op.and]: [
-              Sequelize.json('ownersId'), {
-                [Op.contains]: ownersIdArray
-              }
-            ]
+            roomId: args.roomId,                  
           }
         }
-      );
+      );   
 
       await Chat.update(
         { readed: true }, // The fields to update
@@ -133,10 +139,17 @@ module.exports = (socket) => {
           }
         }
       );
+      const query = `SELECT *
+          FROM inboxes AS Inbox
+          LEFT JOIN profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
+                REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
+          LEFT JOIN files AS file ON Inbox.fileId = file.id 
+          WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
+          GROUP BY user_id;
+          `;
 
-      const inboxes = await InboxJoin.find({ ownersId: { $all: args.ownersId } });
-
-      io.to(args.ownersId).emit('inbox/read', inboxes[0]);
+    const inboxes=await db.sequelize.query(query);      
+      io.to(args.ownersId).emit('inbox/read', inboxes);
       io.to(args.roomId).emit('chat/read', true);
     } catch (error0) {
       console.log(error0.message);
@@ -173,7 +186,7 @@ module.exports = (socket) => {
         const handleDeleteFiles = async (query = {}) => {
           const chats = await Chat.findAll({
             where: {
-              _id: {
+              id: {
                 [Op.in]: chatsId // Filter by IDs in chatsId array
               },
               roomId, // Filter by roomId
@@ -227,7 +240,7 @@ module.exports = (socket) => {
           {
             where: {
               roomId,
-              _id: {
+              id: {
                 [Op.in]: chatsId
               }
             },
