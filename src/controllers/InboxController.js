@@ -10,7 +10,7 @@ module.exports = {
       const userId = req.body.userId; // Make sure req.user._id contains the correct value
       const query = `
             SELECT inboxes.id, inboxes.ownersId, inboxes.roomId, inboxes.roomType, inboxes.archivedBy, inboxes.unreadMessage, inboxes.fileId, inboxes.deletedBy, inboxes.content , profiles.fullname
-            FROM inboxes  LEFT JOIN Profiles ON  FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), REPLACE(REPLACE(inboxes.ownersId, '[', ''), ']', '')) > 0  
+            FROM inboxes  LEFT JOIN profiles ON  FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), REPLACE(REPLACE(inboxes.ownersId, '[', ''), ']', '')) > 0  
 						WHERE JSON_CONTAINS(ownersId, '"${userId}"' ,'$') AND profiles.user_id!="${userId}";`;
       
    
