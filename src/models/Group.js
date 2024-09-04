@@ -37,7 +37,6 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: () => `/group/+${uniqueId(16)}`, // Set default value using a function
           },
         }, {
-          tableName: 'groups', // Optional: specify table name if you want to use a custom name
           timestamps: true,    // Enable timestamps to automatically create `createdAt` and `updatedAt` fields
         })
 

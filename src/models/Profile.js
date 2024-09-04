@@ -78,17 +78,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
         timestamps: true, // Enables createdAt and updatedAt fields
-        tableName: 'profiles', // Specify the table name if different from the default
         underscored: true, // Optional: Use snake_case for column names in the database
         version: false // Disable versioning as in Mongoose
     })
 
-    Profile.associate = (models) => {
-      Profile.hasMany(models.Chat, { foreignKey: 'userId',as: 'chats' });
-      Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
-      Profile.hasMany(models.Contact, { foreignKey: 'friendId', as: 'contacts' });
+    // Profile.associate = (models) => {
+    //   Profile.hasMany(models.Chat, { foreignKey: 'userId',as: 'chats' });
+    //   Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
+    //   Profile.hasMany(models.Contact, { foreignKey: 'friendId', as: 'contacts' });
 
-    };
+    // };
 
     return Profile
   }

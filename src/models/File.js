@@ -35,14 +35,13 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: '0',
           },
         }, {
-          tableName: 'files', // Optional: specify table name if you want to use a custom name
           timestamps: false,  // Optional: disable timestamps if you don't have createdAt/updatedAt fields
         })
 
-        File.associate = (models) => {
-          File.hasMany(models.Chat, { foreignKey: 'fileId' });
-          File.hasMany(models.Inbox, { foreignKey: 'fileId', as: 'inboxes' });
-        };
+        // File.associate = (models) => {
+        //   File.hasMany(models.Chat, { foreignKey: 'fileId' });
+        //   File.hasMany(models.Inbox, { foreignKey: 'fileId', as: 'inboxes' });
+        // };
 
     return File
   }
