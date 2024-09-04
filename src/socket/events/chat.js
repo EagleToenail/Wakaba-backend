@@ -108,7 +108,8 @@ module.exports = (socket) => {
       
       const inboxes=await db.sequelize.query(query)        
         const chatData = chat.toJSON();
-
+          console.log("inbox");
+          console.log(inboxes);
         io.to(args.roomId).emit('chat/insert', { profile, file,  text: chatData.text ,userId: args.userId});
       // send the latest inbox data to be merge with old inbox data
       io.to(args.ownersId).emit('inbox/find', inboxes);
