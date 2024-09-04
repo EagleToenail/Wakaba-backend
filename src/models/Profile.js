@@ -78,6 +78,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
         timestamps: true, // Enables createdAt and updatedAt fields
+        tableName: 'Profiles', // Specify the table name if different from the default
         underscored: true, // Optional: Use snake_case for column names in the database
         version: false // Disable versioning as in Mongoose
     })
