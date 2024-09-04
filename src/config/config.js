@@ -10,14 +10,14 @@ module.exports = {
     authentication: {
         jwtSecret : process.env.JWT_SECRET || 'secret'
     },
-    //development
-    cors: {
-        origin: ['http://192.168.141.65:3000', 'http://localhost:3000'],
-        methods: 'GET,POST'
-    },
-    ////production
+    // //development
     // cors: {
-    //     origin: ['http://3.14.245.186:3000', 'http://localhost:3000'],
+    //     origin: ['http://192.168.141.65:3000', 'http://localhost:3000'],
     //     methods: 'GET,POST'
     // },
+    //production
+    cors: {
+        origin: ['http://3.14.245.186:3000', 'http://localhost:3000'],
+        methods: 'GET,POST'
+    },
 }
