@@ -77,8 +77,8 @@ async find (req, res) {
               where: { userId: userId },
               include: {
                 model: Profile,
-                as: 'Profiles',
-                attributes: ['fullname', 'updated_at'], // Include only necessary fields
+                as: 'profile',
+                attributes: ['fullname', 'updatedAt'], // Include only necessary fields
               },
               logging: console.log, // This will log all SQL queries to the console
 
