@@ -97,10 +97,10 @@ module.exports = (socket) => {
           console.error('Error upserting inbox:', error);
         }
         const query = `SELECT *
-          FROM inboxes AS Inbox
-          LEFT JOIN profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
+          FROM Inboxes AS Inbox
+          LEFT JOIN Profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
                 REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
-          LEFT JOIN files AS file ON Inbox.fileId = file.id 
+          LEFT JOIN Files AS file ON Inbox.fileId = file.id 
           WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
           GROUP BY profiles.user_id;
           `;
@@ -140,10 +140,10 @@ module.exports = (socket) => {
         }
       );
       const query = `SELECT *
-          FROM inboxes AS Inbox
-          LEFT JOIN profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
+          FROM Inboxes AS Inbox
+          LEFT JOIN Profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
                 REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
-          LEFT JOIN files AS file ON Inbox.fileId = file.id 
+          LEFT JOIN Files AS file ON Inbox.fileId = file.id 
           WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
           GROUP BY profiles.user_id;
           `;
