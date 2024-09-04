@@ -96,7 +96,14 @@ module.exports = (socket) => {
         } catch (error) {
           console.error('Error upserting inbox:', error);
         }
-        const query = `SELECT * FROM Inboxes AS Inbox LEFT JOIN Profiles AS profiles ON JSON_CONTAINS(Inbox.ownersId, JSON_QUOTE(profiles.user_id)) WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}';`;      
+        const query = `SELECT *
+          FROM Inboxes AS Inbox
+          LEFT JOIN Profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
+                REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
+          LEFT JOIN Files AS file ON Inbox.fileId = file.id 
+          WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
+          ;
+          `;
       const inboxes=await db.sequelize.query(query)        
         const chatData = chat.toJSON();
           console.log("inbox");
@@ -131,8 +138,14 @@ module.exports = (socket) => {
           }
         }
       );
-           const query = `SELECT * FROM Inboxes AS Inbox LEFT JOIN Profiles AS profiles ON JSON_CONTAINS(Inbox.ownersId, JSON_QUOTE(profiles.user_id)) WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}';`;      
-
+        const query = `SELECT *
+          FROM Inboxes AS Inbox
+          LEFT JOIN Profiles AS profiles ON FIND_IN_SET(CONCAT('"', profiles.user_id, '"'), 
+                REPLACE(REPLACE(Inbox.ownersId, '[', ''), ']', '')) > 0 
+          LEFT JOIN Files AS file ON Inbox.fileId = file.id 
+          WHERE Inbox.roomType = 'private' AND profiles.user_id != '${args.userId}'
+          ;
+          `;
 
     const inboxes=await db.sequelize.query(query);      
       io.to(args.ownersId).emit('inbox/read', inboxes);
