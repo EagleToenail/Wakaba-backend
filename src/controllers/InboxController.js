@@ -9,11 +9,9 @@ module.exports = {
      
       const userId = req.body.userId; // Make sure req.user._id contains the correct value
       const query = `
-            SELECT Inboxes.id, Inboxes.ownersId, Inboxes.roomId, Inboxes.roomType, Inboxes.archivedBy, Inboxes.unreadMessage, Inboxes.fileId, Inboxes.deletedBy, Inboxes.content , Profiles.fullname
-            FROM Inboxes  LEFT JOIN Profiles ON  FIND_IN_SET(CONCAT('"', Profiles.user_id, '"'), REPLACE(REPLACE(Inboxes.ownersId, '[', ''), ']', '')) > 0  
-						WHERE JSON_CONTAINS(ownersId, '"${userId}"' ,'$') AND Profiles.user_id!="${userId}";`;
+            SELECT * FROM Inboxes AS Inbox LEFT JOIN Profiles AS profiles ON JSON_CONTAINS(Inbox.ownersId, JSON_QUOTE(profiles.user_id)) WHERE Inbox.roomType = 'private' AND profiles.user_id != '"${userId}"';`;
       
-   
+   	
       const inboxes=await db.sequelize.query(query)
 
       response({
