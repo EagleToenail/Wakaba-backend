@@ -40,9 +40,9 @@ module.exports = (sequelize, DataTypes) => {
           timestamps: true,    // Enable timestamps to automatically create `createdAt` and `updatedAt` fields
         })
 
-        // Group.associate = (models) => {
-        //   Group.hasMany(models.Inbox, { foreignKey: 'roomId', as: 'inboxes' });
-        // };
+        Group.associate = (models) => {
+          Group.hasMany(models.Inbox, { foreignKey: 'roomId', as: 'inboxes' });
+        };
         
     return Group
   }
