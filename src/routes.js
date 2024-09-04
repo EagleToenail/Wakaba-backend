@@ -27,6 +27,13 @@ module.exports = (app) => {
     app.post("/api/users", UserController.find)
     app.post("/api/user/confirmuser", UserController.confirmUser)
     app.post("/api/user/getUserById",UserController.getUserById)
+    app.post("/api/user/createuserprofile",  UserController.upload.fields([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'idcard_image', maxCount: 1 },
+      { name: 'resume', maxCount: 1 },
+      { name: 'job_description', maxCount: 1 },
+      { name: 'pledge_image', maxCount: 1 },
+    ]),UserController.createUserProfile)
     // app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
     // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
     // app.get("/api/user/getUserList",  UserController.getUserList)

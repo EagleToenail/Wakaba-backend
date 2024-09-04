@@ -4,6 +4,26 @@ const response = require('../helpers/response');
 const jwt = require('jsonwebtoken')
 const decrypt = require('../helpers/decrypt');
 
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = path.join(__dirname, '../uploads/userProfile');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir);
+      }
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}_${file.originalname}`);
+    }
+  });
+  
+const upload = multer({ storage });
+
 module.exports = {
     async confirmUser(req, res) {
         try {
@@ -30,7 +50,7 @@ module.exports = {
             const userId = user.id;
             const username = user.username;
             // Send response
-            console.log('----to input confirm---',token, userId);
+            // console.log('----to input confirm---',token, userId);
             response({
                 res,
                 statusCode: 200,
@@ -44,6 +64,68 @@ module.exports = {
                 success: false,
                 message: error0.message,
               });
+        }
+    },
+    async getUserById(req, res) {
+        try {
+            
+            const {userId} = req.body
+            // console.log('=======',userId)
+            const user = await User.findOne({
+                where: {
+                    id: userId
+                }
+            })
+
+            if (!user) {
+                return res.status(403).send({
+                    error: "Email not registered."
+                })
+            }
+            // console.log('=======',user)
+            res.send(user)
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occured when trying to get an user."
+            })
+        }
+    },
+    async createUserProfile(req, res) {
+        try {
+            console.log("customer update")
+            const {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;
+            const updateFields = {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor};
+            if (req.files['avatar']) {
+            const avatar = req.files['avatar'][0];
+            updateFields.avatar = avatar.filename; // Adjust field name based on your model
+            }
+            if (req.files['idcard_image']) {
+            const idcard = req.files['idcard_image'][0];
+            updateFields.idcard_image = idcard.filename; // Adjust field name based on your model
+            }
+            if (req.files['resume']) {
+            const resume = req.files['resume'][0];
+            updateFields.resume = resume.filename; // Adjust field name based on your model
+            }
+            if (req.files['job_description']) {
+            const job_description = req.files['job_description'][0];
+            updateFields.job_description = job_description.filename; // Adjust field name based on your model
+            }
+            if (req.files['pledge_image']) {
+            const pledge_image = req.files['pledge_image'][0];
+            updateFields.pledge_image = pledge_image.filename; // Adjust field name based on your model
+            }
+            console.log("profile data",updateFields)
+            const profile = await Profile.update(updateFields, {
+                where: {
+                    id: req.body.id
+                }
+            })
+            res.send({"success":true});
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to update customer information"
+            })
         }
     },
     async checkUserName(req, res) {
@@ -157,46 +239,5 @@ module.exports = {
             })
         }
     },
-    async updateUser(req, res) {
-        try {
-            const user = await User.update(req.body, {
-                where: {
-                    id: req.body.id
-                }
-            })
-            res.send(user);
-        } catch (err) {
-            res.status(500).send({
-                error: "An error occured when trying to update user information"
-            })
-        }
-    },
-    async getUserById(req, res) {
-        try {
-            
-            const {userId} = req.body
-            console.log('=======',userId)
-            const users = await Profile.findAll({
-
-            })
-            console.log('=======sss',users)
-            const user = await Profile.findOne({
-                where: {
-                    user_id: userId
-                }
-            })
-
-            if (!user) {
-                return res.status(403).send({
-                    error: "Email not registered."
-                })
-            }
-            console.log('=======',user)
-            res.send(user)
-        } catch (error) {
-            res.status(500).send({
-                error: "An error occured when trying to get an user."
-            })
-        }
-    }
+    upload
 }

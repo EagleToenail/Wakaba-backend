@@ -56,7 +56,7 @@ module.exports = {
     },
     async updateCustomer(req, res) {
         try {
-            // console.log("customer update",req.body)
+            // console.log("profile update",req.body)
             const {opportunity, full_name, katakana_name, phone_number,job, birthday,age, gender, cardType, prefeature, city, address } = req.body;
             const updateFields = {opportunity, full_name, katakana_name, phone_number, job, birthday,age, gender, cardType, prefeature, city, address};
             if (req.files['avatarimage']) {
