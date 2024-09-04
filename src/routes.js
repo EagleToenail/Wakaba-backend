@@ -24,12 +24,14 @@ module.exports = (app) => {
   // app.post("/api/auth/resetRegsToken", AuthenticationController.resetRegsToken)
 
     // // ==============user
-    app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
-    app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
     app.post("/api/users", UserController.find)
-    app.get("/api/user/getUserList",  UserController.getUserList)
-    app.post("/api/user/updateUser", UserController.updateUser)
-    app.get("/api/user/getUserByEmail/:email",UserController.getUserByEmail)
+    app.post("/api/user/confirmuser", UserController.confirmUser)
+    app.post("/api/user/getUserById",UserController.getUserById)
+    // app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
+    // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
+    // app.get("/api/user/getUserList",  UserController.getUserList)
+    // app.post("/api/user/updateUser", UserController.updateUser)
+    
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
     app.post("/api/customer/createCustomer",  CustomerController.upload.fields([

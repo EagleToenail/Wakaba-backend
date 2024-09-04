@@ -1,7 +1,51 @@
 const { User } = require('../models')
+const { Profile } = require('../models')
 const response = require('../helpers/response');
+const jwt = require('jsonwebtoken')
+const decrypt = require('../helpers/decrypt');
 
 module.exports = {
+    async confirmUser(req, res) {
+        try {
+            const errData = {};
+            const { email, password } = req.body;
+            // console.log('password', encrypt(password))
+
+            // Find user by username or email
+            const user = await User.findOne({
+                where: { email: email }
+            });
+            // If user not found or invalid password
+            if (!user) {
+                errData.statusCode = 401;
+                errData.message = 'Username or email not registered';
+
+                throw errData;
+            }
+
+            // decrypt password
+            decrypt(password, user.password);
+            // generate access token
+            const token = jwt.sign({ username: user.username }, 'shhhhh');
+            const userId = user.id;
+            const username = user.username;
+            // Send response
+            console.log('----to input confirm---',token, userId);
+            response({
+                res,
+                statusCode: 200,
+                message: 'Successfully logged in',
+                payload: {token:token,userId:userId,username:username}, // -> send token to store in localStorage
+              });
+        } catch (error0) {
+            response({
+                res,
+                statusCode: error0.statusCode || 500,
+                success: false,
+                message: error0.message,
+              });
+        }
+    },
     async checkUserName(req, res) {
         try {
             const user = await User.findOne({
@@ -127,19 +171,27 @@ module.exports = {
             })
         }
     },
-    async getUserByEmail(req, res) {
+    async getUserById(req, res) {
         try {
-            const user = await User.findOne({
-                where: {
-                    email: req.params.email
-                },
-                attributes: ['id']
+            
+            const {userId} = req.body
+            console.log('=======',userId)
+            const users = await Profile.findAll({
+
             })
+            console.log('=======sss',users)
+            const user = await Profile.findOne({
+                where: {
+                    user_id: userId
+                }
+            })
+
             if (!user) {
                 return res.status(403).send({
                     error: "Email not registered."
                 })
             }
+            console.log('=======',user)
             res.send(user)
         } catch (error) {
             res.status(500).send({

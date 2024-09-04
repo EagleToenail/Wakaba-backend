@@ -54,14 +54,12 @@ module.exports = (sequelize, DataTypes) => {
       store_name:          DataTypes.STRING,
       store_type:          DataTypes.STRING,
       katakana_name:       DataTypes.STRING,
-      // email: {
-      //   type:              DataTypes.STRING,
-      //   unique:             true
-      // },
       birtday:             DataTypes.STRING, 
+      age:                 DataTypes.STRING, 
+      gender:              DataTypes.STRING, 
       idcard_image:        DataTypes.STRING,
       card_type:           DataTypes.STRING,
-      prefectures:         DataTypes.STRING,
+      prefeature:         DataTypes.STRING,
       city:                DataTypes.STRING,
       address:             DataTypes.TEXT,
       resume:              DataTypes.STRING,
