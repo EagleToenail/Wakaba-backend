@@ -19,16 +19,18 @@ module.exports = {
             const { username,email, password} = req.body;
             const encryptedPassword = encrypt(password);
             // Create a new user record
+            console.log(username,email, password,'User');
             const user = await User.create({
               username,
               email,
               password: encryptedPassword,
             });
-            // console.log(username,email, password);
+            console.log(username,email, password,'User');
             const setting = await Setting.create({
                 userId:user.id,
                 // If you want to override defaults or set other fields, include them here
               });
+              console.log(setting,'setting'); 
             const profile = await Profile.create({
                 user_id:user.id, // Ensure userId is set
                 username,

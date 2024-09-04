@@ -70,10 +70,9 @@ module.exports = (sequelize, DataTypes) => {
       pledge_image:        DataTypes.STRING,
       staff_terms:         DataTypes.TEXT,
       online: {
-        type: DataTypes.ENUM,
-        values: ['false', 'true'], // Enum values
+        type: DataTypes.BOOLEAN,
         required:       true,
-        defaultValue:       'false'
+        defaultValue:   false
       },
 
     },
