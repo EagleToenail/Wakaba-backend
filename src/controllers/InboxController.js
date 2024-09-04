@@ -8,7 +8,7 @@ module.exports = {
     try {
      
       const userId = req.body.userId; // Make sure req.user._id contains the correct value
-      const query = `SELECT Inboxes.id, Profiles.fullname,  Inboxes.ownersId,  Inboxes.roomId,  Inboxes.roomType,  Inboxes.unreadMessage,  Inboxes.content FROM  Inboxes  LEFT JOIN Profiles ON Profiles.user_id IN (SUBSTRING_INDEX(SUBSTRING_INDEX(Inboxes.ownersId, '"', 2), '"', -1), SUBSTRING_INDEX(SUBSTRING_INDEX(Inboxes.ownersId, '"', 4), '"', -1)) WHERE `profiles`.user_id='"${userId}"';
+      const query = `SELECT Inboxes.id, Profiles.fullname,  Inboxes.ownersId,  Inboxes.roomId,  Inboxes.roomType,  Inboxes.unreadMessage,  Inboxes.content FROM  Inboxes  LEFT JOIN Profiles ON Profiles.user_id IN (SUBSTRING_INDEX(SUBSTRING_INDEX(Inboxes.ownersId, '"', 2), '"', -1), SUBSTRING_INDEX(SUBSTRING_INDEX(Inboxes.ownersId, '"', 4), '"', -1)) WHERE `Profiles`.user_id='"${userId}"';
       console.log("inbox controller query");
    	
       const inboxes=await db.sequelize.query(query);
