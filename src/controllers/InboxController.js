@@ -10,9 +10,12 @@ module.exports = {
       const userId = req.body.userId; // Make sure req.user._id contains the correct value
       const query = `
             SELECT * FROM Inboxes AS Inbox LEFT JOIN Profiles AS profiles ON JSON_CONTAINS(Inbox.ownersId, JSON_QUOTE(profiles.user_id)) WHERE Inbox.roomType = 'private' AND profiles.user_id != '"${userId}"';`;
-      
+      console.log("inbox controller query");
    	
-      const inboxes=await db.sequelize.query(query)
+      const inboxes=await db.sequelize.query(query);
+            console.log(inboxes);
+
+      console.log("inbox controller result");
 
       response({
         res,
