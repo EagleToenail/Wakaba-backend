@@ -38,7 +38,9 @@ module.exports = (app) => {
     // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
     // app.get("/api/user/getUserList",  UserController.getUserList)
     // app.post("/api/user/updateUser", UserController.updateUser)
-    
+    //==============login or logout timecard
+    app.post("/api/logintime", AuthenticationController.loginTime)
+
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
     app.post("/api/customer/createCustomer",  CustomerController.upload.fields([
@@ -52,22 +54,28 @@ module.exports = (app) => {
     app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
     app.post("/api/customer/search", CustomerController.searchCustomer)
     app.get("/api/customer/getUserByCustomer/:customerId", CustomerController.getCustomerById)
+
     // //============sales
     app.get("/api/sales/getSalesList", SalesController.getSalesList)
     app.post("/api/sales/filter", SalesController.getSalesFilter)
     app.post("/api/sales/createSales", SalesController.createSales)
     app.post("/api/sales/updateSales", SalesController.updateSales)
     app.get("/api/sales/deleteSales", SalesController.deleteSales)
+
     //=============setting
     app.post("/api/settings", SettingController.find)
     app.post("/api/settings/update", SettingController.update)
+
     //=============Inbox
     app.post("/api/inboxes", InboxController.find)
+
     //============contacts
     app.post("/api/contacts", ContactController.insert)
     app.post("/api/contacts/find", ContactController.find)
   // app.post("/api/products/createProduct",ImageController.uploadProductImage, ProductsController.createProduct)
-      //=============chat      
+
+      
+    //=============chat      
     app.get('/api/chats/:roomId',  ChatController.findByRoomId);
     app.delete('/api/chats/:roomId',  ChatController.deleteByRoomId);
 

@@ -25,7 +25,7 @@ require("./routes")(app)
 
 // store socket on global object
 global.io = new SocketServer(server, {cors: config.cors });
-	require('./socket');
+	// require('./socket');
 
 
   sequelize.sync({ force: false })

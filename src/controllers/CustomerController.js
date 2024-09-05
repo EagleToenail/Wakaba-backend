@@ -68,12 +68,13 @@ module.exports = {
                 updateFields.idCard_url = idCard.filename; // Adjust field name based on your model
               }
             // console.log("customer file",updateFields)
-            const customer = await Customer.update(updateFields, {
+            await Customer.update(updateFields, {
                 where: {
                     id: req.body.id
                 }
             })
-            res.send({"customer":customer});
+
+            res.send({"success":true});
         } catch (err) {
             res.status(500).send({
                 error: "An error occured when trying to update customer information"
@@ -108,15 +109,14 @@ module.exports = {
        
         const { name, address, tel } = req.body.params;
         const phone_number = tel;
-        // console.log(req.body)
-        // console.log("name",phone_number)
+        console.log("asd",req.body)
         try {
             // Construct the search query
             const whereClause = [];
 
             if (name!='') {
                 whereClause.push ({
-                     name: { [Op.like]: `%${name}%` } 
+                     full_name: { [Op.like]: `%${name}%` } 
                 });
             }
             if (address!='') {
@@ -130,6 +130,7 @@ module.exports = {
                });
             }
             // console.log('ccc',whereClause.length)
+            // console.log('ccc',whereClause)
             if(whereClause.length!=0){
                 const customers = await Customer.findAll({
                     where: {
