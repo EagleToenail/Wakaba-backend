@@ -29,8 +29,9 @@ module.exports = (sequelize, DataTypes) => {
         values: ['男', '女'], // Enum values
         defaultValue:       '男'
       },
-
     })
-
+    Customer.associate = (models) => {
+      Customer.hasMany(models.Sales, { foreignKey: 'customer_id'});
+    };
     return Customer
   }

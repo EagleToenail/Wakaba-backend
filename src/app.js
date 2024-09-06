@@ -4,7 +4,7 @@ if(process.env.NODE_ENV !== 'production'){
 }
 const express = require("express");
 
-const { Server: SocketServer } = require('socket.io');
+// const { Server: SocketServer } = require('socket.io');
 const http = require('http');
 const path = require('path');
 
@@ -24,7 +24,7 @@ app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 require("./routes")(app)
 
 // store socket on global object
-global.io = new SocketServer(server, {cors: config.cors });
+// global.io = new SocketServer(server, {cors: config.cors });
 	// require('./socket');
 
 

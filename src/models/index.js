@@ -19,6 +19,8 @@ db.Group           = require("./Group")(sequelize, Sequelize.DataTypes);
 db.Inbox           = require("./Inbox")(sequelize, Sequelize.DataTypes);
 db.Setting           = require("./Setting")(sequelize, Sequelize.DataTypes);
 db.WorkingTime           = require("./WorkingTime")(sequelize, Sequelize.DataTypes);
+db.Product1           = require("./Product1")(sequelize, Sequelize.DataTypes);
+db.Product2           = require("./Product2")(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {
