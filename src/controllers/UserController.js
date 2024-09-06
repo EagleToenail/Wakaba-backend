@@ -70,7 +70,7 @@ module.exports = {
         try {
             
             const {userId} = req.body
-            console.log('=======',userId)
+            // console.log('=======',userId)
             const user = await User.findOne({
                 where: {
                     id: userId
@@ -82,7 +82,7 @@ module.exports = {
                     error: "Email not registered."
                 })
             }
-            console.log('=======',user)
+            // console.log('=======',user)
             res.send(user)
         } catch (error) {
             res.status(500).send({

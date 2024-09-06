@@ -5,8 +5,12 @@ const { Op } = require('sequelize');
 module.exports = {
 	async createSales(req, res) {
 		try {
-			const sales = await Sales.create(req.body)
-			res.send(sales)
+            const {trading_date,purchase_staff,customer_id,visit_type,brand_type,store_name,product_type_one,product_type_two,product,quantity,metal_type,price_per_gram,purchase_price, sales_amount, shipping_cost,wholesale_buyer,wholesale_date,payment_date} = req.body;
+            const salesContents = {trading_date,purchase_staff,customer_id,visit_type,brand_type,store_name,product_type_one,product_type_two,product,quantity,metal_type,price_per_gram,purchase_price, sales_amount, shipping_cost,wholesale_buyer,wholesale_date,payment_date};
+            salesContents.gross_profit = sales_amount - (purchase_price - shipping_cost);
+            console.log("hello",salesContents);
+			const sales = await Sales.create(salesContents);
+			res.send({"success":true})
 		} catch (err) {
 			res.status(500).send({
 				error: "An error occured when trying to create a sale."

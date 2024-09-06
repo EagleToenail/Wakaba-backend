@@ -9,6 +9,7 @@ const SettingController = require("./controllers/SettingController")
 const InboxController = require("./controllers/InboxController")
 const ContactController = require("./controllers/ContactController")
 const ChatController = require("./controllers/ChatController")
+const ProductTypeController = require("./controllers/ProductTypeController")
 
 module.exports = (app) => {
   // =========authentication
@@ -72,12 +73,13 @@ module.exports = (app) => {
     //============contacts
     app.post("/api/contacts", ContactController.insert)
     app.post("/api/contacts/find", ContactController.find)
-  // app.post("/api/products/createProduct",ImageController.uploadProductImage, ProductsController.createProduct)
+    // app.post("/api/products/createProduct",ImageController.uploadProductImage, ProductsController.createProduct)
 
       
     //=============chat      
     app.get('/api/chats/:roomId',  ChatController.findByRoomId);
     app.delete('/api/chats/:roomId',  ChatController.deleteByRoomId);
-
-
+    //==============ProductType
+    app.get('/api/ProductType1s',  ProductTypeController.getProductType1List);
+    app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
 }
