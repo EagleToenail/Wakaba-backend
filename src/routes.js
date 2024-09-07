@@ -39,8 +39,10 @@ module.exports = (app) => {
     // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
     // app.get("/api/user/getUserList",  UserController.getUserList)
     // app.post("/api/user/updateUser", UserController.updateUser)
+
     //==============login or logout timecard
     app.post("/api/logintime", AuthenticationController.loginTime)
+    app.post("/api/logouttime", AuthenticationController.logoutTime)
 
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)

@@ -169,6 +169,45 @@ module.exports = {
       });
     }
   },
+  async logoutTime(req, res) {
+    try {
+        const { action, userId } = req.body;
+        if (action == 'clock-out') {
+          // Get the start of the current day
+          let workingTimeRecord = await WorkingTime.findOne({
+            where: {
+              userId:userId
+            }
+          });
+          console.log(workingTimeRecord,'workingTimeRecord')
+          // Current time
+          const currentTime = moment();
+          const loginTime = moment(workingTimeRecord.loginTime, 'YYYY-MM-DD HH:mm:ss');
+          const timeDifference = currentTime.diff(loginTime);
+          // Calculate the new working time by adding the difference
+          const workingTime = workingTimeRecord.workingTime + timeDifference;
+          await WorkingTime.update(
+            { workingTime: workingTime , loginoutTime: moment().format('YYYY-MM-DD HH:mm:ss')},
+            { where: { userId: userId } }
+          );
+          // console.log('aaaaaaaaa',WorkingTime);
+        // // Send response;
+        response({
+          res,
+          statusCode: 200,
+          message: 'Successfully record logintime',
+          payload: {},
+        });
+      }
+    } catch (error0) {
+      response({
+        res,
+        statusCode: error0.statusCode || 500,
+        success: false,
+        message: error0.message,
+      });
+    }
+  },
 
 
 
