@@ -1,6 +1,8 @@
 const { Sales } = require('../models')
 const { Customer } = require('../models')
 const { Op } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
 	async createSales(req, res) {
@@ -83,15 +85,25 @@ module.exports = {
     },
     async updateSales(req, res) {
         try {
-            const sales = await Sales.update(req.body, {
+            const {id,salesSlipData} = req.body;
+            if(salesSlipData.product_type_one != '貴金属') {
+                delete salesSlipData.metal_type;
+                delete salesSlipData.price_per_gram;
+            }
+            salesSlipData.gross_profit = salesSlipData.sales_amount - (salesSlipData.purchase_price - salesSlipData.shipping_cost);
+            delete salesSlipData.id;
+            console.log("salesData",salesSlipData,id)
+
+            await Sales.update(salesSlipData, {
                 where: {
-                    id: req.body.id
+                    id: id
                 }
             })
-            res.send(sales);
+
+            res.send({"success":true});
         } catch (err) {
             res.status(500).send({
-                error: "An error occured when trying to update sales information"
+                error: "An error occured when trying to update customer information"
             })
         }
     },
@@ -112,5 +124,69 @@ module.exports = {
 			})
 		}
 	},
+    async saveInvoice(req, res) {
+		try {
+            const {dataUrl,purchaseData} = req.body;
+            // console.log("dataurl,purchaseData",dataUrl,purchaseData)
+
+            if (!dataUrl) {
+                return res.status(400).json({ error: 'No data URL provided' });
+              }
+            const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+            const thistime = Date.now();
+            const dirPath = path.join(__dirname, '../uploads/signatures');
+            const filename = `signature_${thistime}.png`;
+            const filePath = path.join(dirPath, `${filename}`);
+            if (!fs.existsSync(dirPath)) {
+                fs.mkdirSync(dirPath, { recursive: true });
+              }
+            
+                // Save the file
+            fs.writeFile(filePath, base64Data, 'base64', (err) => {
+                if (err) {
+                console.error('Error saving file:', err);
+                return res.status(500).json({ error: 'Failed to save signature' });
+                }
+            });
+
+            try {
+                for (let index = 0; index < purchaseData.length; index++) {
+                    // const {customer_id, visit_type, brand_type, trading_date, purchase_staff, store_name, product_type_one, product_type_two, metal_type, price_per_gram, purchase_price,product,quantity,} = purchaseData[index];
+                    // const salesData = {customer_id, visit_type,brand_type, trading_date, purchase_staff, store_name, product_type_one, product_type_two, metal_type, price_per_gram, purchase_price, product,quantity}
+                    const salesData = purchaseData[index];
+                    salesData.signature = filename;
+                    if(salesData.product_type_one != '貴金属') {
+                        delete salesData.metal_type;
+                        delete salesData.price_per_gram;
+                    }
+                    delete salesData.id;
+                    console.log("salesData",salesData)
+                    const sales = await Sales.create(salesData);
+                }
+                res.send({"success":true})
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to create a sale."
+                })
+            }
+
+		} catch (err) {
+			res.status(500).send({
+				error: 'An error occured when trying to delete a sales.'
+			})
+		}
+	},
+    async getSalesById(req,res) {
+        try {
+            const sales = await Sales.findByPk(req.params.id)
+                // console.log(JSON.stringify(salesWithCustomer, null, 2));
+            // console.log('saleList',salesWithCustomer);
+            res.send(sales);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    }
 
 }

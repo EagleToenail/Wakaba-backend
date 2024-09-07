@@ -56,14 +56,17 @@ module.exports = (app) => {
     ]), CustomerController.updateCustomer)
     app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
     app.post("/api/customer/search", CustomerController.searchCustomer)
-    app.get("/api/customer/getUserByCustomer/:customerId", CustomerController.getCustomerById)
+    app.get("/api/customer/getCustomerById/:customerId", CustomerController.getCustomerById)
 
     // //============sales
     app.get("/api/sales/getSalesList", SalesController.getSalesList)
+    app.get("/api/sales/getSalesById/:id", SalesController.getSalesById)
     app.post("/api/sales/filter", SalesController.getSalesFilter)
     app.post("/api/sales/createSales", SalesController.createSales)
     app.post("/api/sales/updateSales", SalesController.updateSales)
     app.get("/api/sales/deleteSales", SalesController.deleteSales)
+
+    app.post("/api/purchaseinvoice", SalesController.saveInvoice)
 
     //=============setting
     app.post("/api/settings", SettingController.find)

@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         wholesale_buyer:             DataTypes.STRING,
         wholesale_date:              DataTypes.STRING,
         payment_date:                DataTypes.STRING,
+        signature:                   DataTypes.STRING,
 
     })
     Sales.associate = (models) => {

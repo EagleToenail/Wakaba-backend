@@ -172,22 +172,22 @@ module.exports = {
   async logoutTime(req, res) {
     try {
         const { action, userId } = req.body;
-        if (action == 'clock-out') {
           // Get the start of the current day
           let workingTimeRecord = await WorkingTime.findOne({
             where: {
               userId:userId
             }
           });
-          console.log(workingTimeRecord,'workingTimeRecord')
+          console.log(workingTimeRecord.loginTime,'logintime')
           // Current time
           const currentTime = moment();
           const loginTime = moment(workingTimeRecord.loginTime, 'YYYY-MM-DD HH:mm:ss');
           const timeDifference = currentTime.diff(loginTime);
+          console.log('datas',currentTime, loginTime,timeDifference)
           // Calculate the new working time by adding the difference
-          const workingTime = workingTimeRecord.workingTime + timeDifference;
+          const workingTime = parseFloat(workingTimeRecord.workingTime) + parseFloat(timeDifference);
           await WorkingTime.update(
-            { workingTime: workingTime , loginoutTime: moment().format('YYYY-MM-DD HH:mm:ss')},
+            { workingTime: workingTime , logoutTime: moment().format('YYYY-MM-DD HH:mm:ss')},
             { where: { userId: userId } }
           );
           // console.log('aaaaaaaaa',WorkingTime);
@@ -198,7 +198,7 @@ module.exports = {
           message: 'Successfully record logintime',
           payload: {},
         });
-      }
+
     } catch (error0) {
       response({
         res,
