@@ -10,6 +10,7 @@ const InboxController = require("./controllers/InboxController")
 const ContactController = require("./controllers/ContactController")
 const ChatController = require("./controllers/ChatController")
 const ProductTypeController = require("./controllers/ProductTypeController")
+const ContractorAccessmentController = require("./controllers/ContractorAccessmentController")
 
 module.exports = (app) => {
   // =========authentication
@@ -87,4 +88,7 @@ module.exports = (app) => {
     //==============ProductType
     app.get('/api/ProductType1s',  ProductTypeController.getProductType1List);
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
+    //=========contractaccessmentsheet
+    app.get('/api/contractorassessments',  ContractorAccessmentController.getData);
+
 }

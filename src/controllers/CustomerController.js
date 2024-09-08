@@ -153,8 +153,9 @@ module.exports = {
     },
     async getCustomerById(req, res) {
         try { 
-            // console.log('id',req.params.customerId)
+            //  console.log('id',req.params.customerId)
             const customer = await Customer.findByPk(req.params.customerId)
+            // console.log('searchResult',customer);
             if (!customer) {
                 return res.status(403).send({
                     error: "Customer not found."
