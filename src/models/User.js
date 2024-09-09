@@ -21,5 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     password:            DataTypes.STRING,
 
   })
+
+  // User.associate = (models) => {
+  //   User.hasMany(models.TodoMessage, { foreignKey: 'senderId',as:'SentMessages'});
+  //   User.hasMany(models.TodoMessage, { foreignKey: 'receiverId',as:'ReceivedMessages'});
+  // };
+
   return User
 }

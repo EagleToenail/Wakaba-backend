@@ -11,6 +11,7 @@ const ContactController = require("./controllers/ContactController")
 const ChatController = require("./controllers/ChatController")
 const ProductTypeController = require("./controllers/ProductTypeController")
 const ContractorAccessmentController = require("./controllers/ContractorAccessmentController")
+const TodoMessageConroller = require("./controllers/TodoMessageController")
 
 module.exports = (app) => {
   // =========authentication
@@ -38,7 +39,7 @@ module.exports = (app) => {
     ]),UserController.createUserProfile)
     // app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
     // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
-    // app.get("/api/user/getUserList",  UserController.getUserList)
+    app.get("/api/user/getUserList",  UserController.getUserList)
     // app.post("/api/user/updateUser", UserController.updateUser)
 
     //==============login or logout timecard
@@ -90,5 +91,11 @@ module.exports = (app) => {
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
     //=========contractaccessmentsheet
     app.get('/api/contractorassessments',  ContractorAccessmentController.getData);
+    //========todoList
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/todomessages/:userId', TodoMessageConroller.getMessages);
+    app.post('/api/todomessages/getmessagelist',TodoMessageConroller.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), TodoMessageConroller.createReply);
 
 }

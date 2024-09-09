@@ -35,6 +35,7 @@ db.MusicalInstrument        = require("./MusicalInstrument")(sequelize, Sequeliz
 db.OldCoin                  = require("./OldCoin")(sequelize, Sequelize.DataTypes);
 db.Kimono                   = require("./Kimono")(sequelize, Sequelize.DataTypes);
 db.SmartPhoneAndTablet      = require("./SmartPhoneAndTablet")(sequelize, Sequelize.DataTypes);
+db.TodoMessage              = require("./TodoMessage")(sequelize, Sequelize.DataTypes);
 
 
 Object.keys(db).forEach((modelName) => {

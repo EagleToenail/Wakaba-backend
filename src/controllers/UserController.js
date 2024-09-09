@@ -202,36 +202,7 @@ module.exports = {
     },
     async getUserList(req, res) {
         try {
-            const userId = req.user.id
-            if (!userId) {
-                return res.status(403).send({
-                    error: "Request is not authenticated."
-                })
-            }
-            const userList = await User.findAll({
-                attributes: [
-                    "id",
-                    "store_name",
-                    "store_type",
-                    "full_anme",
-                    "katakana_name",
-                    "profile_image",
-                    "email",
-                    "phone_number",
-                    "pasword",
-                    "birthday",
-                    "idcard_image",
-                    "card_type",
-                    "prefectures",
-                    "city",
-                    "address",
-                    "resume",
-                    "job_description",
-                    "guarantor",
-                    "pledge_image",
-                    "staff_terms",
-                ]
-            })
+            const userList = await User.findAll({})
             res.send(userList);
         } catch (err) {
             res.status(500).send({
