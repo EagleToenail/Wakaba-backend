@@ -29,7 +29,6 @@ module.exports = {
         try {
             const errData = {};
             const { email, password } = req.body;
-            // console.log('password', encrypt(password))
 
             // Find user by username or email
             const user = await User.findOne({
@@ -50,7 +49,6 @@ module.exports = {
             const userId = user.id;
             const username = user.username;
             // Send response
-            // console.log('----to input confirm---',token, userId);
             response({
                 res,
                 statusCode: 200,
@@ -70,7 +68,6 @@ module.exports = {
         try {
             
             const {userId} = req.body
-            // console.log('=======',userId)
             const user = await User.findOne({
                 where: {
                     id: userId
@@ -82,7 +79,6 @@ module.exports = {
                     error: "Email not registered."
                 })
             }
-            // console.log('=======',user)
             res.send(user)
         } catch (error) {
             res.status(500).send({
@@ -92,7 +88,6 @@ module.exports = {
     },
     async createUserProfile(req, res) {
         try {
-            console.log("customer update")
             const {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;
             const updateFields = {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor};
             if (req.files['avatar']) {
@@ -115,7 +110,6 @@ module.exports = {
             const pledge_image = req.files['pledge_image'][0];
             updateFields.pledge_image = pledge_image.filename; // Adjust field name based on your model
             }
-            console.log("profile data",updateFields)
             const profile = await Profile.update(updateFields, {
                 where: {
                     id: req.body.id
@@ -177,7 +171,6 @@ module.exports = {
     },
     async find(req, res) {
         try {
-            // console.log("=======userid========",req.body.userId);
             const userId = req.body.userId;
             const user = await User.findOne( {
                 where: { id: userId}

@@ -42,9 +42,7 @@ module.exports = {
    // Fetch all root messages related to a user and their replies
 	async getMessagesAndRepliesForUser  (req, res) {
         try {
-            // console.log('userID==========',req.params.userId)
             const AllMessages = await TodoMessage.findAll();
-            // console.log('AllMessages=======',AllMessages)
             const rootMessages = await TodoMessage.findAll({
               where: {
                 [Op.or]: [
@@ -54,9 +52,7 @@ module.exports = {
                 parentMessageId: ''
               }
             });
-        //    console.log('rootmessage=============',rootMessages)
             const rootMessageIds = rootMessages.map(msg => msg.id);
-            // console.log('rootMessageIds========',rootMessageIds)
             const replies = await TodoMessage.findAll({
               where: {
                 parentMessageId: {
@@ -64,23 +60,11 @@ module.exports = {
                 }
               }
             });
-            // console.log('replies========',replies)
             const result = rootMessages.map(root => ({
                   ...root.dataValues,
                   replies: replies.filter(reply => parseInt(reply.parentMessageId) === root.id)
                 }
             ));
-        // const result = rootMessages.map(root => {
-        //     console.log('Processing Root:', root.dataValues);
-        //     const filteredReplies = replies.filter(reply => {console.log('reply and root=======================================',parseInt(reply.parentMessageId),root.id)});
-        //     console.log('Filtered Replies:', filteredReplies);
-        //     return {
-        //       ...root.dataValues,
-        //       replies: filteredReplies
-        //     };
-        //   });
-
-           console.log('message result=======',result);
             res.send(result);
           } catch (error) {
             res.status(500).send(error.message);
@@ -90,17 +74,14 @@ module.exports = {
 // Create a new reply
     async createReply (req, res) {
         try {
-            // console.log("todo message sender",req.body);
             const { time, title, content, senderId, receiverId, parentMessageId } = req.body;
             const newMessage = {time, title, content, senderId, receiverId, parentMessageId };
             if (req.files['fileUrl']) {
                 const uploadfile = req.files['fileUrl'][0];
                 newMessage.fileUrl = uploadfile.filename; // Adjust field name based on your model
               }
-              console.log('saveTododtaa',newMessage);
            await TodoMessage.create(newMessage);
             const newMessageContent = await TodoMessage.findAll();
-            // console.log('all message',newMessageContent)
             res.send(newMessageContent);
           } catch (error) {
             res.status(500).send(error.message);
@@ -130,7 +111,7 @@ module.exports = {
               replies: nestedReplies
             };
           }));
-          console.log('result+++++++++++++++++++',result)
+        //   console.log('result+++++++++++++++++++',result)
           res.send(result);
         } catch (error) {
           console.error('Error fetching messages:', error);
