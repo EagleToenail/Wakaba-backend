@@ -126,7 +126,8 @@ module.exports = {
 	},
     async saveInvoice(req, res) {
 		try {
-            const {dataUrl,purchaseData} = req.body;
+            const {dataUrl,payload} = req.body;
+            const purchaseData = payload;
             // console.log("dataurl,purchaseData",dataUrl,purchaseData)
 
             if (!dataUrl) {

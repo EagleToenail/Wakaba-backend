@@ -86,6 +86,28 @@ module.exports = {
             })
         }
     },
+    async getProfileById(req, res) {
+        try {
+            
+            const {userId} = req.body
+            const profile = await Profile.findOne({
+                where: {
+                    user_id: userId
+                }
+            })
+
+            if (!profile) {
+                return res.status(403).send({
+                    error: "Email not registered."
+                })
+            }
+            res.send(profile)
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occured when trying to get an user."
+            })
+        }
+    },
     async createUserProfile(req, res) {
         try {
             const {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;

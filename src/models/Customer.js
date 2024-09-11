@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement:    true
       },
       full_name:           DataTypes.STRING,
+      // email:               DataTypes.STRING,
       katakana_name:       DataTypes.STRING,
       phone_number:        DataTypes.STRING,
       address:             DataTypes.TEXT,

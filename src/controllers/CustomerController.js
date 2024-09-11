@@ -1,4 +1,6 @@
 const { Customer } = require('../models')
+const { CustomerPastVisitHistory } = require('../models')
+
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
@@ -163,6 +165,25 @@ module.exports = {
             }
             // console.log(customer)
             res.send(customer)
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get an user."
+            })
+        }
+    },
+    async getCustomerPastVisitHistory(req,res) {
+        try { 
+             console.log('123id',req.params.customerId)
+            const customerId = req.params.customerId;
+            const customerpastvisithistory = await CustomerPastVisitHistory.findOne({
+                where: { customerId: customerId }
+            });
+            console.log(customerpastvisithistory)
+            if(!customerpastvisithistory.length){
+                res.send([customerpastvisithistory])
+            } else {
+                res.send(customerpastvisithistory)
+            }     
         } catch (err) {
             res.status(500).send({
                 error: "An error occured when trying to get an user."

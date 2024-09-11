@@ -10,6 +10,7 @@ const db = {}
 db.User               = require("./User")(sequelize, Sequelize.DataTypes);
 db.Profile            = require("./Profile")(sequelize, Sequelize.DataTypes);
 db.Customer           = require("./Customer")(sequelize, Sequelize.DataTypes);
+db.CustomerPastVisitHistory           = require("./CustomerPastVisitHistory")(sequelize, Sequelize.DataTypes);
 db.Sales              = require("./Sales")(sequelize, Sequelize.DataTypes);
 
 db.Chat               = require("./Chat")(sequelize, Sequelize.DataTypes);

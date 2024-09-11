@@ -30,6 +30,7 @@ module.exports = (app) => {
     app.post("/api/users", UserController.find)
     app.post("/api/user/confirmuser", UserController.confirmUser)
     app.post("/api/user/getUserById",UserController.getUserById)
+    app.post("/api/profile/getProfileById",UserController.getProfileById)
     app.post("/api/user/createuserprofile",  UserController.upload.fields([
       { name: 'avatar', maxCount: 1 },
       { name: 'idcard_image', maxCount: 1 },
@@ -59,6 +60,7 @@ module.exports = (app) => {
     app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
     app.post("/api/customer/search", CustomerController.searchCustomer)
     app.get("/api/customer/getCustomerById/:customerId", CustomerController.getCustomerById)
+    app.get("/api/customer/customerpastvisithistory/:customerId", CustomerController.getCustomerPastVisitHistory)
 
     // //============sales
     app.get("/api/sales/getSalesList", SalesController.getSalesList)
