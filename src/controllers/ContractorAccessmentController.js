@@ -18,7 +18,7 @@ async getData (req, res) {
         const oldCoins = await OldCoin.findAll({});
         const kimonos = await Kimono.findAll({});
         const smartPhoneAndTablets = await SmartPhoneAndTablet.findAll({});
-        console.log(preciousMetals,'asd')
+        // console.log(preciousMetals,'asd')
 
         response({
         res,
@@ -43,6 +43,113 @@ async getData (req, res) {
         success: false,
         message: error0.message,
         });
+    }
+},
+//-------------------------PreciousMetal-----------------------------------
+async addPreciousMetalData (req, res) {
+    try {
+        const preciousMetalData = req.body;
+
+        const newpreciousMetalData = await PreciousMetals.create(preciousMetalData)
+        res.send(newpreciousMetalData);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to update customer information"
+        })
+    }
+},
+async updatePreciousMetalData (req, res) {
+    try {
+        const preciousMetalData = req.body;
+        const id = req.body.id;  
+        delete preciousMetalData.id;
+        delete preciousMetalData.createdAt;
+        delete preciousMetalData.updatedAt;
+
+
+        await PreciousMetals.update(preciousMetalData, {
+            where: {
+                id: id
+            }
+        })
+    
+        res.send({"success":true});
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to update customer information"
+        })
+    }
+},
+async deletePreciousMetalData(req, res) {
+    try {
+        const preciousMetalDataData = await PreciousMetals.findByPk(req.params.Id)
+        if (!preciousMetalDataData) {
+            return res.status(403).send({
+                error: 'No sales to delete.'
+            })
+        }
+        await preciousMetalDataData.destroy()
+        res.send({'success':true})
+
+    } catch (err) {
+        res.status(500).send({
+            error: 'An error occured when trying to delete a sales.'
+        })
+    }
+},
+//-------------------------OldCoin-----------------------------------
+async addOldCoinData (req, res) {
+    try {
+        const oldCoinData = req.body;
+        console.log("precious",oldCoinData)
+
+        const newoldcoin = await OldCoin.create(oldCoinData)
+    console.log('newoldcoin',newoldcoin);
+        res.send(newoldcoin);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to update customer information"
+        })
+    }
+},
+async updateOldCoinData (req, res) {
+    try {
+        const oldCoinData = req.body;
+        const id = req.body.id;  
+        delete oldCoinData.id;
+        delete oldCoinData.createdAt;
+        delete oldCoinData.updatedAt;
+        // console.log("precious",oldCoinData,id)
+
+        await OldCoin.update(oldCoinData, {
+            where: {
+                id: id
+            }
+        })
+    
+        res.send({"success":true});
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to update customer information"
+        })
+    }
+},
+async deleteOldCoinData(req, res) {
+    try {
+        console.log('sfsadfasdf',req.params.Id)
+        const oldCoinData = await OldCoin.findByPk(req.params.Id)
+        if (!oldCoinData) {
+            return res.status(403).send({
+                error: 'No sales to delete.'
+            })
+        }
+        await oldCoinData.destroy()
+        res.send({'success':true})
+
+    } catch (err) {
+        res.status(500).send({
+            error: 'An error occured when trying to delete a sales.'
+        })
     }
 },
 

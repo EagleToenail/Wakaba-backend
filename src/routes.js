@@ -93,6 +93,13 @@ module.exports = (app) => {
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
     //=========contractaccessmentsheet
     app.get('/api/contractorassessments',  ContractorAccessmentController.getData);
+
+    app.post('/api/contractorassessments/oldcoinadd',  ContractorAccessmentController.addOldCoinData);
+    app.post('/api/contractorassessments/oldcoinupdate',  ContractorAccessmentController.updateOldCoinData);
+    app.get('/api/contractorassessments/oldcoindelete/:Id',  ContractorAccessmentController.deleteOldCoinData);
+    app.post('/api/contractorassessments/preciousmetaladd',  ContractorAccessmentController.addPreciousMetalData);
+    app.post('/api/contractorassessments/preciousmetalupdate',  ContractorAccessmentController.updatePreciousMetalData);
+    app.get('/api/contractorassessments/preciousmetaldelete/:Id',  ContractorAccessmentController.deletePreciousMetalData);
     //========todoList
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/todomessages/:userId', TodoMessageConroller.getMessages);
