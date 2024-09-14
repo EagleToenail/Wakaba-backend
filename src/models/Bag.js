@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       shipping_date: {
-        type: DataTypes.DATE, // Adjust based on the actual format
+        type: DataTypes.STRING, // Adjust based on the actual format
         allowNull: true
       },
       number: {
