@@ -12,6 +12,8 @@ const ChatController = require("./controllers/ChatController")
 const ProductTypeController = require("./controllers/ProductTypeController")
 const ContractorAccessmentController = require("./controllers/ContractorAccessmentController")
 const TodoMessageConroller = require("./controllers/TodoMessageController")
+const InvoiceForPurchaseMessageController = require("./controllers/InvoiceForPurchaseMessageController")
+const WithdrawalBankATMMessageController = require("./controllers/WithdrawalBankATMMessageController")
 
 module.exports = (app) => {
   // =========authentication
@@ -61,6 +63,7 @@ module.exports = (app) => {
     app.post("/api/customer/search", CustomerController.searchCustomer)
     app.get("/api/customer/getCustomerById/:customerId", CustomerController.getCustomerById)
     app.get("/api/customer/customerpastvisithistory/:customerId", CustomerController.getCustomerPastVisitHistory)
+    app.post("/api/customer/customerItem",CustomerController.addCustomerItem)
 
     // //============sales
     app.get("/api/sales/getSalesList", SalesController.getSalesList)
@@ -70,8 +73,8 @@ module.exports = (app) => {
     app.post("/api/sales/updateSales", SalesController.updateSales)
     app.get("/api/sales/deleteSales", SalesController.deleteSales)
 
+    app.post("/api/vendor/getVendorList",SalesController.getVendorList)
     app.post("/api/purchaseinvoice", SalesController.saveInvoice)
-
     //=============setting
     app.post("/api/settings", SettingController.find)
     app.post("/api/settings/update", SettingController.update)
@@ -91,6 +94,8 @@ module.exports = (app) => {
     //==============ProductType
     app.get('/api/ProductType1s',  ProductTypeController.getProductType1List);
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
+    app.get('/api/ProductType3s',  ProductTypeController.getProductType3List);
+    app.get('/api/ProductType4s',  ProductTypeController.getProductType4List);
     //=========contractaccessmentsheet
     app.get('/api/contractorassessments',  ContractorAccessmentController.getData);
 
@@ -100,11 +105,23 @@ module.exports = (app) => {
     app.post('/api/contractorassessments/preciousmetaladd',  ContractorAccessmentController.addPreciousMetalData);
     app.post('/api/contractorassessments/preciousmetalupdate',  ContractorAccessmentController.updatePreciousMetalData);
     app.get('/api/contractorassessments/preciousmetaldelete/:Id',  ContractorAccessmentController.deletePreciousMetalData);
-    //========todoList
+    //========todoListMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/todomessages/:userId', TodoMessageConroller.getMessages);
     app.post('/api/todomessages/getmessagelist',TodoMessageConroller.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), TodoMessageConroller.createReply);
+    //========InvoiceFOrPurchaseMessage
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/invoicepurchasemessages/:userId', InvoiceForPurchaseMessageController.getMessages);
+    app.post('/api/invoicepurchasemessages/getmessagelist',InvoiceForPurchaseMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), InvoiceForPurchaseMessageController.createReply);
+    //========WithdrawalBankATMMessage
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/withdrawalbankatmmessages/:userId', WithdrawalBankATMMessageController.getMessages);
+    app.post('/api/withdrawalbankatmmessages/getmessagelist',WithdrawalBankATMMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), WithdrawalBankATMMessageController.createReply);
 
 }

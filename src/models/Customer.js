@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement:    true
       },
       full_name:           DataTypes.STRING,
-      // email:               DataTypes.STRING,
+      email:               DataTypes.STRING,
       katakana_name:       DataTypes.STRING,
       phone_number:        DataTypes.STRING,
       address:             DataTypes.TEXT,
@@ -30,6 +30,23 @@ module.exports = (sequelize, DataTypes) => {
         values: ['男', '女'], // Enum values
         defaultValue:       '男'
       },
+      item1:                DataTypes.STRING,
+      item2:                DataTypes.STRING,
+      item3:                DataTypes.STRING,
+      line_friend:           {
+        type: DataTypes.ENUM,
+        values: ['yes', 'no'], // Enum values
+        defaultValue:       'no'
+      },
+      google_review:         {
+        type: DataTypes.ENUM,
+        values: ['yes', 'no'], // Enum values
+        defaultValue:       'no'
+      },
+      novelty_item:         DataTypes.STRING,
+      novelty_item_number:  DataTypes.STRING,
+      cupon_item:           DataTypes.STRING,
+      cupon_item_number:   DataTypes.STRING,
     })
     Customer.associate = (models) => {
       Customer.hasMany(models.Sales, { foreignKey: 'customer_id'});

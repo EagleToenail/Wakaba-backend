@@ -1,5 +1,6 @@
 const { Sales } = require('../models')
 const { Customer } = require('../models')
+const { Vendor } = require('../models')
 const { Op } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
@@ -124,6 +125,22 @@ module.exports = {
 			})
 		}
 	},
+    async getVendorList(req,res) {
+        try {
+            const type = req.body.type;
+            console.log('getVendorList',type)
+            const vendorList = await Vendor.findAll({
+                attributes: ['vendor_name'],
+                where: {[type]:'y'}
+            });
+            // console.log('vendorList',vendorList);
+            res.send(vendorList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
     async saveInvoice(req, res) {
 		try {
             const {dataUrl,payload} = req.body;

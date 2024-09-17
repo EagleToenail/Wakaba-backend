@@ -26,8 +26,8 @@ module.exports = {
 	async createCustomer(req, res) {
 		try {
             console.log("customer create",req.body)
-            const {opportunity, full_name, katakana_name, phone_number, birthday, job,age, gender, cardType, prefeature, city, address ,shop,trigger} = req.body;
-            const createFields = {opportunity, full_name, katakana_name, phone_number,job, birthday,age, gender, cardType, prefeature, city, address,shop,trigger};
+            const {opportunity, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger} = req.body;
+            const createFields = {opportunity, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 createFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -59,8 +59,8 @@ module.exports = {
     async updateCustomer(req, res) {
         try {
             // console.log("profile update",req.body)
-            const {opportunity, full_name, katakana_name, phone_number,job, birthday,age, gender, cardType, prefeature, city, address } = req.body;
-            const updateFields = {opportunity, full_name, katakana_name, phone_number, job, birthday,age, gender, cardType, prefeature, city, address};
+            const {opportunity, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,item1,item2,item3 } = req.body;
+            const updateFields = {opportunity, full_name, katakana_name, phone_number, job,email, birthday,age, gender, cardType, prefeature, city,address,item1,item2,item3};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 updateFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -86,13 +86,13 @@ module.exports = {
     async deleteCustomer(req, res) {
 		try {
             const customerId = req.body.customerId;
-            console.log(customerId,'customerId')
+            // console.log(customerId,'customerId')
 			const customer = await Customer.findOne({
                 where: {
                     id: customerId // Condition to match the record
                   }
             })
-            console.log(customer,'customer')
+            // console.log(customer,'customer')
 			if (!customer) {
 				return res.status(403).send({
 					error: 'No customer to delete.'
@@ -173,17 +173,38 @@ module.exports = {
     },
     async getCustomerPastVisitHistory(req,res) {
         try { 
-             console.log('123id',req.params.customerId)
+            //  console.log('123id',req.params.customerId)
             const customerId = req.params.customerId;
             const customerpastvisithistory = await CustomerPastVisitHistory.findOne({
                 where: { customerId: customerId }
             });
-            console.log(customerpastvisithistory)
+            // console.log(customerpastvisithistory)
             if(!customerpastvisithistory.length){
                 res.send([customerpastvisithistory])
             } else {
                 res.send(customerpastvisithistory)
             }     
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get an user."
+            })
+        }
+    },
+    async addCustomerItem(req,res) {
+        try { 
+                const customerId = req.body.customerId;
+                const item1 = req.body.item1;
+                const item2 = req.body.item2;
+                const item3 = req.body.item3;
+                console.log('received information',customerId,item1,item2,item3);
+                await Customer.update(
+                    {item1,item2,item3}, 
+                    {
+                        where: {
+                            id: customerId
+                        }
+                })
+                res.send({"success":true})
         } catch (err) {
             res.status(500).send({
                 error: "An error occured when trying to get an user."

@@ -22,6 +22,8 @@ db.Setting            = require("./Setting")(sequelize, Sequelize.DataTypes);
 db.WorkingTime        = require("./WorkingTime")(sequelize, Sequelize.DataTypes);
 db.Product1           = require("./Product1")(sequelize, Sequelize.DataTypes);
 db.Product2           = require("./Product2")(sequelize, Sequelize.DataTypes);
+db.Product3           = require("./Product3")(sequelize, Sequelize.DataTypes);
+db.Product4           = require("./Product4")(sequelize, Sequelize.DataTypes);
 
 //vendor accessment sheet
 db.PreciousMetals           = require("./PreciousMetals")(sequelize, Sequelize.DataTypes);
@@ -36,7 +38,13 @@ db.MusicalInstrument        = require("./MusicalInstrument")(sequelize, Sequeliz
 db.OldCoin                  = require("./OldCoin")(sequelize, Sequelize.DataTypes);
 db.Kimono                   = require("./Kimono")(sequelize, Sequelize.DataTypes);
 db.SmartPhoneAndTablet      = require("./SmartPhoneAndTablet")(sequelize, Sequelize.DataTypes);
+
+db.Vendor                   = require("./Vendor")(sequelize, Sequelize.DataTypes);
+db.Master                   = require("./Master")(sequelize, Sequelize.DataTypes);
+
 db.TodoMessage              = require("./TodoMessage")(sequelize, Sequelize.DataTypes);
+db.InvoiceForPurchaseMessage              = require("./InvoiceForPurchaseMessage")(sequelize, Sequelize.DataTypes);
+db.WithdrawalBankATMMessage              = require("./WithdrawalBankATMMessage")(sequelize, Sequelize.DataTypes);
 
 
 Object.keys(db).forEach((modelName) => {
