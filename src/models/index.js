@@ -45,6 +45,10 @@ db.Master                   = require("./Master")(sequelize, Sequelize.DataTypes
 db.TodoMessage              = require("./TodoMessage")(sequelize, Sequelize.DataTypes);
 db.InvoiceForPurchaseMessage              = require("./InvoiceForPurchaseMessage")(sequelize, Sequelize.DataTypes);
 db.WithdrawalBankATMMessage              = require("./WithdrawalBankATMMessage")(sequelize, Sequelize.DataTypes);
+db.WithdrawalVariousPurchaseMessage              = require("./WithdrawalVariousPurchaseMessage")(sequelize, Sequelize.DataTypes);
+db.WithdrawalApplyMessage              = require("./WithdrawalApplyMessage")(sequelize, Sequelize.DataTypes);
+db.OnSitePurchaseMessage              = require("./OnSitePurchaseMessage")(sequelize, Sequelize.DataTypes);
+db.DisposalPermissionMessage              = require("./DisposalPermissionMessage")(sequelize, Sequelize.DataTypes);
 
 
 Object.keys(db).forEach((modelName) => {

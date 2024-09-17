@@ -11,9 +11,15 @@ const ContactController = require("./controllers/ContactController")
 const ChatController = require("./controllers/ChatController")
 const ProductTypeController = require("./controllers/ProductTypeController")
 const ContractorAccessmentController = require("./controllers/ContractorAccessmentController")
+
 const TodoMessageConroller = require("./controllers/TodoMessageController")
 const InvoiceForPurchaseMessageController = require("./controllers/InvoiceForPurchaseMessageController")
 const WithdrawalBankATMMessageController = require("./controllers/WithdrawalBankATMMessageController")
+const WithdrawalVariousPurchaseMessageController = require("./controllers/WithdrawalVariousPurchaseMessageController")
+const WithdrawalApplyController = require("./controllers/WithdrawalApplyController")
+const PurchaseToRShopMessageController = require("./controllers/PurchaseToRShopMessageController")
+const OnSitePurchaseMessageController = require("./controllers/OnSitePurchaseMessageController")
+const DisposalPermissionMessageController = require("./controllers/DisposalPermissionMessageController")
 
 module.exports = (app) => {
   // =========authentication
@@ -105,23 +111,61 @@ module.exports = (app) => {
     app.post('/api/contractorassessments/preciousmetaladd',  ContractorAccessmentController.addPreciousMetalData);
     app.post('/api/contractorassessments/preciousmetalupdate',  ContractorAccessmentController.updatePreciousMetalData);
     app.get('/api/contractorassessments/preciousmetaldelete/:Id',  ContractorAccessmentController.deletePreciousMetalData);
+
     //========todoListMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/todomessages/:userId', TodoMessageConroller.getMessages);
     app.post('/api/todomessages/getmessagelist',TodoMessageConroller.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), TodoMessageConroller.createReply);
+
     //========InvoiceFOrPurchaseMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/invoicepurchasemessages/:userId', InvoiceForPurchaseMessageController.getMessages);
     app.post('/api/invoicepurchasemessages/getmessagelist',InvoiceForPurchaseMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), InvoiceForPurchaseMessageController.createReply);
+
     //========WithdrawalBankATMMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/withdrawalbankatmmessages/:userId', WithdrawalBankATMMessageController.getMessages);
     app.post('/api/withdrawalbankatmmessages/getmessagelist',WithdrawalBankATMMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), WithdrawalBankATMMessageController.createReply);
+
+    //========WithdrawalBankATMMessage
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/withdrawalvariouspurchasemessages/:userId', WithdrawalVariousPurchaseMessageController.getMessages);
+    app.post('/api/withdrawalvariouspurchasemessages/getmessagelist',WithdrawalVariousPurchaseMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), WithdrawalVariousPurchaseMessageController.createReply);
+
+    //========WithdrawalApplyMessage
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/withdrawalapplymessages/:userId', WithdrawalApplyController.getMessages);
+    app.post('/api/withdrawalapplymessages/getmessagelist',WithdrawalApplyController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), WithdrawalApplyController.createReply);
+
+    //========PurchaseToRShop
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/purchasetorshopmessages/:userId', PurchaseToRShopMessageController.getMessages);
+    app.post('/api/purchasetorshopmessages/getmessagelist',PurchaseToRShopMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), PurchaseToRShopMessageController.createReply);
+
+    //========OnSitePurchase
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/onsitepurchasemessages/:userId', OnSitePurchaseMessageController.getMessages);
+    app.post('/api/onsitepurchasemessages/getmessagelist',OnSitePurchaseMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), OnSitePurchaseMessageController.createReply);
+
+    //========Disposal Permission
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.get('/api/disposalpermissionmessages/:userId', DisposalPermissionMessageController.getMessages);
+    app.post('/api/disposalpermissionmessages/getmessagelist',DisposalPermissionMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), DisposalPermissionMessageController.createReply);
 
 }
