@@ -2,6 +2,7 @@
 const UserController = require("./controllers/UserController")
 const CustomerController = require("./controllers/CustomerController")
 const SalesController = require("./controllers/SalesController")
+const MasterContoller = require("./controllers/MasterController")
 // const ImageController = require("./controllers/ImageController")
 const AuthenticationController = require("./controllers/AuthenticationController")
 // const AuthenticationControllerPolicy = require("./middleware/AuthenticationControllerPolicy");
@@ -72,15 +73,23 @@ module.exports = (app) => {
     app.post("/api/customer/customerItem",CustomerController.addCustomerItem)
 
     // //============sales
-    app.get("/api/sales/getSalesList", SalesController.getSalesList)
-    app.get("/api/sales/getSalesById/:id", SalesController.getSalesById)
-    app.post("/api/sales/filter", SalesController.getSalesFilter)
-    app.post("/api/sales/createSales", SalesController.createSales)
-    app.post("/api/sales/updateSales", SalesController.updateSales)
-    app.get("/api/sales/deleteSales", SalesController.deleteSales)
+    // app.get("/api/sales/getSalesList", SalesController.getSalesList)
+    // app.get("/api/sales/getSalesById/:id", SalesController.getSalesById)
+    // app.post("/api/sales/filter", SalesController.getSalesFilter)
+    // app.post("/api/sales/createSales", SalesController.createSales)
+    // app.post("/api/sales/updateSales", SalesController.updateSales)
+    // app.get("/api/sales/deleteSales", SalesController.deleteSales)
 
-    app.post("/api/vendor/getVendorList",SalesController.getVendorList)
-    app.post("/api/purchaseinvoice", SalesController.saveInvoice)
+    app.get("/api/sales/getSalesList", MasterContoller.getSalesList)
+    app.get("/api/sales/getSalesById/:id", MasterContoller.getSalesById)
+    app.post("/api/sales/filter", MasterContoller.getSalesFilter)
+    app.post("/api/sales/createSales", MasterContoller.createSales)
+    app.post("/api/sales/updateSales", MasterContoller.updateSales)
+    app.get("/api/sales/deleteSales", MasterContoller.deleteSales)
+
+    app.post("/api/vendor/getVendorList",MasterContoller.getVendorList)
+    app.get("/api/vendor/getVendorListAll",MasterContoller.getVendorListAll)
+    app.post("/api/purchaseinvoice", MasterContoller.saveInvoice)
     //=============setting
     app.post("/api/settings", SettingController.find)
     app.post("/api/settings/update", SettingController.update)

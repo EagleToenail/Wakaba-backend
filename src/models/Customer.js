@@ -13,10 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       katakana_name:       DataTypes.STRING,
       phone_number:        DataTypes.STRING,
       address:             DataTypes.TEXT,
-      trigger:             DataTypes.TEXT, 
+      trigger:             DataTypes.TEXT,
+      visit_type:          DataTypes.STRING(20),
+      brand_type:          DataTypes.STRING(20), 
       shop:                DataTypes.TEXT,
 
-      opportunity:          DataTypes.STRING,
+      // opportunity:          DataTypes.STRING,
       job:                  DataTypes.STRING,
       idCard_url:           DataTypes.STRING,
       cardType:             DataTypes.STRING,
@@ -50,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
     })
     Customer.associate = (models) => {
       Customer.hasMany(models.Sales, { foreignKey: 'customer_id'});
+      Customer.hasMany(models.Master, { foreignKey: 'customer_id'});
     };
     return Customer
   }

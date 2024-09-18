@@ -26,8 +26,8 @@ module.exports = {
 	async createCustomer(req, res) {
 		try {
             console.log("customer create",req.body)
-            const {opportunity, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger} = req.body;
-            const createFields = {opportunity, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger};
+            const {visit_type, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger,brand_type} = req.body;
+            const createFields = {visit_type, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger,brand_type};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 createFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -59,8 +59,8 @@ module.exports = {
     async updateCustomer(req, res) {
         try {
             // console.log("profile update",req.body)
-            const {opportunity, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,item1,item2,item3 } = req.body;
-            const updateFields = {opportunity, full_name, katakana_name, phone_number, job,email, birthday,age, gender, cardType, prefeature, city,address,item1,item2,item3};
+            const {visit_type, full_name, katakana_name, phone_number,job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city, address,item1,item2,item3 } = req.body;
+            const updateFields = {visit_type, full_name, katakana_name, phone_number, job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city,address,item1,item2,item3};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 updateFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -193,12 +193,11 @@ module.exports = {
     async addCustomerItem(req,res) {
         try { 
                 const customerId = req.body.customerId;
-                const item1 = req.body.item1;
-                const item2 = req.body.item2;
-                const item3 = req.body.item3;
-                console.log('received information',customerId,item1,item2,item3);
+                const {item1,item2,item3} = req.body;
+                const updatedfield = {item1,item2,item3};
+                // console.log('received information',customerId,updatedfield,req.body);
                 await Customer.update(
-                    {item1,item2,item3}, 
+                    updatedfield, 
                     {
                         where: {
                             id: customerId

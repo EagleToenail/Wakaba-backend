@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const MasterModel = sequelize.define('MasterModel', {
+    const Master = sequelize.define('Master', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -17,10 +17,9 @@ module.exports = (sequelize, DataTypes) => {
         assessment_date: DataTypes.STRING(15), // Changed from STRING to DATE
         remarks: DataTypes.TEXT,
         // Fields from Sales---------------------------------------
+        customer_id:    DataTypes.STRING(15),
         trading_date: DataTypes.STRING(15), // Changed from STRING to DATE
         purchase_staff: DataTypes.STRING(50),
-        visit_type: DataTypes.STRING(20),
-        brand_type: DataTypes.STRING(20),
         store_name: DataTypes.STRING(50),
         product_type_one: DataTypes.STRING(50),
         product_type_two: DataTypes.STRING(50),
@@ -154,6 +153,8 @@ module.exports = (sequelize, DataTypes) => {
         はなもり: DataTypes.STRING(50),
         バステック: DataTypes.STRING(50),
     });
-
-    return MasterModel;
+    Master.associate = (models) => {
+        Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 
+      };
+    return Master;
 };
