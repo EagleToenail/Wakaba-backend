@@ -1,6 +1,7 @@
 const { Sales } = require('../models')
 const { Master } = require('../models')
 const { Customer } = require('../models')
+const {CustomerPastVisitHistory} = require('../models')
 const { Vendor } = require('../models')
 const { Op } = require('sequelize');
 const fs = require('fs');
@@ -137,7 +138,7 @@ module.exports = {
 		try {
             const {dataUrl,payload} = req.body;
             const purchaseData = payload;
-            // console.log("dataurl,purchaseData",dataUrl,purchaseData)
+            console.log("dataurl,purchaseData",purchaseData)
 
             if (!dataUrl) {
                 return res.status(400).json({ error: 'No data URL provided' });
@@ -158,20 +159,26 @@ module.exports = {
                 return res.status(500).json({ error: 'Failed to save signature' });
                 }
             });
-
+            console.log('aa===========')
             try {
                 for (let index = 0; index < purchaseData.length; index++) {
-                    // const {customer_id, visit_type, brand_type, trading_date, purchase_staff, store_name, product_type_one, product_type_two, metal_type, price_per_gram, purchase_price,product,quantity,} = purchaseData[index];
-                    // const salesData = {customer_id, visit_type,brand_type, trading_date, purchase_staff, store_name, product_type_one, product_type_two, metal_type, price_per_gram, purchase_price, product,quantity}
-                    const salesData = purchaseData[index];
-                    salesData.signature = filename;
-                    if(salesData.product_type_one != '貴金属') {
-                        delete salesData.metal_type;
-                        delete salesData.price_per_gram;
-                    }
-                    delete salesData.id;
-                    console.log("salesData",salesData)
-                    const sales = await Sales.create(salesData);
+                    const masterData = purchaseData[index];
+                    masterData.signature = filename;
+                    delete masterData.id;
+                    console.log('bb===============')
+                    console.log("salesData",masterData)
+                    const sales = await Master.create(masterData);
+                    //save customer past visit history
+                    const customerPastVisitHistory = {
+                        visit_date: masterData.trading_date,
+                        customerId: masterData.customer_id,
+                        applicable: masterData.reason_application,
+                        category:masterData.product_type_one,
+                        product_name:masterData.product_name,
+                        total_purchase_price:masterData.purchase_price,
+                    };
+
+                    const customerpastvistoryhistory = await CustomerPastVisitHistory.create(customerPastVisitHistory);
                 }
                 res.send({"success":true})
             } catch (err) {
@@ -197,6 +204,7 @@ module.exports = {
                 error: "An error occured when trying to get sales list."
             })
         }
-    }
+    },
+//-------------------------------------------------vendorassessmentsheet-----------------------------------------
 
 }

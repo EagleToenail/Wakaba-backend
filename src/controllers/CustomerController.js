@@ -175,7 +175,7 @@ module.exports = {
         try { 
             //  console.log('123id',req.params.customerId)
             const customerId = req.params.customerId;
-            const customerpastvisithistory = await CustomerPastVisitHistory.findOne({
+            const customerpastvisithistory = await CustomerPastVisitHistory.findAll({
                 where: { customerId: customerId }
             });
             // console.log(customerpastvisithistory)

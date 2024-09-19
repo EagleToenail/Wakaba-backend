@@ -24,8 +24,8 @@ app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 require("./routes")(app)
 
 // store socket on global object
-// global.io = new SocketServer(server, {cors: config.cors });
-// 	require('./socket');
+global.io = new SocketServer(server, {cors: config.cors });
+	require('./socket');
 
 
   sequelize.sync({ force: false })

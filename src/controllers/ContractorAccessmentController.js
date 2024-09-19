@@ -1,4 +1,5 @@
 const { PreciousMetals, Clock,Bag,Wallet,Accessories,Camera,Antique,WesternLiquor,MusicalInstrument,OldCoin,Kimono,SmartPhoneAndTablet} = require('../models');
+const {Master} = require('../models');
 // const User = require('../models/User');
 const response = require('../helpers/response');
 // const { Op } = require('sequelize');
@@ -6,7 +7,12 @@ const response = require('../helpers/response');
 module.exports = {
 async getData (req, res) {
     try {
-        const preciousMetals = await PreciousMetals.findAll({});
+        const preciousMetals = await Master.findAll({
+            where :{
+                product_type_one:'貴金属'
+            }
+        });
+        // const preciousMetals = await PreciousMetals.findAll({});
         const clocks = await Clock.findAll({});
         const bags = await Bag.findAll({});
         const wallets = await Wallet.findAll({});
@@ -49,7 +55,6 @@ async getData (req, res) {
 async addPreciousMetalData (req, res) {
     try {
         const preciousMetalData = req.body;
-
         const newpreciousMetalData = await PreciousMetals.create(preciousMetalData)
         res.send(newpreciousMetalData);
     } catch (err) {
