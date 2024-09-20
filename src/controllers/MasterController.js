@@ -205,6 +205,185 @@ module.exports = {
             })
         }
     },
-//-------------------------------------------------vendorassessmentsheet-----------------------------------------
+//-------------------------------------------------purchase request from for wholesalers-----------------------------------------
+
+    async getSalesByIdForShipping(req,res) {
+        try {
+            const salesId = req.body.id;
+            const sales = await Master.findByPk(salesId)
+                // console.log(JSON.stringify(salesWithCustomer, null, 2));
+            // console.log('saleList',salesWithCustomer);
+            res.send(sales);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+    async savePurchaseRequestFromwholeSaler(req,res) {
+        try {
+            const {payload} = req.body;
+           for (let index = 0; index < payload.length; index++) {
+                const element = payload[index];
+                const id = element.id;
+                delete element.id;
+                await Master.update(element, {
+                    where: {
+                        id: id
+                    }
+                })
+           }
+            res.send({'success':true});
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+
+    async getWholeList(req, res) {
+        const { shipping_date,shipping_address,product_status} = req.body.params;
+        console.log("asd",req.body)
+        try {
+            const whereClause = [];
+
+            if (shipping_address!='') {
+                whereClause.push ({
+                    shipping_address: { [Op.like]: `%${shipping_address}%` } 
+               });
+            }
+            if (shipping_date!='') {
+                whereClause.push ({
+                    shipping_date: { [Op.like]: `%${shipping_date}%` } 
+               });
+            }
+            if (product_status!='') {
+                whereClause.push ({
+                    product_status: { [Op.like]: `%${product_status}%` } 
+               });
+            }
+
+            if(whereClause.length!=0){
+                const salesList = await Master.findAll({
+                    where: {
+                        [Op.and]: whereClause
+                    }
+                });
+
+                // console.log(customers)
+                res.send(salesList);
+            }else{
+                const salesList = await Master.findAll();
+                    // console.log(JSON.stringify(salesWithCustomer, null, 2));
+                console.log('saleList',salesList);
+                res.send(salesList);
+            }
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+//---------------------------------------------yahooAcution-----------------------------------
+    async getYahooAction(req,res) {
+        try {
+            const yahooacution = await Master.findAll({
+                where: {
+                    ヤフオク: {
+                        [Op.ne]: null,    // Not NULL
+                        [Op.ne]: '',      // Not empty string
+                    }
+                }
+            });
+            // console.log('vendorList',vendorList);
+            res.send(yahooacution);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+//----------------------------------sales table--------------------search----------
+    async getSalesListBySearch(req, res) {
+        const { trading_date, purchase_staff, shipping_address ,visit_type ,product_type_one ,product_type_two ,shipping_date, deposite_date} = req.body.params;
+        console.log("asd",req.body)
+        try {
+            const whereClause = [];
+
+            if (trading_date!='') {
+                whereClause.push ({
+                     trading_date: { [Op.like]: `%${trading_date}%` } 
+                });
+            }
+            if (purchase_staff!='') {
+                whereClause.push ({
+                    purchase_staff: { [Op.like]: `%${purchase_staff}%` } 
+               });
+            }
+            if (shipping_address!='') {
+                whereClause.push ({
+                    shipping_address: { [Op.like]: `%${shipping_address}%` } 
+               });
+            }
+            if (product_type_one!='') {
+                whereClause.push ({
+                    product_type_one: { [Op.like]: `%${product_type_one}%` } 
+               });
+            }
+            if (product_type_two!='') {
+                whereClause.push ({
+                    product_type_two: { [Op.like]: `%${product_type_two}%` } 
+               });
+            }
+            if (shipping_date!='') {
+                whereClause.push ({
+                    shipping_date: { [Op.like]: `%${shipping_date}%` } 
+               });
+            }
+            if (deposite_date!='') {
+                whereClause.push ({
+                    deposite_date: { [Op.like]: `%${deposite_date}%` } 
+               });
+            }
+            if (visit_type!='') {
+                whereClause.push ({
+                    visit_type: { [Op.like]: `%${visit_type}%` } 
+               });
+            }
+
+            if(whereClause.length!=0){
+                const salesList = await Master.findAll({
+                    include: [
+                        {
+                            model: Customer,
+                            attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                        }
+                    ],
+                    where: {
+                        [Op.and]: whereClause
+                    }
+                });
+
+                // console.log(customers)
+                res.send(salesList);
+            }else{
+                const salesList = await Master.findAll({
+                    include: [
+                        {
+                            model: Customer,
+                            attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                        }
+                    ]
+                });
+                    // console.log(JSON.stringify(salesWithCustomer, null, 2));
+                console.log('saleList',salesList);
+                res.send(salesList);
+            }
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
 
 }

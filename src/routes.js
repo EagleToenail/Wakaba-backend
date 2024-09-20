@@ -90,6 +90,14 @@ module.exports = (app) => {
     app.post("/api/vendor/getVendorList",MasterContoller.getVendorList)
     app.get("/api/vendor/getVendorListAll",MasterContoller.getVendorListAll)
     app.post("/api/purchaseinvoice", MasterContoller.saveInvoice)
+    //==============shipping=======
+    app.post("/api/sales/getSalesById", MasterContoller.getSalesByIdForShipping)
+    app.post("/api/sales/purchaserequestfromwholesaler", MasterContoller.savePurchaseRequestFromwholeSaler)
+    app.post("/api/sales/wholelist", MasterContoller.getWholeList)
+    //===============YahooAcution=======
+    app.get("/api/sales/getYahooAcution" ,MasterContoller.getYahooAction)
+    //===============salesList==========
+    app.post("/api/sales/searchsaleslist" ,MasterContoller.getSalesListBySearch)
     //=============setting
     app.post("/api/settings", SettingController.find)
     app.post("/api/settings/update", SettingController.update)
@@ -106,6 +114,7 @@ module.exports = (app) => {
     //=============chat      
     app.get('/api/chats/:roomId',  ChatController.findByRoomId);
     app.delete('/api/chats/:roomId',  ChatController.deleteByRoomId);
+
     //==============ProductType
     app.get('/api/ProductType1s',  ProductTypeController.getProductType1List);
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);

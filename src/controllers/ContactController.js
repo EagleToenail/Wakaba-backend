@@ -70,11 +70,12 @@ async insert (req, res) {
 async find (req, res) {
     try { 
         const {userId} = req.body;
-        const setting = await Setting.findOne({
-            where: { userId: userId },
-          });
+        // const setting = await Setting.findOne({
+        //     where: { userId: userId },
+        //   });
             const contacts = await Contact.findAll({
-              where: { userId: userId },
+              where: 
+              { userId: userId },
               include: {
                 model: Profile,
                 as: 'profile',
@@ -83,7 +84,7 @@ async find (req, res) {
               logging: console.log, // This will log all SQL queries to the console
 
             });
-
+            console.log(contacts,"contact  information ")
         response({
           res,
           payload: contacts,

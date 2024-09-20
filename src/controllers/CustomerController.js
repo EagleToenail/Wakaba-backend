@@ -136,7 +136,7 @@ module.exports = {
             if(whereClause.length!=0){
                 const customers = await Customer.findAll({
                     where: {
-                        [Op.or]: whereClause
+                        [Op.and]: whereClause
                     }
                 });
                 // console.log(customers)

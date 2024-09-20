@@ -1,3 +1,4 @@
+
 module.exports = (sequelize, DataTypes) => {
     const Master = sequelize.define('Master', {
         id: {
@@ -11,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         shipping_date: DataTypes.STRING(15), // Changed from STRING to DATE
         number: DataTypes.STRING(20),
         product_name: DataTypes.STRING(50),
-        model_number: DataTypes.STRING(10),
         purchase_price: DataTypes.DECIMAL(15, 2),
         quantity: DataTypes.INTEGER,
         assessment_date: DataTypes.STRING(15), // Changed from STRING to DATE
@@ -27,7 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         product_type_four: DataTypes.STRING(50),
         metal_type: DataTypes.STRING(20),
         price_per_gram: DataTypes.DECIMAL(15, 2),
-        purchase_price: DataTypes.DECIMAL(15, 2),//result price
         sales_amount: DataTypes.DECIMAL(15, 2),
         shipping_cost: DataTypes.DECIMAL(15, 2),
         gross_profit: DataTypes.DECIMAL(15, 2),
@@ -47,10 +46,29 @@ module.exports = (sequelize, DataTypes) => {
         supervisor_direction: DataTypes.STRING(50),
         purchase_result: DataTypes.STRING(20),           
 
-        product_status:   DataTypes.STRING(20),
+        product_status: {
+            type: DataTypes.ENUM,
+            values: ['申請中', '発送中','約定済','約定済＋返送依頼','返送依頼','入金待ち','入金済'],
+            defaultValue: '申請中',
+        },
+
         fixed_checkout: DataTypes.STRING(20),//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese
-        depositeDate: DataTypes.STRING(15),
+        deposite_date: DataTypes.STRING(15),
         product_detail: DataTypes.TEXT,
+        //----------------shipping related data
+        shipper: DataTypes.STRING(30),
+        shipper_manager: DataTypes.STRING(30),
+        final_assessment_amount: DataTypes.STRING(20),
+        expected_deposite_date: DataTypes.STRING(15),
+        //---------------yahoo auction related data
+        successful_bider: DataTypes.STRING(50),
+        auction_purchase_price: DataTypes.DECIMAL(20, 2),
+        auction_bider_name: DataTypes.STRING(20),
+        auction_bider_katakana_name: DataTypes.STRING(30),
+        auction_bider_tel: DataTypes.STRING(20),
+        auction_bider_address: DataTypes.STRING(50),
+        auction_bider_evaluation: DataTypes.STRING(30),
+
         // Fields from PreciousMetals--------------------------------------
         gold_type: DataTypes.STRING(20),
         gross_weight: DataTypes.FLOAT,
@@ -85,8 +103,6 @@ module.exports = (sequelize, DataTypes) => {
             // yahoo_auction: DataTypes.STRING,
         // Fields from Bag----------------------------------------
         manufacturer: DataTypes.STRING(50),
-        model_number: DataTypes.STRING(20),
-        rank: DataTypes.STRING(20),
         bb_skype_date: DataTypes.STRING(15), 
         // Fields from Wallet-----------------------------------
         bb_skype_day: DataTypes.STRING(15),
@@ -95,10 +111,7 @@ module.exports = (sequelize, DataTypes) => {
         wakaba_number: DataTypes.STRING(15),
         product_details: DataTypes.STRING(15),
         // Fields from Camera-------------------------------
-        product_name: DataTypes.STRING(50),
-        purchase_price: DataTypes.DECIMAL(10, 2),
         rank: DataTypes.STRING(20),
-        assessment_date: DataTypes.STRING(15), 
             // orchestra: DataTypes.STRING,
             // yahoo_auctions_wholesale: DataTypes.STRING,
         // Fields from Antique----------------------------------
@@ -117,7 +130,6 @@ module.exports = (sequelize, DataTypes) => {
             //gold_liquor: DataTypes.STRING,
             //linksus: DataTypes.STRING,
         // Fields from MusicalInstrument--------------------------
-        remarks: DataTypes.TEXT,
             //yahoo_auctions_wholesale: DataTypes.DECIMAL(15, 2),
         // Fields from Kimono------------------------------------
             //hanamori: DataTypes.STRING,
