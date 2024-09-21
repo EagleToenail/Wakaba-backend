@@ -266,7 +266,10 @@ module.exports = {
             if(whereClause.length!=0){
                 const salesList = await Master.findAll({
                     where: {
-                        [Op.and]: whereClause
+                        [Op.and]: [
+                            ...whereClause,
+                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                        ]                
                     }
                 });
 

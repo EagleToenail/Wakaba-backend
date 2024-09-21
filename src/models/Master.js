@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
         // Common fields-----------------------------
+        shipping_ids: DataTypes.STRING(20),
         shipping_address: DataTypes.STRING,
         shipping_date: DataTypes.STRING(15), // Changed from STRING to DATE
         number: DataTypes.STRING(20),
