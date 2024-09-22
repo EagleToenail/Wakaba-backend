@@ -18,9 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       type:              DataTypes.STRING,
       unique:             true
     },
-    password:            DataTypes.STRING,
-    // role_flag:           DataTypes.STRING(20),
-
+    password:            DataTypes.STRING(30),
+    full_name:           DataTypes.STRING(30),
+    Store_name:         DataTypes.STRING(30),
+    role_flag:           DataTypes.STRING(20),
   })
 
   // User.associate = (models) => {

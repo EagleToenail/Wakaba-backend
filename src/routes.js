@@ -12,6 +12,8 @@ const ContactController = require("./controllers/ContactController")
 const ChatController = require("./controllers/ChatController")
 const ProductTypeController = require("./controllers/ProductTypeController")
 const ContractorAccessmentController = require("./controllers/ContractorAccessmentController")
+const MonthlyIncomeController = require('./controllers/MonthlyIncomeController')
+const CashRegisterController = require('./controllers/CashRegisterController')
 
 const TodoMessageConroller = require("./controllers/TodoMessageController")
 const InvoiceForPurchaseMessageController = require("./controllers/InvoiceForPurchaseMessageController")
@@ -55,7 +57,7 @@ module.exports = (app) => {
     //==============login or logout timecard
     app.post("/api/logintime", AuthenticationController.loginTime)
     app.post("/api/logouttime", AuthenticationController.logoutTime)
-
+    app.get("/api/workingtime" , AuthenticationController.workingTime)
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
     app.post("/api/customer/createCustomer",  CustomerController.upload.fields([
@@ -98,6 +100,16 @@ module.exports = (app) => {
     app.get("/api/sales/getYahooAcution" ,MasterContoller.getYahooAction)
     //===============salesList==========
     app.post("/api/sales/searchsaleslist" ,MasterContoller.getSalesListBySearch)
+    //================monthly Income===============
+    app.get("/api/monthlyincome" ,MonthlyIncomeController.getMonthlyIncomeList)
+    app.post("/api/monthlyincome" ,MonthlyIncomeController.postMonthlyIncomeList)
+    app.post("/api/monthlyincomeperiod" ,MonthlyIncomeController.postPeriodMonthlyIncomeList)
+    app.post("/api/monthlyincome/update" ,MonthlyIncomeController.updateMonthlyIncome)
+    //================cash Register==========
+    app.get("/api/cashregister" ,CashRegisterController.getCashRegisteList)
+    app.post("/api/cashregister" ,CashRegisterController.postCashRegisteList)
+    app.post("/api/cashregisterperiod" ,CashRegisterController.postPeriodCashRegisteList)
+  
     //=============setting
     app.post("/api/settings", SettingController.find)
     app.post("/api/settings/update", SettingController.update)

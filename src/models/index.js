@@ -41,6 +41,8 @@ db.SmartPhoneAndTablet      = require("./SmartPhoneAndTablet")(sequelize, Sequel
 
 db.Vendor                   = require("./Vendor")(sequelize, Sequelize.DataTypes);
 db.Master                   = require("./Master")(sequelize, Sequelize.DataTypes);
+db.SafeMoney                   = require("./SafeMoney")(sequelize, Sequelize.DataTypes);
+db.CashRegister                   = require("./CashRegister")(sequelize, Sequelize.DataTypes);
 
 db.TodoMessage              = require("./TodoMessage")(sequelize, Sequelize.DataTypes);
 db.InvoiceForPurchaseMessage              = require("./InvoiceForPurchaseMessage")(sequelize, Sequelize.DataTypes);

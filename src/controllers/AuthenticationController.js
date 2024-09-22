@@ -1,10 +1,10 @@
-const { User } = require('../models')
-const { Profile } = require('../models')
-const { Setting } = require('../models')
-const { WorkingTime } = require('../models')
+const { User } = require('../models');
+const { Profile } = require('../models');
+const { Setting } = require('../models');
+const { WorkingTime } = require('../models');
 
 const { Op } = require('sequelize');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
 
@@ -115,7 +115,7 @@ module.exports = {
       });
     }
   },
-
+//-------------------------------------login time card---------------------------------------------
   async loginTime(req, res) {
     try {
       const { action, userId } = req.body;
@@ -169,6 +169,7 @@ module.exports = {
       });
     }
   },
+//---------------------------------------logout time card-------------------------------
   async logoutTime(req, res) {
     try {
         const { action, userId } = req.body;
@@ -199,6 +200,76 @@ module.exports = {
           payload: {},
         });
 
+    } catch (error0) {
+      response({
+        res,
+        statusCode: error0.statusCode || 500,
+        success: false,
+        message: error0.message,
+      });
+    }
+  },
+  //show workingtime
+  async workingTime(req, res) {
+    try {
+      const startDate = new Date();
+      startDate.setDate(1); // First day of the current month
+      startDate.setHours(0, 0, 0, 0); // Reset to start of the day
+  
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + 1); // First day of next month
+      endDate.setDate(1);
+      endDate.setHours(0, 0, 0, 0); // Reset to start of the day
+  
+      // Fetching data for the current month
+      const workingTimes = await WorkingTime.findAll({
+        where: {
+          loginTime: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+      });
+  
+      // Structuring the data
+      const userWorkingTimes = workingTimes.reduce((acc, entry) => {
+        const userId = entry.userId;
+        const day = new Date(entry.loginTime).getDate(); // Get day of the month
+  
+        if (!acc[userId]) {
+          acc[userId] = { userId, days: {} };
+        }
+  
+        // Initialize day object if it doesn't exist
+        if (!acc[userId].days[day]) {
+          acc[userId].days[day] = {
+            loginTime: null,
+            logoutTime: null,
+            workingTime: 0, // Initialize working time
+          };
+        }
+  
+        // Store login and logout times
+        acc[userId].days[day].loginTime = entry.loginTime;
+        acc[userId].days[day].logoutTime = entry.logoutTime;
+  
+        // Calculate working time if both times exist
+        if (entry.loginTime && entry.logoutTime) {
+          const loginDate = new Date(entry.loginTime);
+          const logoutDate = new Date(entry.logoutTime);
+          const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
+          acc[userId].days[day].workingTime += duration; // Aggregate working time
+        }
+  
+        return acc;
+      }, {});
+  
+      // Prepare the response in the desired format
+      const response = Object.values(userWorkingTimes).map(user => ({
+        userId: user.userId,
+        days: user.days,
+      }));
+      console.log('response',response)
+      res.json(response);
     } catch (error0) {
       response({
         res,
