@@ -23,6 +23,8 @@ const WithdrawalApplyController = require("./controllers/WithdrawalApplyControll
 const PurchaseToRShopMessageController = require("./controllers/PurchaseToRShopMessageController")
 const OnSitePurchaseMessageController = require("./controllers/OnSitePurchaseMessageController")
 const DisposalPermissionMessageController = require("./controllers/DisposalPermissionMessageController")
+const InquiryController = require("./controllers/InquiryController")
+const SchedulerController = require("./controllers/SchedulerController")
 
 module.exports = (app) => {
   // =========authentication
@@ -52,6 +54,16 @@ module.exports = (app) => {
     // app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
     // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
     app.get("/api/user/getUserList",  UserController.getUserList)
+    app.get("/api/admin/user/getUserList",  UserController.getUserProfileList)
+    app.post("/api/admin/users/search",  UserController.userSearch)
+    app.post("/api/admin/profile/getindividualprofile",  UserController.getIndividualProfileById)
+    app.post("/api/admin/user/updateuserprofile",  UserController.upload.fields([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'idcard_image', maxCount: 1 },
+      { name: 'resume', maxCount: 1 },
+      { name: 'job_description', maxCount: 1 },
+      { name: 'pledge_image', maxCount: 1 },
+    ]),UserController.updateUserProfile)
     // app.post("/api/user/updateUser", UserController.updateUser)
 
     //==============login or logout timecard
@@ -85,6 +97,7 @@ module.exports = (app) => {
     app.get("/api/sales/getSalesList", MasterContoller.getSalesList)
     app.get("/api/sales/getSalesById/:id", MasterContoller.getSalesById)
     app.post("/api/sales/filter", MasterContoller.getSalesFilter)
+    app.post("/api/sales/vendorfilter", MasterContoller.getSalesVendorFilter)
     app.post("/api/sales/createSales", MasterContoller.createSales)
     app.post("/api/sales/updateSales", MasterContoller.updateSales)
     app.get("/api/sales/deleteSales", MasterContoller.deleteSales)
@@ -130,6 +143,7 @@ module.exports = (app) => {
     //==============ProductType
     app.get('/api/ProductType1s',  ProductTypeController.getProductType1List);
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
+    app.post('/api/ProductType2sfilter',  ProductTypeController.getProductType2FilterList);
     app.get('/api/ProductType3s',  ProductTypeController.getProductType3List);
     app.get('/api/ProductType4s',  ProductTypeController.getProductType4List);
     //=========contractaccessmentsheet
@@ -197,5 +211,12 @@ module.exports = (app) => {
     app.post('/api/disposalpermissionmessages/getmessagelist',DisposalPermissionMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), DisposalPermissionMessageController.createReply);
-
+  //============Scheduler
+    app.post('/api/scheduler/create',SchedulerController.create)
+    app.post('/api/scheduler/update',SchedulerController.update)
+    app.post('/api/scheduler/read',SchedulerController.read)
+  //============Inquiry
+  app.post('/api/inquiry/create',InquiryController.create)
+  app.post('/api/inquiry/update',InquiryController.update)
+  app.post('/api/inquiry/read',InquiryController.read)
 }

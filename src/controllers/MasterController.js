@@ -3,7 +3,7 @@ const { Master } = require('../models')
 const { Customer } = require('../models')
 const {CustomerPastVisitHistory} = require('../models')
 const { Vendor } = require('../models')
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
 
@@ -54,6 +54,29 @@ module.exports = {
                 ],
                 where:  {
                     [Op.or]:{product_type_one: { [Op.like]: `%${value}%` } }
+                }
+            });
+            // console.log('saleList',salesWithCustomer);
+            res.send(salesWithCustomer);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+    async getSalesVendorFilter(req, res) {
+        const value = req.body.value;
+        // console.log('zxczxczcx',value)
+        try {
+            const salesWithCustomer = await Master.findAll({
+                include: [
+                {
+                    model: Customer,
+                    attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                }
+                ],
+                where:  {
+                    [Op.or]:{shipping_address: { [Op.like]: `%${value}%` } }
                 }
             });
             // console.log('saleList',salesWithCustomer);

@@ -6,7 +6,9 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        category:       DataTypes.STRING, 
+        category:             DataTypes.STRING(50), 
+        parentId:         DataTypes.STRING(30), 
+        remarks:       DataTypes.STRING(50), 
 
     },
     {

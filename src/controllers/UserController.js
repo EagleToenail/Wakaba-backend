@@ -4,6 +4,7 @@ const response = require('../helpers/response');
 const jwt = require('jsonwebtoken')
 const decrypt = require('../helpers/decrypt');
 
+const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
@@ -90,6 +91,7 @@ module.exports = {
         try {
             
             const {userId} = req.body
+            // console.log('userId--------',userId)
             const profile = await Profile.findOne({
                 where: {
                     user_id: userId
@@ -110,8 +112,9 @@ module.exports = {
     },
     async createUserProfile(req, res) {
         try {
-            const {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;
-            const updateFields = {store_name, store_type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor};
+            console.log('adfasdfasdf',req.body)
+            const {store_name, type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;
+            const updateFields = {store_name, type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor};
             if (req.files['avatar']) {
             const avatar = req.files['avatar'][0];
             updateFields.avatar = avatar.filename; // Adjust field name based on your model
@@ -132,11 +135,8 @@ module.exports = {
             const pledge_image = req.files['pledge_image'][0];
             updateFields.pledge_image = pledge_image.filename; // Adjust field name based on your model
             }
-            const profile = await Profile.update(updateFields, {
-                where: {
-                    id: req.body.id
-                }
-            })
+            // console.log('adfasdfasdf',updateFields)
+            const profile = await Profile.create(updateFields)
             res.send({"success":true});
         } catch (err) {
             res.status(500).send({
@@ -222,6 +222,130 @@ module.exports = {
         } catch (err) {
             res.status(500).send({
                 error: "An error occured when trying to get user list."
+            })
+        }
+    },
+    //-------------------admin part------------------------------------------
+    async getUserProfileList(req, res) {
+        try {
+            const userList = await Profile.findAll()
+            // console.log('userList------',userList)
+            res.send(userList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get user list."
+            })
+        }
+    },
+
+    async userSearch(req, res) {
+        const { store_name, type, full_name, phone, address, birthday } = req.body.params;
+        // console.log("Request Params:", req.body.params);
+    
+        try {
+            // Construct the search query
+            const whereClause = [];
+    
+            if (store_name) {
+                whereClause.push({
+                    store_name: { [Op.like]: `%${store_name}%` }
+                });
+            }
+            if (type) {
+                whereClause.push({
+                    type: { [Op.like]: `%${type}%` }
+                });
+            }
+            if (full_name) {
+                whereClause.push({
+                    fullname: { [Op.like]: `%${full_name}%` }
+                });
+            }
+            if (phone) {
+                whereClause.push({
+                    phone: { [Op.like]: `%${phone}%` }
+                });
+            }
+            if (address) {
+                whereClause.push({
+                    address: { [Op.like]: `%${address}%` }
+                });
+            }
+            if (birthday) {
+                whereClause.push({
+                    birthday: { [Op.like]: `%${birthday}%` }
+                });
+            }
+    
+            // console.log('Where Clause:', whereClause);
+    
+            // Construct the query
+            const userList = await Profile.findAll({
+                where: whereClause.length ? { [Op.and]: whereClause } : undefined, // Use `undefined` if no filters
+            });
+    
+            res.send(userList);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            res.status(500).send({ error: 'Internal Server Error' });
+        }
+    },
+    async getIndividualProfileById(req, res) {
+        try {
+            
+            const {userId} = req.body
+            console.log('userId--------',userId)
+            const profile = await Profile.findOne({
+                where: {
+                    id: userId
+                }
+            })
+
+            if (!profile) {
+                return res.status(403).send({
+                    error: "Email not registered."
+                })
+            }
+            res.send(profile)
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occured when trying to get an user."
+            })
+        }
+    },
+    async updateUserProfile(req, res) {
+        try {
+            const {store_name, type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;
+            const updateFields = {store_name, type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor};
+            if (req.files['avatar']) {
+            const avatar = req.files['avatar'][0];
+            updateFields.avatar = avatar.filename; // Adjust field name based on your model
+            }
+            if (req.files['idcard_image']) {
+            const idcard = req.files['idcard_image'][0];
+            updateFields.idcard_image = idcard.filename; // Adjust field name based on your model
+            }
+            if (req.files['resume']) {
+            const resume = req.files['resume'][0];
+            updateFields.resume = resume.filename; // Adjust field name based on your model
+            }
+            if (req.files['job_description']) {
+            const job_description = req.files['job_description'][0];
+            updateFields.job_description = job_description.filename; // Adjust field name based on your model
+            }
+            if (req.files['pledge_image']) {
+            const pledge_image = req.files['pledge_image'][0];
+            updateFields.pledge_image = pledge_image.filename; // Adjust field name based on your model
+            }
+            const profile = await Profile.update(updateFields, {
+                where: {
+                    id: req.body.id
+                }
+            })
+            res.send({"success":true});
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to update customer information"
             })
         }
     },

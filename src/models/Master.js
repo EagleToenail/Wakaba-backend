@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         // Common fields-----------------------------
         shipping_ids: DataTypes.STRING(20),
-        shipping_address: DataTypes.STRING,
+        shipping_address: {
+            type: DataTypes.STRING, // Assuming it's a string; change to INTEGER if appropriate
+            defaultValue:'オークション'
+          },
         shipping_date: DataTypes.STRING(15), // Changed from STRING to DATE
         number: DataTypes.STRING(20),
         product_name: DataTypes.STRING(50),
@@ -49,8 +52,8 @@ module.exports = (sequelize, DataTypes) => {
 
         product_status: {
             type: DataTypes.ENUM,
-            values: ['申請中', '発送中','約定済','約定済＋返送依頼','返送依頼','入金待ち','入金済'],
-            defaultValue: '申請中',
+            values: ['査定中', 'お預かり','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],
+            defaultValue: '査定中',
         },
 
         fixed_checkout: DataTypes.STRING(20),//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese

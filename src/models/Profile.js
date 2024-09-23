@@ -52,9 +52,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       //=========
       store_name:          DataTypes.STRING,
-      store_type:          DataTypes.STRING,
+      type:                 DataTypes.STRING,
       katakana_name:       DataTypes.STRING,
-      birtday:             DataTypes.STRING, 
+      birthday:             DataTypes.STRING, 
       age:                 DataTypes.STRING, 
       gender:              DataTypes.STRING, 
       idcard_image:        DataTypes.STRING,
@@ -67,6 +67,9 @@ module.exports = (sequelize, DataTypes) => {
       guarantor:           DataTypes.STRING,
       pledge_image:        DataTypes.STRING,
       staff_terms:         DataTypes.TEXT,
+      enter_day:        DataTypes.STRING(30),
+      retire_day:        DataTypes.STRING(30),
+      post:              DataTypes.STRING(30),
       online: {
         type: DataTypes.BOOLEAN,
         required:       true,
@@ -83,7 +86,7 @@ module.exports = (sequelize, DataTypes) => {
       Profile.hasMany(models.Chat, { foreignKey: 'userId',as: 'chats' });
       Profile.hasMany(models.Inbox, { foreignKey: 'ownersId', as: 'inboxes' });
       Profile.hasMany(models.Contact, { foreignKey: 'friendId', as: 'contacts' });
-
+      Profile.belongsTo(models.User, { foreignKey: 'user_id'}); 
     };
 
     return Profile

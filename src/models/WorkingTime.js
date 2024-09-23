@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey:       true,
         autoIncrement:    true
       },
+      date:            DataTypes.STRING(50),
       userId: {
         type:              DataTypes.STRING,
         unique:             true
@@ -15,5 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       workingTime:          DataTypes.STRING,
   
     })
+    WorkingTime.associate = (models) => {
+      WorkingTime.belongsTo(models.User, { foreignKey: 'userId'}); 
+    };
     return WorkingTime
   }

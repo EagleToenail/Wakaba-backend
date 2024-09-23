@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        category:       DataTypes.STRING,              
+        category:       DataTypes.STRING(50),              
+        remarks:       DataTypes.STRING(50),              
     },
     {
         timestamps: false,    // Optional: disable timestamps if you don't have createdAt/updatedAt fields

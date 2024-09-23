@@ -14,6 +14,23 @@ const encrypt = require('../helpers/encrypt');
 const decrypt = require('../helpers/decrypt');
 const moment = require('moment'); // For date manipulation
 
+  // Helper function to create an array of days for the current month
+  const createDaysArray = (month, year) => {
+    const daysArray = [];
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Get the number of days in the month
+  
+    for (let day = 1; day <= daysInMonth; day++) {
+      daysArray.push({
+        day,
+        loginTime: null,
+        logoutTime: null,
+        workingTime: 0,
+      });
+    }
+  
+    return daysArray;
+  };
+
 module.exports = {
 
   async register(req, res) {
@@ -221,54 +238,57 @@ module.exports = {
       endDate.setDate(1);
       endDate.setHours(0, 0, 0, 0); // Reset to start of the day
   
-      // Fetching data for the current month
+      // Fetching data for the current month with user details
       const workingTimes = await WorkingTime.findAll({
         where: {
           loginTime: {
             [Op.between]: [startDate, endDate],
           },
         },
+        include: [
+          {
+            model: User,
+            attributes: ['store_name', 'full_name'], // Include store_name and full_name from User
+          },
+        ],
       });
+  
+      // Get the days array for the current month
+      const daysArray = createDaysArray(startDate.getMonth(), startDate.getFullYear());
   
       // Structuring the data
       const userWorkingTimes = workingTimes.reduce((acc, entry) => {
         const userId = entry.userId;
-        const day = new Date(entry.loginTime).getDate(); // Get day of the month
+        const storeName = entry.User.store_name; // Get store name from included user data
+        const fullName = entry.User.full_name; // Get full name from included user data
   
         if (!acc[userId]) {
-          acc[userId] = { userId, days: {} };
+          acc[userId] = { userId, store_name: storeName, full_name: fullName, days: daysArray.map(day => ({ ...day })) }; // Create a copy of days array
         }
   
-        // Initialize day object if it doesn't exist
-        if (!acc[userId].days[day]) {
-          acc[userId].days[day] = {
-            loginTime: null,
-            logoutTime: null,
-            workingTime: 0, // Initialize working time
-          };
-        }
+        // Determine the day of the month from the login time
+        const dayOfMonth = new Date(entry.loginTime).getDate();
   
-        // Store login and logout times
-        acc[userId].days[day].loginTime = entry.loginTime;
-        acc[userId].days[day].logoutTime = entry.logoutTime;
+        // Update the specific day's working time details
+        const dayEntry = acc[userId].days.find(day => day.day === dayOfMonth);
+        dayEntry.loginTime = entry.loginTime;
+        dayEntry.logoutTime = entry.logoutTime;
   
         // Calculate working time if both times exist
         if (entry.loginTime && entry.logoutTime) {
           const loginDate = new Date(entry.loginTime);
           const logoutDate = new Date(entry.logoutTime);
           const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
-          acc[userId].days[day].workingTime += duration; // Aggregate working time
+          dayEntry.workingTime = duration; // Store calculated working time
         }
   
         return acc;
       }, {});
   
       // Prepare the response in the desired format
-      const response = Object.values(userWorkingTimes).map(user => ({
-        userId: user.userId,
-        days: user.days,
-      }));
-      console.log('response',response)
+      const response = Object.values(userWorkingTimes);
+
+    console.log('response',response)
       res.json(response);
     } catch (error0) {
       response({
@@ -284,3 +304,40 @@ module.exports = {
 
 }
 
+
+// [
+//   {
+//     "userId": "user1",
+//     "store_name": "aaa",
+//     "full_name": "John Doe",
+//     "days": [
+//       {
+//         "day": 1,
+//         "loginTime": "2024-09-01T09:00:00Z",
+//         "logoutTime": "2024-09-01T17:00:00Z",
+//         "workingTime": 480
+//       },
+//       {
+//         "day": 2,
+//         "loginTime": "2024-09-02T09:15:00Z",
+//         "logoutTime": "2024-09-02T17:30:00Z",
+//         "workingTime": 525
+//       },
+//       // ... more days
+//     ]
+//   },
+//   {
+//     "userId": "user2",
+//     "store_name": "aaa",
+//     "full_name": "Jane Smith",
+//     "days": [
+//       {
+//         "day": 1,
+//         "loginTime": "2024-09-01T10:00:00Z",
+//         "logoutTime": "2024-09-01T18:00:00Z",
+//         "workingTime": 480
+//       },
+//       // ... more days
+//     ]
+//   }
+// ]

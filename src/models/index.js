@@ -24,6 +24,8 @@ db.Product1           = require("./Product1")(sequelize, Sequelize.DataTypes);
 db.Product2           = require("./Product2")(sequelize, Sequelize.DataTypes);
 db.Product3           = require("./Product3")(sequelize, Sequelize.DataTypes);
 db.Product4           = require("./Product4")(sequelize, Sequelize.DataTypes);
+db.Inquery            = require("./Inquiry")(sequelize, Sequelize.DataTypes);
+db.Scheduler            = require("./Scheduler")(sequelize, Sequelize.DataTypes);
 
 //vendor accessment sheet
 db.PreciousMetals           = require("./PreciousMetals")(sequelize, Sequelize.DataTypes);

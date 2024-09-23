@@ -12,18 +12,73 @@ async getData (req, res) {
                 product_type_one:'貴金属'
             }
         });
+        const clocks = await Master.findAll({
+            where :{
+                product_type_one:'時計'
+            }
+        });
+        const bags = await Master.findAll({
+            where :{
+                product_type_one:'バッグ'
+            }
+        });
+        const wallets = await Master.findAll({
+            where :{
+                product_type_one:'財布'
+            }
+        });
+        const accessories = await Master.findAll({
+            where :{
+                product_type_one:'アクセサリ'
+            }
+        });
+        const cameras = await Master.findAll({
+            where :{
+                product_type_one:'カメラ'
+            }
+        });
+        const antiques = await Master.findAll({
+            where :{
+                product_type_one:'骨董品'
+            }
+        });
+        const westernLiquors = await Master.findAll({
+            where :{
+                product_type_one:'洋酒'
+            }
+        });
+        const musicalInstruments = await Master.findAll({
+            where :{
+                product_type_one:'楽器'
+            }
+        });
+        const oldCoins = await Master.findAll({
+            where :{
+                product_type_one:'古銭等'
+            }
+        });
+        const kimonos = await Master.findAll({
+            where :{
+                product_type_one:'着物'
+            }
+        });
+        const smartPhoneAndTablets = await Master.findAll({
+            where :{
+                product_type_one:'スマホ夕ブレット'
+            }
+        });
         // const preciousMetals = await PreciousMetals.findAll({});
-        const clocks = await Clock.findAll({});
-        const bags = await Bag.findAll({});
-        const wallets = await Wallet.findAll({});
-        const accessories = await Accessories.findAll({});
-        const cameras = await Camera.findAll({});
-        const antiques = await Antique.findAll({});
-        const westernLiquors = await WesternLiquor.findAll({});
-        const musicalInstruments = await MusicalInstrument.findAll({});
-        const oldCoins = await OldCoin.findAll({});
-        const kimonos = await Kimono.findAll({});
-        const smartPhoneAndTablets = await SmartPhoneAndTablet.findAll({});
+        // const clocks = await Clock.findAll({});
+        // const bags = await Bag.findAll({});
+        // const wallets = await Wallet.findAll({});
+        // const accessories = await Accessories.findAll({});
+        // const cameras = await Camera.findAll({});
+        // const antiques = await Antique.findAll({});
+        // const westernLiquors = await WesternLiquor.findAll({});
+        // const musicalInstruments = await MusicalInstrument.findAll({});
+        // const oldCoins = await OldCoin.findAll({});
+        // const kimonos = await Kimono.findAll({});
+        // const smartPhoneAndTablets = await SmartPhoneAndTablet.findAll({});
         // console.log(preciousMetals,'asd')
 
         response({
