@@ -217,6 +217,5 @@ module.exports = (app) => {
     app.post('/api/scheduler/read',SchedulerController.read)
   //============Inquiry
   app.post('/api/inquiry/create',InquiryController.create)
-  app.post('/api/inquiry/update',InquiryController.update)
   app.post('/api/inquiry/read',InquiryController.read)
 }

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         shipping_date: DataTypes.STRING(15), // Changed from STRING to DATE
         number: DataTypes.STRING(20),
         product_name: DataTypes.STRING(50),
+        comment:      DataTypes.TEXT,
         purchase_price: DataTypes.DECIMAL(15, 2),
         quantity: DataTypes.INTEGER,
         assessment_date: DataTypes.STRING(15), // Changed from STRING to DATE
@@ -113,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
             // girasol: DataTypes.STRING,
         // Fields from Accessories-----------------------------------
         wakaba_number: DataTypes.STRING(15),
-        product_details: DataTypes.STRING(15),
+            // product_details: DataTypes.STRING(15),
         // Fields from Camera-------------------------------
         rank: DataTypes.STRING(20),
             // orchestra: DataTypes.STRING,
