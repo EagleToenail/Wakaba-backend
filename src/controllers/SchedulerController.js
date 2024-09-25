@@ -5,7 +5,9 @@ module.exports = {
         try {
             const { item, userId } = req.body;
             const { start_date, end_date, text, id } = item;
-          
+            
+            
+            
             const profile = await Profile.findOne({
               where: { user_id: userId }
             });

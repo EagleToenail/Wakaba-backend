@@ -7,10 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement:    true
       },
       date:            DataTypes.STRING(50),
-      userId: {
-        type:              DataTypes.STRING,
-        unique:             true
-      },
+      userId:          DataTypes.STRING,
       loginTime:            DataTypes.STRING,
       logoutTime:           DataTypes.STRING,
       workingTime:          DataTypes.STRING,

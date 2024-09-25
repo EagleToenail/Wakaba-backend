@@ -155,7 +155,6 @@ module.exports = {
   },
 //-------------------------------------login time card---------------------------------------------
   async loginTime(req, res) {
-    try {
       const { action, userId } = req.body;
       if (action == 'clock-in') {
         const now = new Date();
@@ -171,7 +170,7 @@ module.exports = {
         const currentDateTime = `${currentDay} ${currentTime}`;
         // Get the start of the current day
         const todayStart = moment().startOf('day').format('YYYY-MM-DD');
-        // console.log('================',todayStart)
+        // console.log('================',userId,currentDay)
 
         let workingTimeRecord = await WorkingTime.findOne({
           where: {
@@ -179,7 +178,9 @@ module.exports = {
             date: currentDay,
           }
         });
-        if (workingTimeRecord == null) {
+        // console.log('workingTimeRecord',workingTimeRecord)
+        if (workingTimeRecord === null) {
+          // console.log()
           workingTimeRecord = await WorkingTime.create({
             date:currentDay,
             userId:userId,
@@ -203,14 +204,6 @@ module.exports = {
         message: 'Successfully record logintime',
         payload: {},
       });
-    } catch (error0) {
-      response({
-        res,
-        statusCode: error0.statusCode || 500,
-        success: false,
-        message: error0.message,
-      });
-    }
   },
 //---------------------------------------logout time card-------------------------------
   async logoutTime(req, res) {
@@ -254,7 +247,7 @@ module.exports = {
               date:currentDay,
             } }
           );
-          // console.log('aaaaaaaaa',WorkingTime);
+      console.log('aaaaaaaaa',timeDifference);
         // // Send response;
         response({
           res,

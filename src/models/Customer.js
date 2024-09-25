@@ -35,6 +35,8 @@ module.exports = (sequelize, DataTypes) => {
       item1:                DataTypes.STRING,
       item2:                DataTypes.STRING,
       item3:                DataTypes.STRING,
+      item4:                DataTypes.STRING(50),
+      item5:                DataTypes.STRING(50),
       line_friend:           {
         type: DataTypes.ENUM,
         values: ['yes', 'no'], // Enum values

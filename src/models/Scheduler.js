@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
         store_name: DataTypes.STRING,
         text: DataTypes.STRING,
         start_date: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
+          type: DataTypes.STRING,
+            
           },
         end_date: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
+          type: DataTypes.STRING,
+           
           },
         createdAt: {
           type: DataTypes.DATE,
