@@ -13,7 +13,7 @@ module.exports = {
             const {trading_date,purchase_staff,customer_id,visit_type,brand_type,store_name,product_type_one,product_type_two,product,quantity,metal_type,price_per_gram,purchase_price, sales_amount, shipping_cost,wholesale_buyer,wholesale_date,payment_date} = req.body;
             const salesContents = {trading_date,purchase_staff,customer_id,visit_type,brand_type,store_name,product_type_one,product_type_two,product,quantity,metal_type,price_per_gram,purchase_price, sales_amount, shipping_cost,wholesale_buyer,wholesale_date,payment_date};
             salesContents.gross_profit = sales_amount - (purchase_price - shipping_cost);
-            console.log("hello",salesContents);
+            // console.log("hello",salesContents);
 			const sales = await Sales.create(salesContents);
 			res.send({"success":true})
 		} catch (err) {
@@ -33,7 +33,7 @@ module.exports = {
                 ]
             });
                 // console.log(JSON.stringify(salesWithCustomer, null, 2));
-            console.log('saleList',salesList);
+            // console.log('saleList',salesList);
             res.send(salesList);
         } catch (err) {
             res.status(500).send({
@@ -131,7 +131,7 @@ module.exports = {
     async getVendorList(req,res) {
         try {
             const type = req.body.type;
-            console.log('getVendorList',type)
+            // console.log('getVendorList',type)
             const vendorList = await Vendor.findAll({
                 attributes: ['vendor_name'],
                 where: {[type]:'y'}
@@ -161,7 +161,7 @@ module.exports = {
 		try {
             const {dataUrl,payload} = req.body;
             const purchaseData = payload;
-            console.log("dataurl,purchaseData",purchaseData)
+            // console.log("dataurl,purchaseData",purchaseData)
 
             if (!dataUrl) {
                 return res.status(400).json({ error: 'No data URL provided' });
@@ -182,14 +182,14 @@ module.exports = {
                 return res.status(500).json({ error: 'Failed to save signature' });
                 }
             });
-            console.log('aa===========')
+            // console.log('aa===========')
             try {
                 for (let index = 0; index < purchaseData.length; index++) {
                     const masterData = purchaseData[index];
                     masterData.signature = filename;
                     delete masterData.id;
-                    console.log('bb===============')
-                    console.log("salesData",masterData)
+                    // console.log('bb===============')
+                    // console.log("salesData",masterData)
                     const sales = await Master.create(masterData);
                     //save customer past visit history
                     const customerPastVisitHistory = {
@@ -266,7 +266,7 @@ module.exports = {
 
     async getWholeList(req, res) {
         const { shipping_date,shipping_address,product_status} = req.body.params;
-        console.log("asd",req.body)
+        // console.log("asd",req.body)
         try {
             const whereClause = [];
 
@@ -301,7 +301,7 @@ module.exports = {
             }else{
                 const salesList = await Master.findAll();
                     // console.log(JSON.stringify(salesWithCustomer, null, 2));
-                console.log('saleList',salesList);
+                // console.log('saleList',salesList);
                 res.send(salesList);
             }
         } catch (err) {
@@ -332,7 +332,7 @@ module.exports = {
 //----------------------------------sales table--------------------search----------
     async getSalesListBySearch(req, res) {
         const { trading_date, purchase_staff, shipping_address ,visit_type ,product_type_one ,product_type_two ,shipping_date, deposite_date} = req.body.params;
-        console.log("asd",req.body)
+        // console.log("asd",req.body)
         try {
             const whereClause = [];
 
@@ -402,7 +402,7 @@ module.exports = {
                     ]
                 });
                     // console.log(JSON.stringify(salesWithCustomer, null, 2));
-                console.log('saleList',salesList);
+                // console.log('saleList',salesList);
                 res.send(salesList);
             }
         } catch (err) {

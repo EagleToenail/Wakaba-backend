@@ -226,9 +226,10 @@ module.exports = {
       });
     }
   },
-  //show workingtime
-  async workingTime(req, res) {
+  //show workingtime-----------------------workingtime-----------------------------------
+   async workingTime(req, res) {
     try {
+      const userID = req.body.id;
       const startDate = new Date();
       startDate.setDate(1); // First day of the current month
       startDate.setHours(0, 0, 0, 0); // Reset to start of the day
@@ -244,6 +245,7 @@ module.exports = {
           loginTime: {
             [Op.between]: [startDate, endDate],
           },
+          userId:userID,
         },
         include: [
           {
@@ -251,45 +253,97 @@ module.exports = {
             attributes: ['store_name', 'full_name'], // Include store_name and full_name from User
           },
         ],
-      });
+      }); 
+     
+      // const daysArray = createDaysArray(startDate.getMonth(), startDate.getFullYear());
+      // const userWorkingTimes = workingTimes.reduce((acc, entry) => {
+      //   const userId = entry.userId;
+      //   const storeName = entry.User.store_name; // Get store name from included user data
+      //   const fullName = entry.User.full_name; // Get full name from included user data
   
-      // Get the days array for the current month
-      const daysArray = createDaysArray(startDate.getMonth(), startDate.getFullYear());
+      //   if (!acc[userId]) {
+      //     acc[userId] = { userId, store_name: storeName, full_name: fullName, days: daysArray.map(day => ({ ...day })) }; // Create a copy of days array
+      //   }
   
-      // Structuring the data
-      const userWorkingTimes = workingTimes.reduce((acc, entry) => {
-        const userId = entry.userId;
-        const storeName = entry.User.store_name; // Get store name from included user data
-        const fullName = entry.User.full_name; // Get full name from included user data
+      //   // Determine the day of the month from the login time
+      //   const dayOfMonth = new Date(entry.loginTime).getDate();
   
-        if (!acc[userId]) {
-          acc[userId] = { userId, store_name: storeName, full_name: fullName, days: daysArray.map(day => ({ ...day })) }; // Create a copy of days array
-        }
+      //   // Update the specific day's working time details
+      //   const dayEntry = acc[userId].days.find(day => day.day === dayOfMonth);
+      //   dayEntry.loginTime = entry.loginTime;
+      //   dayEntry.logoutTime = entry.logoutTime;
   
-        // Determine the day of the month from the login time
-        const dayOfMonth = new Date(entry.loginTime).getDate();
+      //   // Calculate working time if both times exist
+      //   if (entry.loginTime && entry.logoutTime) {
+      //     const loginDate = new Date(entry.loginTime);
+      //     const logoutDate = new Date(entry.logoutTime);
+      //     const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
+      //     dayEntry.workingTime = duration; // Store calculated working time
+      //   }
   
-        // Update the specific day's working time details
-        const dayEntry = acc[userId].days.find(day => day.day === dayOfMonth);
-        dayEntry.loginTime = entry.loginTime;
-        dayEntry.logoutTime = entry.logoutTime;
-  
-        // Calculate working time if both times exist
-        if (entry.loginTime && entry.logoutTime) {
-          const loginDate = new Date(entry.loginTime);
-          const logoutDate = new Date(entry.logoutTime);
-          const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
-          dayEntry.workingTime = duration; // Store calculated working time
-        }
-  
-        return acc;
-      }, {});
-  
-      // Prepare the response in the desired format
-      const response = Object.values(userWorkingTimes);
+      //   console.log('acc',acc.length)
+      //   return acc;
+      // }, {});
+      const workingTimeInstance = workingTimes[0]; // Get the first entry
+      const values = workingTimeInstance.dataValues;
+      //console.log('aaa', values);
+      const entry = values; // Assuming workingTimes is an array with a single entry
+//------------------
+const userId = entry.userId;
+const storeName = entry.User.dataValues.store_name; // Get store name from included user data
+const fullName = entry.User.dataValues.full_name; // Get full name from included user data
 
-    console.log('response',response)
-      res.json(response);
+// Get the current month and year
+const currentDate = new Date();
+const currentYear = currentDate.getFullYear();
+const currentMonth = currentDate.getMonth(); // 0-based month
+
+// Get the number of days in the current month
+const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+const daysArray = [];
+
+// Populate the days array with all days of the current month
+for (let day = 1; day <= daysInMonth; day++) {
+  const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][new Date(formattedDate).getDay()]; // Get Japanese day of the week
+
+  // Check if there is a corresponding working time entry for this day
+  const dayEntry = {
+    day: formattedDate,
+    dayofweek: dayOfWeek,
+    loginTime: '-',
+    logoutTime: '-',
+    workingTime: '-'
+  };
+
+  // If the entry date matches the current entry's date, populate the data
+  if (entry.date === formattedDate) {
+    dayEntry.loginTime = entry.loginTime || '-';
+    dayEntry.logoutTime = entry.logoutTime || '-';
+    if (entry.logoutTime) {
+      const loginDate = new Date(entry.loginTime);
+      const logoutDate = new Date(entry.logoutTime);
+      const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
+      dayEntry.workingTime = duration; // Store calculated working time
+    }
+  }
+
+  // Add the day entry to the days array
+  daysArray.push(dayEntry);
+}
+
+// Construct the final user working time object
+const userWorkingTime = {
+  userId,
+  store_name: storeName,
+  full_name: fullName,
+  days: daysArray
+};
+
+// Example usage: log the result
+// console.log('userWorkingTime', userWorkingTime);
+res.json(userWorkingTime); // Return the final structured object
+      
     } catch (error0) {
       response({
         res,
@@ -298,7 +352,9 @@ module.exports = {
         message: error0.message,
       });
     }
+
   },
+  
 
 
 
@@ -341,3 +397,18 @@ module.exports = {
 //     ]
 //   }
 // ]
+  // {
+  //   "userId": "user2",
+  //   "store_name": "aaa",
+  //   "full_name": "Jane Smith",
+  //   "days": [
+  //     {
+  //       "day": 2024-09-01,
+  //       "dayofweek": 月,
+  //       "loginTime": "2024-09-01T10:00:00Z",
+  //       "logoutTime": "2024-09-01T18:00:00Z",
+  //       "workingTime": 480
+  //     },
+  //     // ... more days
+  //   ]
+  // }

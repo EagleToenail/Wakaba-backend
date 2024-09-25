@@ -17,7 +17,7 @@ module.exports = {
     // },
     //production
     cors: {
-        origin: ['http://3.14.245.186:3000', 'http://localhost:3000'],
+        origin: ['http://3.148.117.74:3000', 'http://localhost:3000'],
         methods: 'GET,POST'
     },
 }

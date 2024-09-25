@@ -11,6 +11,7 @@ const path = require('path');
 const cors = require("cors")
 const config = require("./config/config")
 const { sequelize } = require("./models")
+const preciousMetalsPriceController = require('./controllers/PreciousMetalsPriceController');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors(config.cors));
 app.use('/public', express.static('public'));
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+preciousMetalsPriceController.create();
 
 // // require('./passport')
 require("./routes")(app)
