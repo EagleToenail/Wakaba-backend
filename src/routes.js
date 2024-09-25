@@ -69,7 +69,7 @@ module.exports = (app) => {
     //==============login or logout timecard
     app.post("/api/logintime", AuthenticationController.loginTime)
     app.post("/api/logouttime", AuthenticationController.logoutTime)
-    app.post("/api/workingtime" , AuthenticationController.workingTime)
+    app.get("/api/workingtime" , AuthenticationController.workingTime)
     // //============customer
     app.get("/api/customer/getCustomerList", CustomerController.getCustomerList)
     app.post("/api/customer/createCustomer",  CustomerController.upload.fields([

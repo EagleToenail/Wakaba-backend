@@ -31,6 +31,27 @@ const moment = require('moment'); // For date manipulation
     return daysArray;
   };
 
+  const calculateTimeDifference = (startTime, endTime,workingTime) => {
+    const [hours1, minutes1, seconds1] = startTime.split(':').map(Number);
+    const [hours2, minutes2, seconds2] = endTime.split(':').map(Number);
+    const [hours3, minutes3, seconds3] = workingTime.split(':').map(Number);
+
+    // Convert both times to total seconds
+    const totalSeconds1 = hours1 * 3600 + minutes1 * 60 + seconds1;
+    const totalSeconds2 = hours2 * 3600 + minutes2 * 60 + seconds2;
+    const totalSeconds3 = hours3 * 3600 + minutes3 * 60 + seconds3;
+
+    // Calculate the difference in seconds
+    const differenceInSeconds = totalSeconds2 - totalSeconds1 + totalSeconds3;
+
+    // Calculate hours, minutes, and seconds
+    const hours = Math.floor(differenceInSeconds / 3600);
+    const minutes = Math.floor((differenceInSeconds % 3600) / 60);
+    const seconds = differenceInSeconds % 60;
+
+    return { hours, minutes, seconds };
+};
+
 module.exports = {
 
   async register(req, res) {
@@ -38,18 +59,18 @@ module.exports = {
       const { username, email, password } = req.body;
       const encryptedPassword = encrypt(password);
       // Create a new user record
-      console.log(username, email, password, 'User');
+      // console.log(username, email, password, 'User');
       const user = await User.create({
         username,
         email,
         password: encryptedPassword,
       });
-      console.log(username, email, password, 'User');
+      // console.log(username, email, password, 'User');
       const setting = await Setting.create({
         userId: user.id,
         // If you want to override defaults or set other fields, include them here
       });
-      console.log(setting, 'setting');
+      // console.log(setting, 'setting');
       const profile = await Profile.create({
         user_id: user.id, // Ensure userId is set
         username,
@@ -137,40 +158,45 @@ module.exports = {
     try {
       const { action, userId } = req.body;
       if (action == 'clock-in') {
+        const now = new Date();
+        // Format the date as YYYY-MM-DD
+        const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+        const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+
+        // Format the time as HH:mm:ss
+        const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
+        const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
+
+        // Combine date and time
+        const currentDateTime = `${currentDay} ${currentTime}`;
         // Get the start of the current day
         const todayStart = moment().startOf('day').format('YYYY-MM-DD');
-        console.log('================',todayStart)
+        // console.log('================',todayStart)
 
         let workingTimeRecord = await WorkingTime.findOne({
           where: {
-            userId:userId
+            userId:userId,
+            date: currentDay,
           }
         });
         if (workingTimeRecord == null) {
           workingTimeRecord = await WorkingTime.create({
-            loginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-            workingTime: '0', // Initialize workingtime to "0"
-            userId,
+            date:currentDay,
+            userId:userId,
+            loginTime: currentTime,
+            workingTime: '0:0:0', // Initialize workingtime to "0:0:0"
           });
         } else {
-          // If a record exists, check if it's a new day
-          const lastLoginDate = moment(workingTimeRecord.loginTime).startOf('day');
-          if (!lastLoginDate.isSame(todayStart, 'day')) {
+
             await WorkingTime.update(
-              { workingTime: '0' , loginTime: moment().format('YYYY-MM-DD HH:mm:ss')},
-              { where: { userId: userId } }
+              {loginTime:currentTime},
+              { where: {
+                 userId: userId,
+                 date:currentDay,
+                 } }
             );
-          }
         }
       }
-      // working time
-      let workingTimeRecord = await WorkingTime.findOne({
-        where: {
-          userId:userId
-        }
-      });
-      console.log(workingTimeRecord,'workingTimeRecord')
-      // // Send response;
       response({
         res,
         statusCode: 200,
@@ -190,23 +216,43 @@ module.exports = {
   async logoutTime(req, res) {
     try {
         const { action, userId } = req.body;
-          // Get the start of the current day
+              // Get current date and time
+              const now = new Date();
+              // Format the date as YYYY-MM-DD
+              const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+              const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+      
+              // Format the time as HH:mm:ss
+              const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
+              const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
+      
+              // Combine date and time
+              const currentDateTime = `${currentDay} ${currentTime}`;
+
           let workingTimeRecord = await WorkingTime.findOne({
             where: {
-              userId:userId
+              userId:userId,
+              date:currentDay
             }
           });
-          console.log(workingTimeRecord.loginTime,'logintime')
-          // Current time
-          const currentTime = moment();
-          const loginTime = moment(workingTimeRecord.loginTime, 'YYYY-MM-DD HH:mm:ss');
-          const timeDifference = currentTime.diff(loginTime);
-          console.log('datas',currentTime, loginTime,timeDifference)
-          // Calculate the new working time by adding the difference
-          const workingTime = parseFloat(workingTimeRecord.workingTime) + parseFloat(timeDifference);
+       
+        const time1 = workingTimeRecord.loginTime;
+        const time2 = currentTime;
+        const time3 = workingTimeRecord.workingTime;
+        if(time1 == null || time1 == '') {
+          time1 = currentTime;
+        }
+        // console.log('time1,time2',time1,time2);
+        
+        const { hours, minutes, seconds } = calculateTimeDifference(time1, time2 ,time3);
+        const timeDifference = `${hours}:${minutes}:${seconds}`
+
           await WorkingTime.update(
-            { workingTime: workingTime , logoutTime: moment().format('YYYY-MM-DD HH:mm:ss')},
-            { where: { userId: userId } }
+            { logoutTime:currentTime, workingTime:timeDifference},
+            { where: { 
+              userId: userId,
+              date:currentDay,
+            } }
           );
           // console.log('aaaaaaaaa',WorkingTime);
         // // Send response;
@@ -228,131 +274,135 @@ module.exports = {
   },
   //show workingtime-----------------------workingtime-----------------------------------
    async workingTime(req, res) {
-    try {
-      const userID = req.body.id;
-      const startDate = new Date();
-      startDate.setDate(1); // First day of the current month
-      startDate.setHours(0, 0, 0, 0); // Reset to start of the day
-  
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1); // First day of next month
-      endDate.setDate(1);
-      endDate.setHours(0, 0, 0, 0); // Reset to start of the day
-  
-      // Fetching data for the current month with user details
-      const workingTimes = await WorkingTime.findAll({
-        where: {
-          loginTime: {
-            [Op.between]: [startDate, endDate],
-          },
-          userId:userID,
-        },
-        include: [
-          {
-            model: User,
-            attributes: ['store_name', 'full_name'], // Include store_name and full_name from User
-          },
-        ],
-      }); 
-     
-      // const daysArray = createDaysArray(startDate.getMonth(), startDate.getFullYear());
-      // const userWorkingTimes = workingTimes.reduce((acc, entry) => {
-      //   const userId = entry.userId;
-      //   const storeName = entry.User.store_name; // Get store name from included user data
-      //   const fullName = entry.User.full_name; // Get full name from included user data
-  
-      //   if (!acc[userId]) {
-      //     acc[userId] = { userId, store_name: storeName, full_name: fullName, days: daysArray.map(day => ({ ...day })) }; // Create a copy of days array
-      //   }
-  
-      //   // Determine the day of the month from the login time
-      //   const dayOfMonth = new Date(entry.loginTime).getDate();
-  
-      //   // Update the specific day's working time details
-      //   const dayEntry = acc[userId].days.find(day => day.day === dayOfMonth);
-      //   dayEntry.loginTime = entry.loginTime;
-      //   dayEntry.logoutTime = entry.logoutTime;
-  
-      //   // Calculate working time if both times exist
-      //   if (entry.loginTime && entry.logoutTime) {
-      //     const loginDate = new Date(entry.loginTime);
-      //     const logoutDate = new Date(entry.logoutTime);
-      //     const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
-      //     dayEntry.workingTime = duration; // Store calculated working time
-      //   }
-  
-      //   console.log('acc',acc.length)
-      //   return acc;
-      // }, {});
-      const workingTimeInstance = workingTimes[0]; // Get the first entry
-      const values = workingTimeInstance.dataValues;
-      //console.log('aaa', values);
-      const entry = values; // Assuming workingTimes is an array with a single entry
-//------------------
-const userId = entry.userId;
-const storeName = entry.User.dataValues.store_name; // Get store name from included user data
-const fullName = entry.User.dataValues.full_name; // Get full name from included user data
+    // const currentMonth = new Date().getMonth() + 1;
+    // const currentYear = new Date().getFullYear();
+    // const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    
+    // const dateToDayMap = {
+    //     0: '日', // Sunday
+    //     1: '月', // Monday
+    //     2: '火', // Tuesday
+    //     3: '水', // Wednesday
+    //     4: '木', // Thursday
+    //     5: '金', // Friday
+    //     6: '土', // Saturday
+    // };
+    
+    // const dates = Array.from({ length: daysInMonth }, (_, i) => {
+    //     const date = new Date(currentYear, currentMonth - 1, i + 1);
+    //     const dayOfWeek = date.getDay(); // Get the day of the week (0-6)
+    //     return {
+    //         formatted: `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${(i + 1).toString().padStart(2, '0')}`,
+    //         dayOfWeek: dateToDayMap[dayOfWeek] // Map to Japanese short day name
+    //     };
+    // });
+    
+    // try {
+    //     const workingTimes = await WorkingTime.findAll({
+    //         include: [{
+    //             model: User,
+    //             attributes: ['full_name', 'store_name']
+    //         }],
+    //         where: {
+    //             date: {
+    //                 [Op.in]: dates.map(d => d.formatted)
+    //             }
+    //         },
+    //         order: [['date', 'ASC']],
+    //     });
+    
+    //     const users = [...new Set(workingTimes.map(entry => `${entry.User.full_name} - ${entry.User.store_name}`))];
+    
+    //     const results = dates.map(date => {
+    //         const dailyEntries = users.map(user => {
+    //             const entry = workingTimes.find(record => {
+    //                 const fullNameStore = `${record.User.full_name} - ${record.User.store_name}`;
+    //                 return record.date === date.formatted && fullNameStore === user;
+    //             });
+    //             return {
+    //                 user: user,
+    //                 loginTime: entry ? entry.loginTime : '00:00:00',
+    //                 logoutTime: entry ? entry.logoutTime : '00:00:00',
+    //                 workingTime: entry ? entry.workingTime : '00:00:00',
+    //             };
+    //         });
+    //         return { date: date.formatted, dayOfWeek: date.dayOfWeek, entries: dailyEntries };
+    //     });
+    
+    //     res.json(results);
+    // } catch (error) {
+    //     console.error('Error fetching working times:', error);
+    //     res.status(500).json({ error: 'データ取得中にエラーが発生しました。' });
+    // }
+    const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
+const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+const currentDate = new Date(); // Get the current date
+const todayFormatted = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
 
-// Get the current month and year
-const currentDate = new Date();
-const currentYear = currentDate.getFullYear();
-const currentMonth = currentDate.getMonth(); // 0-based month
-
-// Get the number of days in the current month
-const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-const daysArray = [];
-
-// Populate the days array with all days of the current month
-for (let day = 1; day <= daysInMonth; day++) {
-  const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][new Date(formattedDate).getDay()]; // Get Japanese day of the week
-
-  // Check if there is a corresponding working time entry for this day
-  const dayEntry = {
-    day: formattedDate,
-    dayofweek: dayOfWeek,
-    loginTime: '-',
-    logoutTime: '-',
-    workingTime: '-'
-  };
-
-  // If the entry date matches the current entry's date, populate the data
-  if (entry.date === formattedDate) {
-    dayEntry.loginTime = entry.loginTime || '-';
-    dayEntry.logoutTime = entry.logoutTime || '-';
-    if (entry.logoutTime) {
-      const loginDate = new Date(entry.loginTime);
-      const logoutDate = new Date(entry.logoutTime);
-      const duration = (logoutDate - loginDate) / 1000 / 60; // Duration in minutes
-      dayEntry.workingTime = duration; // Store calculated working time
-    }
-  }
-
-  // Add the day entry to the days array
-  daysArray.push(dayEntry);
-}
-
-// Construct the final user working time object
-const userWorkingTime = {
-  userId,
-  store_name: storeName,
-  full_name: fullName,
-  days: daysArray
+const dateToDayMap = {
+    0: '日', // Sunday
+    1: '月', // Monday
+    2: '火', // Tuesday
+    3: '水', // Wednesday
+    4: '木', // Thursday
+    5: '金', // Friday
+    6: '土', // Saturday
 };
 
-// Example usage: log the result
-// console.log('userWorkingTime', userWorkingTime);
-res.json(userWorkingTime); // Return the final structured object
-      
-    } catch (error0) {
-      response({
-        res,
-        statusCode: error0.statusCode || 500,
-        success: false,
-        message: error0.message,
-      });
-    }
+const dates = Array.from({ length: daysInMonth }, (_, i) => {
+    const date = new Date(currentYear, currentMonth - 1, i + 1);
+    const dayOfWeek = date.getDay(); // Get the day of the week (0-6)
+    return {
+        formatted: `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${(i + 1).toString().padStart(2, '0')}`,
+        dayOfWeek: dateToDayMap[dayOfWeek], // Map to Japanese short day name
+        isFuture: date > currentDate // Check if the date is in the future
+    };
+});
 
+try {
+    const workingTimes = await WorkingTime.findAll({
+        include: [{
+            model: User,
+            attributes: ['full_name', 'store_name']
+        }],
+        where: {
+            date: {
+                [Op.in]: dates.map(d => d.formatted)
+            }
+        },
+        order: [['date', 'ASC']],
+    });
+
+    const users = [...new Set(workingTimes.map(entry => 
+        `${entry.User.full_name} - ${entry.User.store_name}`
+    ))];
+
+    const results = dates.map(date => {
+        const dailyEntries = users.map(user => {
+            const entry = workingTimes.find(record => {
+                const fullNameStore = `${record.User.full_name} - ${record.User.store_name}`;
+                return record.date === date.formatted && fullNameStore === user;
+            });
+            
+            // Determine values based on whether the entry exists and if it's today
+            const isToday = date.formatted === todayFormatted;
+
+            return {
+                user: user,
+                loginTime: entry ? entry.loginTime : (isToday ? '00:00:00' : null),
+                logoutTime: entry ? entry.logoutTime : (isToday ? '00:00:00' : null),
+                workingTime: entry ? entry.workingTime : (isToday ? '00:00:00' : null),
+            };
+        });
+        return { date: date.formatted, dayOfWeek: date.dayOfWeek, entries: dailyEntries };
+    });
+
+    res.json(results);
+} catch (error) {
+    console.error('Error fetching working times:', error);
+    res.status(500).json({ error: 'データ取得中にエラーが発生しました。' });
+}
   },
   
 
@@ -360,55 +410,3 @@ res.json(userWorkingTime); // Return the final structured object
 
 }
 
-
-// [
-//   {
-//     "userId": "user1",
-//     "store_name": "aaa",
-//     "full_name": "John Doe",
-//     "days": [
-//       {
-//         "day": 1,
-//         "loginTime": "2024-09-01T09:00:00Z",
-//         "logoutTime": "2024-09-01T17:00:00Z",
-//         "workingTime": 480
-//       },
-//       {
-//         "day": 2,
-//         "loginTime": "2024-09-02T09:15:00Z",
-//         "logoutTime": "2024-09-02T17:30:00Z",
-//         "workingTime": 525
-//       },
-//       // ... more days
-//     ]
-//   },
-//   {
-//     "userId": "user2",
-//     "store_name": "aaa",
-//     "full_name": "Jane Smith",
-//     "days": [
-//       {
-//         "day": 1,
-//         "loginTime": "2024-09-01T10:00:00Z",
-//         "logoutTime": "2024-09-01T18:00:00Z",
-//         "workingTime": 480
-//       },
-//       // ... more days
-//     ]
-//   }
-// ]
-  // {
-  //   "userId": "user2",
-  //   "store_name": "aaa",
-  //   "full_name": "Jane Smith",
-  //   "days": [
-  //     {
-  //       "day": 2024-09-01,
-  //       "dayofweek": 月,
-  //       "loginTime": "2024-09-01T10:00:00Z",
-  //       "logoutTime": "2024-09-01T18:00:00Z",
-  //       "workingTime": 480
-  //     },
-  //     // ... more days
-  //   ]
-  // }
