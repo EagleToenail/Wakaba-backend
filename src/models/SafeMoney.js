@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       total_amount: DataTypes.DECIMAL(60,2),
       sales_balance: DataTypes.DECIMAL(60,2),
       sales_variance: DataTypes.DECIMAL(60,2),
+      store_name: DataTypes.STRING(50),
     })
     return SafeMoney
   }

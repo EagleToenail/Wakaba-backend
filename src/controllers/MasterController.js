@@ -3,6 +3,7 @@ const { Master } = require('../models')
 const { Customer } = require('../models')
 const {CustomerPastVisitHistory} = require('../models')
 const { Vendor } = require('../models')
+const { SafeMoney } = require('../models')
 const { Op, where } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
@@ -88,16 +89,55 @@ module.exports = {
         }
     },
     async updateSales(req, res) {
-        try {
             const {id,salesSlipData} = req.body;
+            console.log("salesData",salesSlipData,id)
             if(salesSlipData.product_type_one != '貴金属') {
                 delete salesSlipData.metal_type;
                 delete salesSlipData.price_per_gram;
             }
-            salesSlipData.gross_profit = salesSlipData.sales_amount - (salesSlipData.purchase_price - salesSlipData.shipping_cost);
+            if(salesSlipData.sales_amount !== null && salesSlipData.sales_amount !== '') {
+                salesSlipData.gross_profit = salesSlipData.sales_amount - (salesSlipData.purchase_price - salesSlipData.shipping_cost);
+            }
             delete salesSlipData.id;
-            // console.log("salesData",salesSlipData,id)
+            console.log("salesData",salesSlipData,id)
+            //----------save at Monthly income table 
+            const now = new Date();
+            // Format the date as YYYY-MM-DD
+            const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+            const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+    
+            // Format the time as HH:mm:ss
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
+            const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
+    
+            // Combine date and time
+            const currentDateTime = `${currentDay} ${currentTime}`;
 
+            let todaySales_amount = await SafeMoney.findOne({
+                where: {
+                  store_name:salesSlipData.store_name,
+                  date: currentDay,
+                }
+              });
+              // console.log('workingTimeRecord',workingTimeRecord)
+              if (todaySales_amount === null) {
+                // console.log()
+                await SafeMoney.create({
+                  date:currentDay,
+                  sales_balance:salesSlipData.sales_amount,
+                  store_name:salesSlipData.store_name
+                });
+              } else {
+                  const totalAmount = parseFloat(todaySales_amount.sales_balance) + parseFloat(salesSlipData.sales_amount);
+                  await SafeMoney.update(
+                    {sales_balance:totalAmount},
+                    { where: {
+                        store_name: salesSlipData.store_name,
+                       date:currentDay,
+                    }}
+                  );
+              }
+            //----------
             await Master.update(salesSlipData, {
                 where: {
                     id: id
@@ -105,11 +145,6 @@ module.exports = {
             })
 
             res.send({"success":true});
-        } catch (err) {
-            res.status(500).send({
-                error: "An error occured when trying to update customer information"
-            })
-        }
     },
     async deleteSales(req, res) {
 		try {
@@ -191,6 +226,41 @@ module.exports = {
                     // console.log('bb===============')
                     // console.log("salesData",masterData)
                     const sales = await Master.create(masterData);
+                    //----------save at Monthly income table 
+                    const now = new Date();
+                    // Format the date as YYYY-MM-DD
+                    const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+                    const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+            
+                    // Format the time as HH:mm:ss
+                    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
+                    const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
+            
+                    let todayPurchase_amount = await SafeMoney.findOne({
+                        where: {
+                        store_name:masterData.store_name,
+                        date: currentDay,
+                        }
+                    });
+                    // console.log('workingTimeRecord',workingTimeRecord)
+                    if (todayPurchase_amount === null) {
+                        // console.log()
+                        await SafeMoney.create({
+                        date:currentDay,
+                        total_purchase_price:masterData.purchase_price,
+                        store_name:masterData.store_name
+                        });
+                    } else {
+                        const totalPurchaseAmount = parseFloat(todayPurchase_amount.total_purchase_price) + parseFloat(masterData.purchase_price);
+                        await SafeMoney.update(
+                            {total_purchase_price:totalPurchaseAmount},
+                            { where: {
+                                store_name: masterData.store_name,
+                            date:currentDay,
+                            }}
+                        );
+                    }
+                    //----------
                     //save customer past visit history
                     const customerPastVisitHistory = {
                         visit_date: masterData.trading_date,
@@ -266,7 +336,7 @@ module.exports = {
 
     async getWholeList(req, res) {
         const { shipping_date,shipping_address,product_status} = req.body.params;
-        // console.log("asd",req.body)
+        console.log("asd",req.body)
         try {
             const whereClause = [];
 

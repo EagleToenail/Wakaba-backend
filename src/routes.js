@@ -85,7 +85,7 @@ module.exports = (app) => {
     app.get("/api/customer/getCustomerById/:customerId", CustomerController.getCustomerById)
     app.get("/api/customer/customerpastvisithistory/:customerId", CustomerController.getCustomerPastVisitHistory)
     app.post("/api/customer/customerItem",CustomerController.addCustomerItem)
-
+    app.post("/api/customer/updatecustomeritem",CustomerController.updateCustomerInvoice)
     // //============sales
     // app.get("/api/sales/getSalesList", SalesController.getSalesList)
     // app.get("/api/sales/getSalesById/:id", SalesController.getSalesById)
@@ -114,8 +114,8 @@ module.exports = (app) => {
     //===============salesList==========
     app.post("/api/sales/searchsaleslist" ,MasterContoller.getSalesListBySearch)
     //================monthly Income===============
-    app.get("/api/monthlyincome" ,MonthlyIncomeController.getMonthlyIncomeList)
-    app.post("/api/monthlyincome" ,MonthlyIncomeController.postMonthlyIncomeList)
+    app.post("/api/monthlyincome" ,MonthlyIncomeController.getMonthlyIncomeList)
+    app.post("/api/monthlyincomefordate" ,MonthlyIncomeController.postMonthlyIncomeList)
     app.post("/api/monthlyincomeperiod" ,MonthlyIncomeController.postPeriodMonthlyIncomeList)
     app.post("/api/monthlyincome/update" ,MonthlyIncomeController.updateMonthlyIncome)
     //================cash Register==========

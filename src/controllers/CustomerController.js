@@ -83,6 +83,40 @@ module.exports = {
             })
         }
     },
+    async updateCustomerInvoice(req, res) {
+        try {
+            console.log("Customer update request received", req.body);
+    
+            const { id, item1, item2, item3, item4, item5 } = req.body;
+            if (!id) {
+                return res.status(400).send({ error: "Customer ID is required" });
+            }
+    
+            const updateFields = { item1, item2, item3, item4, item5 };
+            Object.keys(updateFields).forEach(key => {
+                if (updateFields[key] === undefined) {
+                    delete updateFields[key];
+                }
+            });
+            updateFields.item1 = (updateFields.item1).toString();
+            console.log("Update fields:", updateFields);
+    
+            const [updated] = await Customer.update(updateFields, {
+                where: { id }
+            });
+    
+            if (updated) {
+                res.send({ success: true });
+            } else {
+                res.status(404).send({ error: "Customer not found" });
+            }
+        } catch (err) {
+            console.error("Error updating customer:", err); // Log the error for debugging
+            res.status(500).send({
+                error: "An error occurred when trying to update customer information"
+            });
+        }
+    },
     async deleteCustomer(req, res) {
 		try {
             const customerId = req.body.customerId;
