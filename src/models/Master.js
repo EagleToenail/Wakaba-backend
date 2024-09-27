@@ -10,20 +10,22 @@ module.exports = (sequelize, DataTypes) => {
         // Common fields-----------------------------
         shipping_ids: DataTypes.STRING(20),
         shipping_address: {
-            type: DataTypes.STRING, // Assuming it's a string; change to INTEGER if appropriate
-            defaultValue:'オークション'
+            type: DataTypes.STRING, // 
+            defaultValue:''
           },
-        shipping_date: DataTypes.STRING(15), // Changed from STRING to DATE
+        trading_date: DataTypes.STRING(15), // the date that the shop bought the items from customer
+        assessment_date: DataTypes.STRING(15), // the date that the shop received assesment (estimate) from wholesaler vendor
+        shipping_date: DataTypes.STRING(15), // the date to send items to wholesaler
+        expected_deposit_date: DataTypes.STRING(15),
+        deposit_date: DataTypes.STRING(15), //the date that the payment from wholesaler confirmed
         number: DataTypes.STRING(20),
         product_name: DataTypes.STRING(50),
         comment:      DataTypes.TEXT,
         purchase_price: DataTypes.DECIMAL(15, 2),
         quantity: DataTypes.INTEGER,
-        assessment_date: DataTypes.STRING(15), // Changed from STRING to DATE
         remarks: DataTypes.TEXT,
         // Fields from Sales---------------------------------------
         customer_id:    DataTypes.STRING(15),
-        trading_date: DataTypes.STRING(15), // Changed from STRING to DATE
         purchase_staff: DataTypes.STRING(50),
         store_name: DataTypes.STRING(50),
         product_type_one: DataTypes.STRING(50),
@@ -36,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
         shipping_cost: DataTypes.DECIMAL(15, 2),
         gross_profit: DataTypes.DECIMAL(15, 2),
         wholesale_buyer: DataTypes.STRING(50),
-        wholesale_date: DataTypes.STRING(15), // Changed from STRING to DATE
-        payment_date: DataTypes.STRING(15), // Changed from STRING to DATE
+        wholesale_date: DataTypes.STRING(15), // Changed from STRING to DATE//no need
+        payment_date: DataTypes.STRING(15), //  the date that the payment from wholesaler confirmed // no need
         signature: DataTypes.STRING(50),
 
         hearing: DataTypes.STRING(5),
@@ -58,13 +60,11 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         fixed_checkout: DataTypes.STRING(20),//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese
-        deposite_date: DataTypes.STRING(15),
         product_detail: DataTypes.TEXT,
         //----------------shipping related data
         shipper: DataTypes.STRING(30),
         shipper_manager: DataTypes.STRING(30),
         final_assessment_amount: DataTypes.STRING(20),
-        expected_deposite_date: DataTypes.STRING(15),
         //---------------yahoo auction related data
         successful_bider: DataTypes.STRING(50),
         auction_purchase_price: DataTypes.DECIMAL(20, 2),
