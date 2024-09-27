@@ -78,18 +78,7 @@ module.exports = (sequelize, DataTypes) => {
         gold_type: DataTypes.STRING(20),
         gross_weight: DataTypes.FLOAT,
         bullion_weight: DataTypes.FLOAT,
-            // book_assessment_net_japan: DataTypes.STRING,//vendor name
-            // line_color_stone_bank: DataTypes.STRING,
-            // real_assessment_color_stone_bank: DataTypes.STRING,
-            // line_four_nine: DataTypes.STRING,
-            // book_assessment_four_nine: DataTypes.STRING,
-            // kaimana_assessment_date: DataTypes.STRING, 
-            // line_kaimana: DataTypes.STRING,
-            // original_assessment_kaimana: DataTypes.STRING,
-            // online_ssessment_date_quote: DataTypes.STRING,
         // Fields from OldCoin----------------------------------------
-            // wataru_shoji: DataTypes.STRING,
-            // omiya: DataTypes.STRING,
         // Fields from Clock-----------------------------------------
         model_number_one: DataTypes.STRING(20),
         model_number_two: DataTypes.STRING(20),
@@ -98,33 +87,16 @@ module.exports = (sequelize, DataTypes) => {
         tester: DataTypes.STRING(20),
         box_guarantee: DataTypes.STRING(20),
         skype_date: DataTypes.STRING(15),
-
-            // bb: DataTypes.STRING,//vendor name
-            // ga: DataTypes.STRING,
-            // belmond: DataTypes.STRING,
-            // homecom: DataTypes.STRING,
-            // kaimana: DataTypes.STRING,
-            // four_nine: DataTypes.STRING,
-            // yahoo_auction: DataTypes.STRING,
         // Fields from Bag----------------------------------------
         manufacturer: DataTypes.STRING(50),
         bb_skype_date: DataTypes.STRING(15), 
         // Fields from Wallet-----------------------------------
         bb_skype_day: DataTypes.STRING(15),
-            // girasol: DataTypes.STRING,
         // Fields from Accessories-----------------------------------
         wakaba_number: DataTypes.STRING(15),
-            // product_details: DataTypes.STRING(15),
         // Fields from Camera-------------------------------
         rank: DataTypes.STRING(20),
-            // orchestra: DataTypes.STRING,
-            // yahoo_auctions_wholesale: DataTypes.STRING,
         // Fields from Antique----------------------------------
-            // nap_cat: DataTypes.STRING,
-            // art: DataTypes.STRING,
-            // yoshioka_art: DataTypes.STRING,
-            // sword_sato: DataTypes.STRING,
-            // yahoo_auctions: DataTypes.STRING,
         // Fields from WesternLiquor--------------------------
         kinds: DataTypes.STRING(15),
         brand: DataTypes.STRING(15),
@@ -132,15 +104,9 @@ module.exports = (sequelize, DataTypes) => {
         frequency: DataTypes.STRING(15),
         yahoo_auctions_highest_price: DataTypes.DECIMAL(15, 2),
         auction_id: DataTypes.STRING(10),
-            //gold_liquor: DataTypes.STRING,
-            //linksus: DataTypes.STRING,
         // Fields from MusicalInstrument--------------------------
-            //yahoo_auctions_wholesale: DataTypes.DECIMAL(15, 2),
         // Fields from Kimono------------------------------------
-            //hanamori: DataTypes.STRING,
         // Fields from SmartPhoneAndTablet-------------------------------
-            //yahoo_auctions_highest_price: DataTypes.DECIMAL(15, 2),
-            //pathtech: DataTypes.STRING
         // Vendors-----------------------------------------------
         本査定ネットジャパン: DataTypes.STRING(50),
         LINE色石バンク: DataTypes.STRING(50),
