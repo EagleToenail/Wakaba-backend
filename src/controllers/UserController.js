@@ -228,7 +228,20 @@ module.exports = {
     //-------------------admin part------------------------------------------
     async getUserProfileList(req, res) {
         try {
-            const userList = await Profile.findAll()
+            // const userList = await Profile.findAll();
+            const userList = await Profile.findAll({
+                include: [
+                  {
+                    model: User,
+                    attributes: ['role_flag'],
+                    where: {
+                      id: {
+                        [Op.col]: 'Profile.user_id',
+                      },
+                    },
+                  },
+                ],
+              });
             // console.log('userList------',userList)
             res.send(userList);
         } catch (err) {

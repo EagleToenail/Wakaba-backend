@@ -4,9 +4,12 @@ const { Customer } = require('../models')
 const {CustomerPastVisitHistory} = require('../models')
 const { Vendor } = require('../models')
 const { SafeMoney } = require('../models')
-const { Op, where } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
+
+const { Op, fn, col } = require('sequelize');
+const moment = require('moment-timezone'); // Ensure you have moment-timezone installed
+
 
 module.exports = {
 	async createSales(req, res) {
@@ -481,5 +484,107 @@ module.exports = {
             })
         }
     },
+//------------------------------------OwnerTop-----------------------------
+    async getOwnerTopData(req,res){
+        // console.log('datas--------')
+        const storeName = req.body.storeName;
+            // Set timezone to Japan
+        const startOfMonth = moment.tz('Asia/Tokyo').startOf('month').toDate();
+        const endOfMonth = moment.tz('Asia/Tokyo').endOf('month').toDate();
+        // console.log('datas--------',storeName,startOfMonth,endOfMonth)
+        try {
+            const metrics = await Master.findAll({
+                attributes: [
+                    [fn('COUNT', fn('DISTINCT', col('customer_id'))), 'customer_count'],
+                    [fn('COUNT', fn('DISTINCT', col('product_name'))), 'product_count'],
+                    [fn('SUM', col('gross_profit')), 'total_gross_profit'],
+                    [fn('SUM', col('purchase_price')), 'total_purchase_price'],
+                    [fn('SUM', col('sales_amount')), 'total_sales_amount'],
+                    [col('store_name'), 'store_name'], // Include store name
+                ],
+                where: {                  
+                    shipping_date: {
+                        [Op.between]: [startOfMonth, endOfMonth],
+                    },
+                },
+                group: ['store_name'],
+                // limit: 1,
+            });
+            // console.log('metrics',metrics)
+            res.send(metrics);
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occured when trying to get data."
+            })
+        }
+    },    
+    async getComprehensiveAnalysis(req,res){
+        // console.log('datas--------')
+        const storeName = req.body.storeName;
+            // Set timezone to Japan
+        const startOfMonth = moment.tz('Asia/Tokyo').startOf('month').toDate();
+        const endOfMonth = moment.tz('Asia/Tokyo').endOf('month').toDate();
+        // console.log('datas--------',storeName,startOfMonth,endOfMonth)
+        try {
+            const metrics = await Master.findAll({
+                attributes: [
+                    [fn('COUNT', fn('DISTINCT', col('customer_id'))), 'customer_count'],
+                    [fn('COUNT', fn('DISTINCT', col('product_name'))), 'product_count'],
+                    [fn('SUM', col('gross_profit')), 'total_gross_profit'],
+                    [fn('SUM', col('purchase_price')), 'total_purchase_price'],
+                    [fn('SUM', col('sales_amount')), 'total_sales_amount'],
+                    [col('store_name'), 'store_name'], // Include store name
+                ],
+                where: {                  
+                    shipping_date: {
+                        [Op.between]: [startOfMonth, endOfMonth],
+                    },
+                },
+                group: ['store_name'],
+                // limit: 1,
+            });
+            // console.log('metrics',metrics)
+            res.send(metrics);
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occured when trying to get data."
+            })
+        }
+    },    
+    async getiveAnalysisIndividualResult(req,res){
+        // console.log('datas--------')
+        const storeName = req.body.storeName;
+            // Set timezone to Japan
+        const startOfMonth = moment.tz('Asia/Tokyo').startOf('month').toDate();
+        const endOfMonth = moment.tz('Asia/Tokyo').endOf('month').toDate();
+        // console.log('datas--------',storeName,startOfMonth,endOfMonth)
+        try {
+            const metrics = await Master.findAll({
+                attributes: [
+                    [fn('COUNT', fn('DISTINCT', col('customer_id'))), 'customer_count'],
+                    [fn('COUNT', fn('DISTINCT', col('product_name'))), 'product_count'],
+                    [fn('SUM', col('gross_profit')), 'total_gross_profit'],
+                    [fn('SUM', col('purchase_price')), 'total_purchase_price'],
+                    [fn('SUM', col('sales_amount')), 'total_sales_amount'],
+                    [col('store_name'), 'store_name'], // Include store name
+                    [col('purchase_staff'), 'purchase_staff'], // Include store name
+                ],
+                where: {                  
+                    shipping_date: {
+                        [Op.between]: [startOfMonth, endOfMonth],
+                    },
+                    store_name:storeName
+                },
+                group: ['purchase_staff'],
+                // limit: 1,
+            });
+            // console.log('metrics',metrics)
+            res.send(metrics);
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occured when trying to get data."
+            })
+        }
+    },    
 
 }

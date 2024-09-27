@@ -218,4 +218,8 @@ module.exports = (app) => {
   //============Inquiry
   app.post('/api/inquiry/create',InquiryController.create)
   app.post('/api/inquiry/read',InquiryController.read)
+  //=============OwnerTop
+  app.get('/api/ownertop/getdata',MasterContoller.getOwnerTopData)
+  app.get('/api/comprehensiveanalysis/getdata',MasterContoller.getComprehensiveAnalysis)
+  app.post('/api/staffindividualresult/getdata',MasterContoller.getiveAnalysisIndividualResult)
 }
