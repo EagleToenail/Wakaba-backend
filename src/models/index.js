@@ -55,6 +55,8 @@ db.WithdrawalApplyMessage              = require("./WithdrawalApplyMessage")(seq
 db.OnSitePurchaseMessage              = require("./OnSitePurchaseMessage")(sequelize, Sequelize.DataTypes);
 db.DisposalPermissionMessage              = require("./DisposalPermissionMessage")(sequelize, Sequelize.DataTypes);
 
+db.StampInterestRate              = require("./StampInterestRate")(sequelize, Sequelize.DataTypes);
+db.StampSheet              = require("./StampSheet")(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {

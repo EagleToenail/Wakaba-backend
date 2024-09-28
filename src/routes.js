@@ -26,6 +26,8 @@ const DisposalPermissionMessageController = require("./controllers/DisposalPermi
 const InquiryController = require("./controllers/InquiryController")
 const SchedulerController = require("./controllers/SchedulerController")
 
+const StampController = require("./controllers/StampsController")
+
 module.exports = (app) => {
   // =========authentication
   app.post("/api/auth/register", AuthenticationController.register)
@@ -222,4 +224,9 @@ module.exports = (app) => {
   app.get('/api/ownertop/getdata',MasterContoller.getOwnerTopData)
   app.get('/api/comprehensiveanalysis/getdata',MasterContoller.getComprehensiveAnalysis)
   app.post('/api/staffindividualresult/getdata',MasterContoller.getiveAnalysisIndividualResult)
+  //============stamp sheet
+  app.get('/api/stamprate',StampController.getStampRate)
+  app.post('/api/stampsheet/create',StampController.createStampSheet)
+  app.get('/api/stampsheet',StampController.getStampSheetList)
+  app.post('/api/stampsheet/update',StampController.updateStampSheet)
 }
