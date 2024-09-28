@@ -229,7 +229,7 @@ module.exports = {
                     // console.log('bb===============')
                     // console.log("salesData",masterData)
                     const sales = await Master.create(masterData);
-                    //----------save at Monthly income table 
+                    //----------save at Monthly income table-------------------------------- 
                     const now = new Date();
                     // Format the date as YYYY-MM-DD
                     const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
@@ -263,8 +263,8 @@ module.exports = {
                             }}
                         );
                     }
-                    //----------
-                    //save customer past visit history
+                    //-------------------------------------------
+                    //save customer past visit history--------------
                     const customerPastVisitHistory = {
                         visit_date: masterData.trading_date,
                         customerId: masterData.customer_id,
@@ -276,6 +276,7 @@ module.exports = {
 
                     const customerpastvistoryhistory = await CustomerPastVisitHistory.create(customerPastVisitHistory);
                 }
+                //-------------------------------------------------------
                 res.send({"success":true})
             } catch (err) {
                 res.status(500).send({

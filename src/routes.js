@@ -224,13 +224,20 @@ module.exports = (app) => {
   app.get('/api/ownertop/getdata',MasterContoller.getOwnerTopData)
   app.get('/api/comprehensiveanalysis/getdata',MasterContoller.getComprehensiveAnalysis)
   app.post('/api/staffindividualresult/getdata',MasterContoller.getiveAnalysisIndividualResult)
-  //============stamp sheet
+  //============stamp Rate
   app.get('/api/stamprate',StampController.getStampRate)
+  app.post('/api/stamprate/update',StampController.updateStampRate)
+  //============stamp sheet
   app.post('/api/stampsheet/create',StampController.createStampSheet)
   app.get('/api/stampsheet',StampController.getStampSheetList)
-  app.post('/api/stampsheet/update',StampController.updateStampSheet)
+  app.post('/api/stamp/update',StampController.updateStamp)
   //============stamp Rose
   app.post('/api/stamprose/create',StampController.createStampRose)
   app.get('/api/stamprose',StampController.getStampRoseList)
-  // app.post('/api/stampsheet/update',StampController.updateStampSheet)
+  //============stamp Pack
+  app.post('/api/stamppack/create',StampController.createStampPack)
+  app.get('/api/stamppack',StampController.getStampPackList)
+  //============stamp Card
+  app.post('/api/stampcard/create',StampController.createStampCard)
+  app.get('/api/stampcard',StampController.getStampCardList)
 }

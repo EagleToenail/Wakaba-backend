@@ -6,20 +6,13 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey:       true,
         autoIncrement:    true
       },
-      sheetrate: {
+      category: {
         type: DataTypes.STRING(20), // Adjust data type if necessary
         allowNull: true
       },
-      roserate: {
+      percent: {
         type: DataTypes.STRING(20), // Adjust data type if necessary
-        allowNull: true
-      },
-      packrate: {
-        type: DataTypes.STRING(20), // Adjust data type if necessary
-        allowNull: true
-      },
-      cardrate: {
-        type: DataTypes.STRING(20), // Adjust data type if necessary
+        defaultValue:'0',
         allowNull: true
       },
     })
