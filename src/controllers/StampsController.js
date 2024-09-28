@@ -1,5 +1,6 @@
 
 const {StampSheet} = require('../models');
+const {StampRose} = require('../models');
 const {StampInterestRate} = require('../models');
 const { Op } = require('sequelize');
 const fs = require('fs');
@@ -62,6 +63,26 @@ module.exports = {
             })
         }
     },
-
-
+//----------------stamp Rose-----------------------------
+    async createStampRose(req, res) {
+        try {
+            const stamprose = await StampRose.create(req.body);
+            const stampRoseList = await StampRose.findAll();
+            res.send(stampRoseList)
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to create a sale."
+            })
+        }
+    },
+    async getStampRoseList(req, res) {
+        try {
+            const stampRoseList = await StampRose.findAll();
+            res.send(stampRoseList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
 }

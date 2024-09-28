@@ -57,6 +57,7 @@ db.DisposalPermissionMessage              = require("./DisposalPermissionMessage
 
 db.StampInterestRate              = require("./StampInterestRate")(sequelize, Sequelize.DataTypes);
 db.StampSheet              = require("./StampSheet")(sequelize, Sequelize.DataTypes);
+db.StampRose              = require("./StampRose")(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {

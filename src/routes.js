@@ -229,4 +229,8 @@ module.exports = (app) => {
   app.post('/api/stampsheet/create',StampController.createStampSheet)
   app.get('/api/stampsheet',StampController.getStampSheetList)
   app.post('/api/stampsheet/update',StampController.updateStampSheet)
+  //============stamp Rose
+  app.post('/api/stamprose/create',StampController.createStampRose)
+  app.get('/api/stamprose',StampController.getStampRoseList)
+  // app.post('/api/stampsheet/update',StampController.updateStampSheet)
 }
