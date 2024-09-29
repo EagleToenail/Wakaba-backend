@@ -228,16 +228,21 @@ module.exports = (app) => {
   app.get('/api/stamprate',StampController.getStampRate)
   app.post('/api/stamprate/update',StampController.updateStampRate)
   //============stamp sheet
+  app.post('/api/stamp/update',StampController.updateStamp)
+
   app.post('/api/stampsheet/create',StampController.createStampSheet)
   app.get('/api/stampsheet',StampController.getStampSheetList)
-  app.post('/api/stamp/update',StampController.updateStamp)
+  app.post('/api/stampsheet/update',StampController.updateStampSheet)
   //============stamp Rose
   app.post('/api/stamprose/create',StampController.createStampRose)
   app.get('/api/stamprose',StampController.getStampRoseList)
+  app.post('/api/stamprose/update',StampController.updateStampRose)
   //============stamp Pack
   app.post('/api/stamppack/create',StampController.createStampPack)
   app.get('/api/stamppack',StampController.getStampPackList)
+  app.post('/api/stamppack/update',StampController.updateStampPack)
   //============stamp Card
   app.post('/api/stampcard/create',StampController.createStampCard)
   app.get('/api/stampcard',StampController.getStampCardList)
+  app.post('/api/stampcard/update',StampController.updateStampCard)
 }

@@ -60,6 +60,18 @@ module.exports = {
             })
         }
     },
+    async updateStampSheet(req, res) {
+        try {
+            const { id, ...newData } = req.body; // Extract id and other fields
+            await StampSheet.update(newData, { where: { id } });
+            const stampSheetList = await StampSheet.findAll();
+            res.send(stampSheetList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
     async updateStamp(req, res) {
         try {
             // console.log('==========',req.body.sheetRows)
@@ -146,6 +158,18 @@ module.exports = {
             })
         }
     },
+    async updateStampRose(req, res) {
+        try {
+            const { id, ...newData } = req.body; // Extract id and other fields
+            await StampRose.update(newData, { where: { id } });
+            const stampRoseList = await StampRose.findAll();
+            res.send(stampRoseList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
 //----------------stamp Pack-----------------------------
     async createStampPack(req, res) {
         try {
@@ -168,6 +192,18 @@ module.exports = {
             })
         }
     },
+    async updateStampPack(req, res) {
+        try {
+            const { id, ...newData } = req.body; // Extract id and other fields
+            await StampPack.update(newData, { where: { id } });
+            const stampPackList = await StampPack.findAll();
+            res.send(stampPackList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
 //----------------stamp Card-----------------------------
     async createStampCard(req, res) {
         try {
@@ -182,6 +218,18 @@ module.exports = {
     },
     async getStampCardList(req, res) {
         try {
+            const stampCardList = await StampCard.findAll();
+            res.send(stampCardList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+    async updateStampCard(req, res) {
+        try {
+            const { id, ...newData } = req.body; // Extract id and other fields
+            await StampCard.update(newData, { where: { id } });
             const stampCardList = await StampCard.findAll();
             res.send(stampCardList);
         } catch (err) {
