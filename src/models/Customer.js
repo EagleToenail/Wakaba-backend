@@ -20,7 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 
       // opportunity:          DataTypes.STRING,
       job:                  DataTypes.STRING,
-      idCard_url:           DataTypes.STRING,
+      idCard_url:  {
+        type: DataTypes.STRING,
+        defaultValue:       ''
+      },
       cardType:             DataTypes.STRING,
       avatar_url:           DataTypes.STRING,
       prefeature:           DataTypes.STRING,
