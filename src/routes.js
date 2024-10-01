@@ -233,6 +233,10 @@ module.exports = (app) => {
   app.post('/api/stampsheet/create',StampController.createStampSheet)
   app.get('/api/stampsheet',StampController.getStampSheetList)
   app.post('/api/stampsheet/update',StampController.updateStampSheet)
+  //============stamp Pasting
+  app.post('/api/stamppasting/create',StampController.createStampPasting)
+  app.get('/api/stamppasting',StampController.getStampPastingList)
+  app.post('/api/stamppasting/update',StampController.updateStampPasting)
   //============stamp Rose
   app.post('/api/stamprose/create',StampController.createStampRose)
   app.get('/api/stamprose',StampController.getStampRoseList)
@@ -245,4 +249,16 @@ module.exports = (app) => {
   app.post('/api/stampcard/create',StampController.createStampCard)
   app.get('/api/stampcard',StampController.getStampCardList)
   app.post('/api/stampcard/update',StampController.updateStampCard)
+  //=============stamp shipping history
+  app.post('/api/stampinbound/create',StampController.createStampInbound)
+  app.post('/api/stampoutbound/create',StampController.createStampOutbound)
+  app.get('/api/stampshippinghistory',StampController.getStampShippingHistory)
+  app.post('/api/stampshippinghistory',StampController.postStampShippingHistory)
+  app.post('/api/stampshippinghistory/search',StampController.searchStampShippingHistory)
+  app.post('/api/stampshippinghistorydetail',StampController.detailStampShippingHistory)
+
+
+
+
+
 }
