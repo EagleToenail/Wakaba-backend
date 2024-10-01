@@ -27,6 +27,7 @@ const InquiryController = require("./controllers/InquiryController")
 const SchedulerController = require("./controllers/SchedulerController")
 
 const StampController = require("./controllers/StampsController")
+const CommemorativeCoinAndBillController = require('./controllers/CommemorativeCoinAndBillController')
 
 module.exports = (app) => {
   // =========authentication
@@ -256,9 +257,18 @@ module.exports = (app) => {
   app.post('/api/stampshippinghistory',StampController.postStampShippingHistory)
   app.post('/api/stampshippinghistory/search',StampController.searchStampShippingHistory)
   app.post('/api/stampshippinghistorydetail',StampController.detailStampShippingHistory)
-
-
-
+//===============coin
+app.get('/api/coin',CommemorativeCoinAndBillController.getCoinList)
+app.post('/api/coin/create',CommemorativeCoinAndBillController.createCoin)
+//===============bill
+app.get('/api/bill',CommemorativeCoinAndBillController.getBillList)
+app.post('/api/bill/create',CommemorativeCoinAndBillController.createBill)
+app.post('/api/profiledata',CommemorativeCoinAndBillController.getProfile)//get user profile
+//===============coin and bill exchange
+app.post('/api/coinandbillhistorydetail',CommemorativeCoinAndBillController.getExchangeHistoryById)
+app.get('/api/coinandbillexchange',CommemorativeCoinAndBillController.getExchangeHistory)
+app.post('/api/coinandbillexchange/create',CommemorativeCoinAndBillController.createExchange)
+app.post('/api/coinandbillexchange/search',CommemorativeCoinAndBillController.searchExchange)
 
 
 }

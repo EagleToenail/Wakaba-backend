@@ -63,6 +63,10 @@ db.StampPack              = require("./StampPack")(sequelize, Sequelize.DataType
 db.StampCard              = require("./StampCard")(sequelize, Sequelize.DataTypes);
 db.StampsTransaction   = require("./StampsTransaction")(sequelize, Sequelize.DataTypes);
 
+db.Coin   = require("./Coin")(sequelize, Sequelize.DataTypes);
+db.Bill   = require("./Bill")(sequelize, Sequelize.DataTypes);
+db.Bill   = require("./Bill")(sequelize, Sequelize.DataTypes);
+db.CoinAndBillExchange = require("./CoinAndBillExchange")(sequelize, Sequelize.DataTypes);
 Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {
     db[modelName].associate(db)

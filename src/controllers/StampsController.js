@@ -76,19 +76,30 @@ module.exports = {
     },
     async updateStamp(req, res) {
         try {
-            // console.log('==========',req.body.sheetRows)
             const sheetRows = req.body.sheetRows;
+            console.log('=====iiii=====',req.body.sheetRows)
             const roseRows = req.body.roseRows;
             const packRows = req.body.packRows;
             const cardRows = req.body.cardRows;
+            const inorout = req.body.inorout;
+            console.log('=====iiii=====',req.body.inorout)
+            const id = req.body.id;
+            console.log('=====iiii=====',req.body.sheetRows,inorout,id)
 
             const updateSheet = sheetRows.map(async (data) => {
                 const { id, ...newData } = data; // Extract id and other fields
                 const existingSheet = await StampSheet.findByPk(id);
                 const updatedData = {};
                 for (const key in newData) {
-                    if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                        updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                    if(inorout === '入庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
+                    }
+                    if(inorout === '出庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
                     }
                 }
                 
@@ -99,9 +110,17 @@ module.exports = {
                 const existingSheet = await StampRose.findByPk(id);
                 const updatedData = {};
                 for (const key in newData) {
-                    if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                        updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                    if(inorout === '入庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
                     }
+                    if(inorout === '出庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
+                    }
+
                 }
                 
                 await StampRose.update(updatedData, { where: { id } });
@@ -111,9 +130,17 @@ module.exports = {
                 const existingSheet = await StampPack.findByPk(id);
                 const updatedData = {};
                 for (const key in newData) {
-                    if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                        updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                    if(inorout === '入庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
                     }
+                    if(inorout === '出庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
+                    }
+
                 }
                 
                 await StampPack.update(updatedData, { where: { id } });
@@ -123,12 +150,26 @@ module.exports = {
                 const existingSheet = await StampCard.findByPk(id);
                 const updatedData = {};
                 for (const key in newData) {
-                    if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                        updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                    if(inorout === '入庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
+                    }
+                    if(inorout === '出庫') {
+                        if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
+                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                        }
                     }
                 }
-                
                 await StampCard.update(updatedData, { where: { id } });
+            });
+            //update transaction
+            const stateUpdate = {};
+            stateUpdate.stamp_status = '承認された' 
+            const stamphistory = await StampsTransaction.update(stateUpdate,{
+                    where: {
+                        id: id
+                    }
             });
             res.send({success:true});
         } catch (err) {
@@ -177,7 +218,7 @@ module.exports = {
         try {
             const stamprose = await StampRose.create(req.body);
             const stampRoseList = await StampRose.findAll();
-            console.log('========================================',stampRoseList)
+            //console.log('========================================',stampRoseList)
             res.send(stampRoseList)
         } catch (err) {
             res.status(500).send({
