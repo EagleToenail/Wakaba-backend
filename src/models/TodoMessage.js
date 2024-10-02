@@ -29,10 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         parentMessageId: {
             type: DataTypes.STRING,
             allowNull: true,
-            // references: {
-            //     model: 'TodoMessages',
-            //     key: 'id',
-            // },
         },
         fileUrl: {
             type: DataTypes.STRING,

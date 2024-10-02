@@ -54,6 +54,8 @@ db.WithdrawalVariousPurchaseMessage              = require("./WithdrawalVariousP
 db.WithdrawalApplyMessage              = require("./WithdrawalApplyMessage")(sequelize, Sequelize.DataTypes);
 db.OnSitePurchaseMessage              = require("./OnSitePurchaseMessage")(sequelize, Sequelize.DataTypes);
 db.DisposalPermissionMessage              = require("./DisposalPermissionMessage")(sequelize, Sequelize.DataTypes);
+db.GeneralChatMessage              = require("./GeneralChatMessage")(sequelize, Sequelize.DataTypes);
+db.StoreChatMessage              = require("./StoreChatMessage")(sequelize, Sequelize.DataTypes);
 
 db.StampInterestRate              = require("./StampInterestRate")(sequelize, Sequelize.DataTypes);
 db.StampSheet              = require("./StampSheet")(sequelize, Sequelize.DataTypes);

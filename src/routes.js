@@ -16,6 +16,8 @@ const MonthlyIncomeController = require('./controllers/MonthlyIncomeController')
 const CashRegisterController = require('./controllers/CashRegisterController')
 
 const TodoMessageConroller = require("./controllers/TodoMessageController")
+const GeneralChatMessageController = require('./controllers/GeneralChatController');
+const StoreChatMessaeContorller = require('./controllers/StoreChatContoller');
 const InvoiceForPurchaseMessageController = require("./controllers/InvoiceForPurchaseMessageController")
 const WithdrawalBankATMMessageController = require("./controllers/WithdrawalBankATMMessageController")
 const WithdrawalVariousPurchaseMessageController = require("./controllers/WithdrawalVariousPurchaseMessageController")
@@ -165,6 +167,18 @@ module.exports = (app) => {
     app.post('/api/todomessages/getmessagelist',TodoMessageConroller.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), TodoMessageConroller.createReply);
+    //========GeneralChatMessage
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.post('/api/generalchat', GeneralChatMessageController.getMessages);
+    app.post('/api/generalchat/getmessagelist',GeneralChatMessageController.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), GeneralChatMessageController.createReply);
+    //========StoreChatMessage
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.post('/api/storechat', StoreChatMessaeContorller.getMessages);
+    app.post('/api/storechat/getmessagelist',StoreChatMessaeContorller.upload.fields([
+      { name: 'fileUrl', maxCount: 1 },
+    ]), StoreChatMessaeContorller.createReply);
 
     //========InvoiceFOrPurchaseMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
@@ -180,7 +194,7 @@ module.exports = (app) => {
       { name: 'fileUrl', maxCount: 1 },
     ]), WithdrawalBankATMMessageController.createReply);
 
-    //========WithdrawalBankATMMessage
+    //========Withdrawal Various purchase
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/withdrawalvariouspurchasemessages/:userId', WithdrawalVariousPurchaseMessageController.getMessages);
     app.post('/api/withdrawalvariouspurchasemessages/getmessagelist',WithdrawalVariousPurchaseMessageController.upload.fields([
