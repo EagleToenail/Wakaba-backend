@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     vendor_name: DataTypes.STRING,
-    
+    categoryIds: {
+      type: DataTypes.STRING(50),
+      defaultValue:'',
+    },
     貴金属: {
       type: DataTypes.ENUM,
       values: ['y', 'n'],

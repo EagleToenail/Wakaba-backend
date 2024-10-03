@@ -30,7 +30,7 @@ module.exports = {
     },
     async getProductType2FilterList(req, res) {
         try {
-            const parentId = req.body.name;
+            const parentId = req.body.id;
             const product2List = await Product2.findAll({
                 where: {
                     parentId:parentId

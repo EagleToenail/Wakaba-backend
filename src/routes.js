@@ -11,7 +11,6 @@ const InboxController = require("./controllers/InboxController")
 const ContactController = require("./controllers/ContactController")
 const ChatController = require("./controllers/ChatController")
 const ProductTypeController = require("./controllers/ProductTypeController")
-const ContractorAccessmentController = require("./controllers/ContractorAccessmentController")
 const MonthlyIncomeController = require('./controllers/MonthlyIncomeController')
 const CashRegisterController = require('./controllers/CashRegisterController')
 
@@ -92,13 +91,6 @@ module.exports = (app) => {
     app.post("/api/customer/customerItem",CustomerController.addCustomerItem)
     app.post("/api/customer/updatecustomeritem",CustomerController.updateCustomerInvoice)
     // //============sales
-    // app.get("/api/sales/getSalesList", SalesController.getSalesList)
-    // app.get("/api/sales/getSalesById/:id", SalesController.getSalesById)
-    // app.post("/api/sales/filter", SalesController.getSalesFilter)
-    // app.post("/api/sales/createSales", SalesController.createSales)
-    // app.post("/api/sales/updateSales", SalesController.updateSales)
-    // app.get("/api/sales/deleteSales", SalesController.deleteSales)
-
     app.get("/api/sales/getSalesList", MasterContoller.getSalesList)
     app.get("/api/sales/getSalesById/:id", MasterContoller.getSalesById)
     app.post("/api/sales/filter", MasterContoller.getSalesFilter)
@@ -110,6 +102,18 @@ module.exports = (app) => {
     app.post("/api/vendor/getVendorList",MasterContoller.getVendorList)
     app.get("/api/vendor/getVendorListAll",MasterContoller.getVendorListAll)
     app.post("/api/purchaseinvoice", MasterContoller.saveInvoice)
+    app.post('/api/purchaseinvoice/create',MasterContoller.upload.fields([
+      { name: 'product_photo', maxCount: 1 },
+    ]), MasterContoller.createInvoice);
+    app.post('/api/purchaseinvoice/update',MasterContoller.upload.fields([
+      { name: 'product_photo', maxCount: 1 },
+    ]), MasterContoller.updateInvoice);
+    app.post('/api/purchaseinvoice/delete', MasterContoller.deleteInvoice);
+    app.post('/api/purchaseinvoice/getregistereddata', MasterContoller.getRegisteredData);
+
+    app.post("/api/category/initialdata", MasterContoller.getCategoryInitialData)
+    app.post("/api/category/data", MasterContoller.getCategoryData)
+    app.post("/api/vendor/updateestimate", MasterContoller.updateEstimate)
     //==============shipping=======
     app.post("/api/sales/getSalesById", MasterContoller.getSalesByIdForShipping)
     app.post("/api/sales/purchaserequestfromwholesaler", MasterContoller.savePurchaseRequestFromwholeSaler)
@@ -151,16 +155,6 @@ module.exports = (app) => {
     app.post('/api/ProductType2sfilter',  ProductTypeController.getProductType2FilterList);
     app.get('/api/ProductType3s',  ProductTypeController.getProductType3List);
     app.get('/api/ProductType4s',  ProductTypeController.getProductType4List);
-    //=========contractaccessmentsheet
-    app.get('/api/contractorassessments',  ContractorAccessmentController.getData);
-
-    app.post('/api/contractorassessments/oldcoinadd',  ContractorAccessmentController.addOldCoinData);
-    app.post('/api/contractorassessments/oldcoinupdate',  ContractorAccessmentController.updateOldCoinData);
-    app.get('/api/contractorassessments/oldcoindelete/:Id',  ContractorAccessmentController.deleteOldCoinData);
-    app.post('/api/contractorassessments/preciousmetaladd',  ContractorAccessmentController.addPreciousMetalData);
-    app.post('/api/contractorassessments/preciousmetalupdate',  ContractorAccessmentController.updatePreciousMetalData);
-    app.get('/api/contractorassessments/preciousmetaldelete/:Id',  ContractorAccessmentController.deletePreciousMetalData);
-
     //========todoListMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/todomessages/:userId', TodoMessageConroller.getMessages);

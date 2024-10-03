@@ -104,6 +104,7 @@ module.exports = (sequelize, DataTypes) => {
         frequency: DataTypes.STRING(15),
         yahoo_auctions_highest_price: DataTypes.DECIMAL(15, 2),
         auction_id: DataTypes.STRING(10),
+        estimate_wholesaler: DataTypes.TEXT,
         // Fields from MusicalInstrument--------------------------
         // Fields from Kimono------------------------------------
         // Fields from SmartPhoneAndTablet-------------------------------

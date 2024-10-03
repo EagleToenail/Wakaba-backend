@@ -6,10 +6,26 @@ const { Vendor } = require('../models')
 const { SafeMoney } = require('../models')
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
 
 const { Op, fn, col } = require('sequelize');
 const moment = require('moment-timezone'); // Ensure you have moment-timezone installed
 
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = path.join(__dirname, '../uploads/product');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir);
+      }
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}_${file.originalname}`);
+    }
+  });
+  
+const upload = multer({ storage });
 
 module.exports = {
 	async createSales(req, res) {
@@ -47,7 +63,7 @@ module.exports = {
     },
     async getSalesFilter(req, res) {
         const value = req.body.value;
-        // console.log('zxczxczcx',value)
+        console.log('zxczxczcx',value)
         try {
             const salesWithCustomer = await Master.findAll({
                 include: [
@@ -168,13 +184,19 @@ module.exports = {
 	},
     async getVendorList(req,res) {
         try {
-            const type = req.body.type;
-            // console.log('getVendorList',type)
+            const categoryId = req.body.id;
             const vendorList = await Vendor.findAll({
-                attributes: ['vendor_name'],
-                where: {[type]:'y'}
+                where: {
+                    categoryIds: {
+                        [Op.or]: [
+                            { [Op.like]: `${categoryId},%` },    
+                            { [Op.like]: `%, ${categoryId},%` },  
+                            { [Op.like]: `%, ${categoryId}` },    
+                            { [Op.eq]: categoryId.toString() }    
+                        ]
+                    }
+                }
             });
-            // console.log('vendorList',vendorList);
             res.send(vendorList);
         } catch (err) {
             res.status(500).send({
@@ -197,6 +219,7 @@ module.exports = {
     },
     async saveInvoice(req, res) {
 		try {
+            console.log('------------saveinvoice------------')
             const {dataUrl,payload} = req.body;
             const purchaseData = payload;
             // console.log("dataurl,purchaseData",purchaseData)
@@ -225,10 +248,17 @@ module.exports = {
                 for (let index = 0; index < purchaseData.length; index++) {
                     const masterData = purchaseData[index];
                     masterData.signature = filename;
+                    const id = masterData.id;
                     delete masterData.id;
                     // console.log('bb===============')
                     // console.log("salesData",masterData)
-                    const sales = await Master.create(masterData);
+                    const updateField = {};
+                    updateField.product_status = '買取済';
+                    await Master.update(updateField,{
+                        where:{
+                            id:id
+                        }
+                    });
                     //----------save at Monthly income table-------------------------------- 
                     const now = new Date();
                     // Format the date as YYYY-MM-DD
@@ -302,6 +332,172 @@ module.exports = {
             })
         }
     },
+//----------------------------------------------purchase invoice ---------------------------------------------------------------
+async createInvoice(req, res) {
+    try {
+        const {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+            purchase_result,purchase_price,estimate_wholesaler} = req.body;
+
+        const createData = {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+            purchase_result,purchase_price,estimate_wholesaler};
+    
+        if (req.files['product_photo']) {
+            const uploadfile = req.files['product_photo'][0];
+            createData.product_photo = uploadfile.filename; // Adjust field name based on your model
+          }
+        console.log('createData',createData)
+       await Master.create(createData);
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status:'査定中'
+            }
+       });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async updateInvoice(req, res) {
+    try {
+        const id = req.body.id;
+        const {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+            purchase_result,purchase_price,estimate_wholesaler} = req.body;
+
+        const updateData = {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+            purchase_result,purchase_price,estimate_wholesaler};
+    
+        if (req.files['product_photo']) {
+            const uploadfile = req.files['product_photo'][0];
+            updateData.product_photo = uploadfile.filename; // Adjust field name based on your model
+          }
+        console.log('updateData',updateData,id)
+       await Master.update(updateData,{
+            where: {
+                id:id
+            }
+       });
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status:'査定中'
+            }
+       });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async deleteInvoice(req,res) {
+    try {
+        console.log('deleteinvoice')
+        const id = req.body.id;
+        console.log('deleteinvoice',id)
+        await Master.destroy({
+            where: {
+                id:id
+            }
+        });
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status:'査定中'
+            }
+        });
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async getRegisteredData(req,res) {
+    try {
+        const customerId = req.body.id;
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status:'査定中',
+                customer_id:customerId
+            }
+       });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+//----------------------------------------------vendor assessment 
+async getCategoryInitialData(req, res) {
+    try {
+        const category = req.body.category;
+        const salesList = await Master.findAll({
+            where: {
+                product_type_one: category,
+                product_status:'買取済',
+            }
+        });
+        // console.log('saleList',salesList);
+        res.send(salesList);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
+},
+async getCategoryData(req, res) {
+    try {
+        const category = req.body.category;
+        const salesList = await Master.findAll({
+            where: {
+                product_type_one: category,
+                product_status:'買取済',
+            }
+        });
+        // console.log('saleList',salesList);
+        res.send(salesList);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
+},
+async updateEstimate(req, res) {
+    try {
+        const id = req.body.id;
+        const category = req.body.category;
+        const payload = req.body.payload;
+        const otherData = req.body.otherData;
+        const updateField0 = otherData;
+        delete updateField0.id;
+        delete updateField0.estimate_wholesaler;
+        await Master.update(updateField0,{
+            where:{
+                id:id
+            }
+        });
+        console.log('success')
+        const updateField = {};
+        updateField.estimate_wholesaler = payload;
+        await Master.update(updateField,{
+            where:{
+                id:id
+            }
+        });
+        const salesList = await Master.findAll({
+            where: {
+                product_type_one: category,
+                product_status:'買取済',
+            }
+        });
+        // console.log('saleList',salesList);
+        res.send(salesList);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
+},
 //-------------------------------------------------purchase request from for wholesalers-----------------------------------------
 
     async getSalesByIdForShipping(req,res) {
@@ -586,6 +782,7 @@ module.exports = {
                 error: "An error occured when trying to get data."
             })
         }
-    },    
+    },  
 
+   upload
 }
