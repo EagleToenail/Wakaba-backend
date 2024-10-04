@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         number: DataTypes.STRING(20),
         product_name: DataTypes.STRING(50),
         comment:      DataTypes.TEXT,
-        purchase_price: DataTypes.DECIMAL(15, 2),
+        purchase_price: DataTypes.INTEGER,
         quantity: DataTypes.INTEGER,
         remarks: DataTypes.TEXT,
         // Fields from Sales---------------------------------------
@@ -33,10 +33,10 @@ module.exports = (sequelize, DataTypes) => {
         product_type_three: DataTypes.STRING(50),
         product_type_four: DataTypes.STRING(50),
         metal_type: DataTypes.STRING(20),
-        price_per_gram: DataTypes.DECIMAL(15, 2),
-        sales_amount: DataTypes.DECIMAL(15, 2),
-        shipping_cost: DataTypes.DECIMAL(15, 2),
-        gross_profit: DataTypes.DECIMAL(15, 2),
+        price_per_gram: DataTypes.INTEGER,
+        sales_amount: DataTypes.INTEGER,
+        shipping_cost: DataTypes.INTEGER,
+        gross_profit: DataTypes.INTEGER,
         wholesale_buyer: DataTypes.STRING(50),
         wholesale_date: DataTypes.STRING(15), // Changed from STRING to DATE//no need
         payment_date: DataTypes.STRING(15), //  the date that the payment from wholesaler confirmed // no need
@@ -46,9 +46,9 @@ module.exports = (sequelize, DataTypes) => {
         product_photo: DataTypes.STRING(50),
         reason_application: DataTypes.STRING(50),
         interest_rate: DataTypes.STRING(5),
-        product_price: DataTypes.DECIMAL(15, 2),
+        product_price: DataTypes.INTEGER,
         highest_estimate_vendor: DataTypes.STRING(20),
-        highest_estimate_price: DataTypes.DECIMAL(15, 2),
+        highest_estimate_price: DataTypes.INTEGER,
         number_of_vendor: DataTypes.STRING(5),
         supervisor_direction: DataTypes.STRING(50),
         purchase_result: DataTypes.STRING(20),           
@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
         final_assessment_amount: DataTypes.STRING(20),
         //---------------yahoo auction related data
         successful_bider: DataTypes.STRING(50),
-        auction_purchase_price: DataTypes.DECIMAL(20, 2),
+        auction_purchase_price: DataTypes.INTEGER,
         auction_bider_name: DataTypes.STRING(20),
         auction_bider_katakana_name: DataTypes.STRING(30),
         auction_bider_tel: DataTypes.STRING(20),
@@ -102,40 +102,13 @@ module.exports = (sequelize, DataTypes) => {
         brand: DataTypes.STRING(15),
         capacity: DataTypes.STRING(15),
         frequency: DataTypes.STRING(15),
-        yahoo_auctions_highest_price: DataTypes.DECIMAL(15, 2),
+        yahoo_auctions_highest_price: DataTypes.INTEGER,
         auction_id: DataTypes.STRING(10),
         estimate_wholesaler: DataTypes.TEXT,
         // Fields from MusicalInstrument--------------------------
         // Fields from Kimono------------------------------------
         // Fields from SmartPhoneAndTablet-------------------------------
         // Vendors-----------------------------------------------
-        本査定ネットジャパン: DataTypes.STRING(50),
-        LINE色石バンク: DataTypes.STRING(50),
-        本査定色石バンク: DataTypes.STRING(50),
-        LINEフォーナイン: DataTypes.STRING(50),
-        本査定フォーナイン: DataTypes.STRING(50),
-        カイマナ査定日: DataTypes.STRING(50),
-        LINEカイマナ: DataTypes.STRING(50),
-        本査定カイマナ: DataTypes.STRING(50),
-        LINE査定日相場: DataTypes.STRING(50),
-        ワタル商事: DataTypes.STRING(50),
-        近江屋: DataTypes.STRING(50),
-        ヤフオク: DataTypes.STRING(50),//yahoo auction
-        BB: DataTypes.STRING(50),
-        GA: DataTypes.STRING(50),
-        ベルモンド: DataTypes.STRING(50),
-        ホームコム: DataTypes.STRING(50),
-        カイマナ: DataTypes.STRING(50),
-        フォーナイン: DataTypes.STRING(50),
-        ひるねこ: DataTypes.STRING(50),
-        アート: DataTypes.STRING(50),
-        吉岡美術: DataTypes.STRING(50),
-        刀剣佐藤: DataTypes.STRING(50),
-        ゴールドリカー: DataTypes.STRING(50),
-        リンクサス: DataTypes.STRING(50),
-        管弦屋: DataTypes.STRING(50),
-        はなもり: DataTypes.STRING(50),
-        バステック: DataTypes.STRING(50),
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 

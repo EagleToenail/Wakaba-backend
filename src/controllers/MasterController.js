@@ -108,60 +108,55 @@ module.exports = {
         }
     },
     async updateSales(req, res) {
+
+            const now = new Date();
+            // Format the date as YYYY-MM-DD
+            const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+            const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+
             const {id,salesSlipData} = req.body;
-            console.log("salesData",salesSlipData,id)
             if(salesSlipData.product_type_one != '貴金属') {
                 delete salesSlipData.metal_type;
                 delete salesSlipData.price_per_gram;
             }
             if(salesSlipData.sales_amount !== null && salesSlipData.sales_amount !== '') {
                 salesSlipData.gross_profit = salesSlipData.sales_amount - (salesSlipData.purchase_price - salesSlipData.shipping_cost);
-            }
-            delete salesSlipData.id;
-            console.log("salesData",salesSlipData,id)
-            //----------save at Monthly income table 
-            const now = new Date();
-            // Format the date as YYYY-MM-DD
-            const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
-            const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
-    
-            // Format the time as HH:mm:ss
-            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
-            const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
-    
-            // Combine date and time
-            const currentDateTime = `${currentDay} ${currentTime}`;
+                salesSlipData.product_status = '約定済';
+                delete salesSlipData.id;
+                console.log("salesData",salesSlipData,id)
+                await Master.update(salesSlipData, {
+                    where: {
+                        id: id
+                    }
+                })
 
-            let todaySales_amount = await SafeMoney.findOne({
-                where: {
-                  store_name:salesSlipData.store_name,
-                  date: currentDay,
-                }
-              });
-              // console.log('workingTimeRecord',workingTimeRecord)
-              if (todaySales_amount === null) {
-                // console.log()
-                await SafeMoney.create({
-                  date:currentDay,
-                  sales_balance:salesSlipData.sales_amount,
-                  store_name:salesSlipData.store_name
+                //----------save at Monthly income table 
+                let todaySales_amount = await SafeMoney.findOne({
+                    where: {
+                    store_name:salesSlipData.store_name,
+                    date: currentDay,
+                    }
                 });
-              } else {
-                  const totalAmount = parseFloat(todaySales_amount.sales_balance) + parseFloat(salesSlipData.sales_amount);
-                  await SafeMoney.update(
-                    {sales_balance:totalAmount},
-                    { where: {
-                        store_name: salesSlipData.store_name,
-                       date:currentDay,
-                    }}
-                  );
-              }
-            //----------
-            await Master.update(salesSlipData, {
-                where: {
-                    id: id
+                // console.log('workingTimeRecord',workingTimeRecord)
+                if (todaySales_amount === null) {
+                    // console.log()
+                    await SafeMoney.create({
+                    date:currentDay,
+                    sales_balance:salesSlipData.sales_amount,
+                    store_name:salesSlipData.store_name
+                    });
+                } else {
+                    const totalAmount = parseFloat(todaySales_amount.sales_balance) + parseFloat(salesSlipData.sales_amount);
+                    await SafeMoney.update(
+                        {sales_balance:totalAmount},
+                        { where: {
+                            store_name: salesSlipData.store_name,
+                        date:currentDay,
+                        }}
+                    );
                 }
-            })
+                //----------
+            }
 
             res.send({"success":true});
     },
@@ -562,14 +557,19 @@ async updateEstimate(req, res) {
                         [Op.and]: [
                             ...whereClause,
                             { shipping_ids: { [Op.ne]: null } } // Add this condition
-                        ]                
+                        ],
+                         product_status:'発送中'               
                     }
                 });
 
                 // console.log(customers)
                 res.send(salesList);
             }else{
-                const salesList = await Master.findAll();
+                const salesList = await Master.findAll({
+                    where: {
+                        product_status:'発送中'   
+                    }
+                });
                     // console.log(JSON.stringify(salesWithCustomer, null, 2));
                 // console.log('saleList',salesList);
                 res.send(salesList);

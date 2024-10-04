@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       executor: DataTypes.STRING(30),
       confirmation_date: DataTypes.STRING(30),
       application_date: DataTypes.STRING(30),
-      total: DataTypes.DECIMAL(60,2)
+      total: DataTypes.INTEGER(60,2)
     })
     return CashRegister
   }

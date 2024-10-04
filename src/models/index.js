@@ -28,20 +28,6 @@ db.Inquery            = require("./Inquiry")(sequelize, Sequelize.DataTypes);
 db.Scheduler            = require("./Scheduler")(sequelize, Sequelize.DataTypes);
 db.PreciousMetalsPrice           = require("./PreciousMetalsPrice")(sequelize, Sequelize.DataTypes);
 
-//vendor accessment sheet
-// db.PreciousMetals           = require("./PreciousMetals")(sequelize, Sequelize.DataTypes);
-// db.Clock                    = require("./Clock")(sequelize, Sequelize.DataTypes);
-// db.Bag                      = require("./Bag")(sequelize, Sequelize.DataTypes);
-// db.Wallet                   = require("./Wallet")(sequelize, Sequelize.DataTypes);
-// db.Accessories              = require("./Accessories")(sequelize, Sequelize.DataTypes);
-// db.Camera                   = require("./Camera")(sequelize, Sequelize.DataTypes);
-// db.Antique                  = require("./Antique")(sequelize, Sequelize.DataTypes);
-// db.WesternLiquor            = require("./WesternLiquor")(sequelize, Sequelize.DataTypes);
-// db.MusicalInstrument        = require("./MusicalInstrument")(sequelize, Sequelize.DataTypes);
-// db.OldCoin                  = require("./OldCoin")(sequelize, Sequelize.DataTypes);
-// db.Kimono                   = require("./Kimono")(sequelize, Sequelize.DataTypes);
-// db.SmartPhoneAndTablet      = require("./SmartPhoneAndTablet")(sequelize, Sequelize.DataTypes);
-
 db.Vendor                   = require("./Vendor")(sequelize, Sequelize.DataTypes);
 db.Master                   = require("./Master")(sequelize, Sequelize.DataTypes);
 db.SafeMoney                   = require("./SafeMoney")(sequelize, Sequelize.DataTypes);

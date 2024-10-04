@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       total_amount: {
-        type: DataTypes.DECIMAL(15, 2),
+        type: DataTypes.INTEGER,
         allowNull: true
       },
       category: {
@@ -31,15 +31,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       total_sales: {
-        type: DataTypes.DECIMAL(15, 2),
+        type: DataTypes.INTEGER,
         allowNull: true
       },
       total_gross_profit: {
-        type: DataTypes.DECIMAL(15, 2),
+        type: DataTypes.INTEGER,
         allowNull: true
       },
       total_purchase_price: {
-        type: DataTypes.DECIMAL(15, 2),
+        type: DataTypes.INTEGER,
         allowNull: true
       }
     })
