@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
         // Common fields-----------------------------
+        invoice_ids: DataTypes.STRING(20),
         shipping_ids: DataTypes.STRING(20),
         shipping_address: {
             type: DataTypes.STRING, // 
@@ -27,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         // Fields from Sales---------------------------------------
         customer_id:    DataTypes.STRING(15),
         purchase_staff: DataTypes.STRING(50),
+        purchase_staff_id: DataTypes.STRING(10),
         store_name: DataTypes.STRING(50),
         product_type_one: DataTypes.STRING(50),
         product_type_two: DataTypes.STRING(50),
@@ -109,6 +111,8 @@ module.exports = (sequelize, DataTypes) => {
         // Fields from Kimono------------------------------------
         // Fields from SmartPhoneAndTablet-------------------------------
         // Vendors-----------------------------------------------
+        entire_items_url: DataTypes.STRING(50),
+        document_url: DataTypes.STRING(50),
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 

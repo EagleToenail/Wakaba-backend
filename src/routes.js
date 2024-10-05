@@ -29,6 +29,7 @@ const SchedulerController = require("./controllers/SchedulerController")
 
 const StampController = require("./controllers/StampsController")
 const CommemorativeCoinAndBillController = require('./controllers/CommemorativeCoinAndBillController')
+const MasterController = require("./controllers/MasterController")
 
 module.exports = (app) => {
   // =========authentication
@@ -109,7 +110,9 @@ module.exports = (app) => {
       { name: 'product_photo', maxCount: 1 },
     ]), MasterContoller.updateInvoice);
     app.post('/api/purchaseinvoice/delete', MasterContoller.deleteInvoice);
+    app.post('/api/purchaseinvoice/alldelete', MasterContoller.allInvoiceClear);
     app.post('/api/purchaseinvoice/getregistereddata', MasterContoller.getRegisteredData);
+    app.post('/api/purchaseinvoice/commentsave', MasterController.commentSave)
 
     app.post("/api/category/initialdata", MasterContoller.getCategoryInitialData)
     app.post("/api/category/data", MasterContoller.getCategoryData)

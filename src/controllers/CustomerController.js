@@ -24,7 +24,7 @@ const upload = multer({ storage });
 
 module.exports = {
 	async createCustomer(req, res) {
-		try {
+        try{
             console.log("customer create",req.body)
             const {visit_type, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger,brand_type} = req.body;
             const createFields = {visit_type, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger,brand_type};
@@ -35,15 +35,17 @@ module.exports = {
             if (req.files['idcard']) {
             const idCard = req.files['idcard'][0];
             createFields.idCard_url = idCard.filename; // Adjust field name based on your model
-            }
+            } 
             console.log("cusotmer data",createFields)
-			const customer = await Customer.create(createFields)
-			res.send(customer)
-		} catch (err) {
-			res.status(500).send({
-				error: "An error occured when trying to create a customer."
-			})
-		}
+            const customer = await Customer.create(createFields)
+            res.send(customer)
+        }catch (err) {
+            console.error("Error updating customer:", err); // Log the error for debugging
+            res.status(500).send({
+                error: "An error occurred when trying to update customer information"
+            });
+        }
+        
 	},
     async getCustomerList(req, res) {
         try {

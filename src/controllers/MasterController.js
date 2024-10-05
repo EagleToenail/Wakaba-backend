@@ -212,6 +212,35 @@ module.exports = {
             })
         }
     },
+    async getVendorListSelected(req,res) {
+        try {
+            const payload = req.body.payload;
+            for (let index = 0; index < payload.length; index++) {
+                const element = payload[index];
+                
+                const vendorList = await Vendor.findAll({
+                    attributes: ['vendor_name','cateagoryIds'],
+                    where:{
+                        categoryIds: {
+                            [Op.or]: [
+                                { [Op.like]: `${categoryId},%` },    
+                                { [Op.like]: `%, ${categoryId},%` },  
+                                { [Op.like]: `%, ${categoryId}` },    
+                                { [Op.eq]: categoryId.toString() }    
+                            ]
+                        }
+                    }
+                });
+                
+            }
+            // console.log('vendorList',vendorList);
+            res.send(vendorList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
     async saveInvoice(req, res) {
 		try {
             console.log('------------saveinvoice------------')
@@ -330,23 +359,27 @@ module.exports = {
 //----------------------------------------------purchase invoice ---------------------------------------------------------------
 async createInvoice(req, res) {
     try {
-        const {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+        const userStoreName = req.body.userStoreName;
+        const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
             purchase_result,purchase_price,estimate_wholesaler} = req.body;
 
-        const createData = {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+        const createData = {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
             purchase_result,purchase_price,estimate_wholesaler};
     
         if (req.files['product_photo']) {
             const uploadfile = req.files['product_photo'][0];
             createData.product_photo = uploadfile.filename; // Adjust field name based on your model
           }
-        console.log('createData',createData)
+        console.log('createData------',createData)
        await Master.create(createData);
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中'
+                product_status:'査定中',
+                store_name:userStoreName,
+                customer_id:createData.customer_id,
+                purchase_staff_id:createData.purchase_staff_id
             }
        });
         // const newMessageContent = await TodoMessage.findAll();
@@ -358,12 +391,13 @@ async createInvoice(req, res) {
 async updateInvoice(req, res) {
     try {
         const id = req.body.id;
-        const {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+        const userStoreName = req.body.userStoreName;
+        const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
             purchase_result,purchase_price,estimate_wholesaler} = req.body;
 
-        const updateData = {trading_date,number,purchase_staff,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+        const updateData = {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
             purchase_result,purchase_price,estimate_wholesaler};
     
         if (req.files['product_photo']) {
@@ -378,7 +412,10 @@ async updateInvoice(req, res) {
        });
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中'
+                product_status:'査定中',
+                store_name:userStoreName,
+                customer_id:updateData.customer_id,
+                purchase_staff_id:updateData.purchase_staff_id
             }
        });
         // const newMessageContent = await TodoMessage.findAll();
@@ -391,6 +428,8 @@ async deleteInvoice(req,res) {
     try {
         console.log('deleteinvoice')
         const id = req.body.id;
+        const userStoreName = req.body.userStoreName;
+        const userId = req.body.userId;
         console.log('deleteinvoice',id)
         await Master.destroy({
             where: {
@@ -399,7 +438,9 @@ async deleteInvoice(req,res) {
         });
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中'
+                product_status:'査定中',
+                store_name: userStoreName,
+                purchase_staff_id: userId
             }
         });
         res.send(invoiceData);
@@ -410,13 +451,62 @@ async deleteInvoice(req,res) {
 async getRegisteredData(req,res) {
     try {
         const customerId = req.body.id;
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
        const invoiceData = await Master.findAll({
             where: {
                 product_status:'査定中',
-                customer_id:customerId
+                customer_id:customerId,
+                purchase_staff_id:userId,
+                userStoreName:userStoreName
             }
        });
         // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async allInvoiceClear(req,res) {
+    try {
+        console.log('deleteinvoice')
+        const payload = req.body.payload;
+        console.log('payload',payload)
+        for (let index = 0; index < payload.length; index++) {
+            const element = payload[index];
+            id = element.id;
+            await Master.destroy({
+                where: {
+                    id:id
+                }
+            });
+        }
+        res.send({success:true});
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async commentSave(req,res) {
+    try {
+        const payload = req.body.payload;
+        const id = payload.id;
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
+        const comment = payload.comment;
+        const updateField = {};
+        updateField.comment = comment;
+        await Master.update(updateField,{
+            where: {
+                id:id
+            }
+        });
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status:'査定中',
+                store_name:userStoreName,
+                purchase_staff_id: userId
+            }
+        });
         res.send(invoiceData);
       } catch (error) {
         res.status(500).send(error.message);

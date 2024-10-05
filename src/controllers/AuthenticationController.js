@@ -136,13 +136,15 @@ module.exports = {
       // generate access token
       const token = jwt.sign({ username: user.username }, 'shhhhh');
       const userId = user.id;
+      const storename = user.store_name;
+      const role = user.role_flag;
 
       // // Send response;
       response({
         res,
         statusCode: 200,
         message: 'Successfully logged in',
-        payload: { token: token, userId: userId }, // -> send token to store in localStorage
+        payload: { token: token, userId: userId,username:username,storename:storename ,role:role }, // -> send token to store in localStorage
       });
     } catch (error0) {
       response({
