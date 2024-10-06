@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
 
         product_status: {
             type: DataTypes.ENUM,
-            values: ['査定中', 'お預かり','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],
+            values: ['査定中','成約済', 'お預かり','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],
             defaultValue: '査定中',
         },
 
@@ -111,8 +111,8 @@ module.exports = (sequelize, DataTypes) => {
         // Fields from Kimono------------------------------------
         // Fields from SmartPhoneAndTablet-------------------------------
         // Vendors-----------------------------------------------
-        entire_items_url: DataTypes.STRING(50),
-        document_url: DataTypes.STRING(50),
+        entire_items_url: DataTypes.STRING(100),
+        document_url: DataTypes.STRING(100),
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 

@@ -117,6 +117,17 @@ module.exports = (app) => {
     app.post("/api/category/initialdata", MasterContoller.getCategoryInitialData)
     app.post("/api/category/data", MasterContoller.getCategoryData)
     app.post("/api/vendor/updateestimate", MasterContoller.updateEstimate)
+
+    app.post("/api/purchaseinvoice/uploadimage",MasterContoller.upload.fields([
+      { name: 'entire_items_url', maxCount: 1 },
+      { name: 'document_url', maxCount: 1 },
+    ]), MasterContoller.uploadItemsImage)
+    
+    app.post("/api/purchaseinvoice/purchasepermit", MasterContoller.purchasePermission)
+    app.post("/api/purchaseinvoice/customerreceiptpermit", MasterContoller.purchaseReceiptPermit)
+    app.post("/api/purchaseinvoice/stamps", MasterContoller.purchaseStamp)
+
+    app.post("/api/purchaseinvoice/getinvoicelist", MasterContoller.getInvoiceList)
     //==============shipping=======
     app.post("/api/sales/getSalesById", MasterContoller.getSalesByIdForShipping)
     app.post("/api/sales/purchaserequestfromwholesaler", MasterContoller.savePurchaseRequestFromwholeSaler)

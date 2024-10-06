@@ -14,6 +14,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(20),
         defaultValue:'0',
       },
+      in_charge_id: {
+        type: DataTypes.STRING(20),
+        defaultValue:'0',
+      },
+      store_name: {
+        type: DataTypes.STRING(20),
+        defaultValue:'0',
+      },
       inorout: {
         type: DataTypes.STRING(20),
         defaultValue:'0',

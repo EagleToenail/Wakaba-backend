@@ -4,6 +4,7 @@ const { Customer } = require('../models')
 const {CustomerPastVisitHistory} = require('../models')
 const { Vendor } = require('../models')
 const { SafeMoney } = require('../models')
+const { StampsTransaction } = require('../models')
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
@@ -349,6 +350,7 @@ module.exports = {
             const sales = await Master.findByPk(req.params.id)
                 // console.log(JSON.stringify(salesWithCustomer, null, 2));
             // console.log('saleList',salesWithCustomer);
+
             res.send(sales);
         } catch (err) {
             res.status(500).send({
@@ -376,7 +378,9 @@ async createInvoice(req, res) {
        await Master.create(createData);
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中',
+                product_status: {
+                    [Op.or]: ['査定中', '成約済','お預かり']
+                },
                 store_name:userStoreName,
                 customer_id:createData.customer_id,
                 purchase_staff_id:createData.purchase_staff_id
@@ -412,7 +416,9 @@ async updateInvoice(req, res) {
        });
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中',
+                product_status: {
+                    [Op.or]: ['査定中', '成約済','お預かり']
+                },
                 store_name:userStoreName,
                 customer_id:updateData.customer_id,
                 purchase_staff_id:updateData.purchase_staff_id
@@ -438,7 +444,9 @@ async deleteInvoice(req,res) {
         });
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中',
+                product_status: {
+                    [Op.or]: ['査定中', '成約済','お預かり']
+                },
                 store_name: userStoreName,
                 purchase_staff_id: userId
             }
@@ -453,12 +461,15 @@ async getRegisteredData(req,res) {
         const customerId = req.body.id;
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
+        console.log('aaaaaa',customerId,userId,userStoreName)
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中',
+                product_status: {
+                    [Op.or]: ['査定中', '成約済','お預かり']
+                },
                 customer_id:customerId,
                 purchase_staff_id:userId,
-                userStoreName:userStoreName
+                store_name:userStoreName
             }
        });
         // const newMessageContent = await TodoMessage.findAll();
@@ -493,6 +504,7 @@ async commentSave(req,res) {
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
         const comment = payload.comment;
+        const customer_id = payload.customer_id;
         const updateField = {};
         updateField.comment = comment;
         await Master.update(updateField,{
@@ -502,15 +514,491 @@ async commentSave(req,res) {
         });
        const invoiceData = await Master.findAll({
             where: {
-                product_status:'査定中',
+                product_status: {
+                    [Op.or]: ['査定中', '成約済','お預かり']
+                },
                 store_name:userStoreName,
-                purchase_staff_id: userId
+                purchase_staff_id: userId,
+                customer_id:customer_id
             }
         });
         res.send(invoiceData);
       } catch (error) {
         res.status(500).send(error.message);
       }
+},
+async uploadItemsImage(req,res) {
+    try {
+        const {ids,customer_id,purchase_staff_id,store_name} = req.body;
+        const updateField = {};
+        if (req.files['entire_items_url']) {
+            const uploadfile = req.files['entire_items_url'][0];
+            updateField.entire_items_url = uploadfile.filename; // Adjust field name based on your model
+          }
+        if (req.files['document_url']) {
+            const uploadfile = req.files['document_url'][0];
+            updateField.document_url = uploadfile.filename; // Adjust field name based on your model
+          }
+          
+          const itemIds = ids.split(',').map(Number);
+          console.log('-------------updateField',updateField,itemIds.length)
+        for (let index = 0; index < itemIds.length; index++) {
+            const element = itemIds[index];
+            console.log(element)
+            await Master.update(updateField,{
+                where: {
+                    id:element
+                }
+            });
+        }
+
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status:'査定中',
+                store_name:store_name,
+                purchase_staff_id: purchase_staff_id,
+                customer_id:customer_id
+            }
+        });
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async purchasePermission(req,res) {
+    try {
+        const ids = req.body.ids;
+        const customerId = req.body.id;
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
+        const updateField = {};
+        updateField.product_status = '成約済';
+        for (let index = 0; index < ids.length; index++) {
+            const element = ids[index];
+            await Master.update(updateField,{
+                where: {
+                    id:element
+                }
+            });
+        }
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status: {
+                    [Op.or]: ['査定中', '成約済','お預かり']
+                },
+                customer_id:customerId,
+                purchase_staff_id:userId,
+                store_name:userStoreName
+            }
+       });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async purchaseReceiptPermit(req,res) {
+    try {
+        console.log('hello')
+        const ids = req.body.ids;
+        const customerId = req.body.customerId;
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
+        const updateField = {};
+        updateField.product_status = 'お預かり';
+        console.log('bbbbbb',customerId,userId,userStoreName,ids.length)
+        for (let index = 0; index < ids.length; index++) {
+            const element = ids[index];
+            await Master.update(updateField,{
+                where: {
+                    id:element
+                }
+            });
+        }
+        updateField.invoice_ids = ids.toString();
+        await Master.update(updateField,{
+            where: {
+                id:ids[0]
+            }
+        });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send({success:true});
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async purchaseStamp(req,res){
+    try {
+        console.log('=======arrive==========')
+        const {currentDay,customerId,username,storeName,userId,stampRate,
+            sheetIds,sheetValues,roseIds,roseValues,packIds,packValues,cardIds,cardValues,
+            totalNumberOfSheet1,totalNumberOfSheet2,totalNumberOfRose1,totalNumberOfRose2,totalNumberOfPack1,totalNumberOfPack2,totalNumberOfCard1,totalNumberOfCard2,
+            totalFaceValue1,totalFaceValue2,totalRoseFaceValue1,totalRoseFaceValue2,totalPackFaceValue1,totalPackFaceValue2,totalCardFaceValue1,totalCardFaceValue2,
+            totalPurchaseOfSheet1,totalPurchaseOfSheet2,totalPurchaseOfRose1,totalPurchaseOfRose2,totalPurchaseOfPack1,totalPurchaseOfPack2,totalPurchaseOfCard1,totalPurchaseOfCard2,
+        } = req.body;
+        const aaa = {currentDay,customerId,username,storeName,userId,stampRate,
+            sheetIds,sheetValues,roseIds,roseValues,packIds,packValues,cardIds,cardValues,
+            totalNumberOfSheet1,totalNumberOfSheet2,totalNumberOfRose1,totalNumberOfRose2,totalNumberOfPack1,totalNumberOfPack2,totalNumberOfCard1,totalNumberOfCard2,
+            totalFaceValue1,totalFaceValue2,totalRoseFaceValue1,totalRoseFaceValue2,totalPackFaceValue1,totalPackFaceValue2,totalCardFaceValue1,totalCardFaceValue2,
+            totalPurchaseOfSheet1,totalPurchaseOfSheet2,totalPurchaseOfRose1,totalPurchaseOfRose2,totalPurchaseOfPack1,totalPurchaseOfPack2,totalPurchaseOfCard1,totalPurchaseOfCard2,
+        }
+         console.log('=======arrive==========',aaa)
+        if(sheetIds.length !== 0) {
+            // console.log('====');
+            const createData = {};
+            createData.date = currentDay;
+            createData.in_charge = username;
+            createData.inorout = '人庫';
+            createData.stamp_type = '切手シート';
+            createData.stamp_ids = sheetIds.toString();
+            createData.stamp_numbers = sheetValues.toString();
+            createData.totalFaceValue = (Number(totalFaceValue1) + Number(totalFaceValue2)).toString();
+            createData.five_up_facevalue = totalFaceValue1;
+            createData.five_down_facevalue = totalFaceValue2;
+            createData.in_charge_id = userId;
+            createData.store_name = storeName;
+            await StampsTransaction.create(createData);
+            console.log('stampOk1')
+
+            if(totalFaceValue1 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+                createInvoiceData.product_type_two = 'シート(高)';
+                createInvoiceData.interest_rate = (stampRate[0].percent).toString();
+                createInvoiceData.product_price = totalFaceValue1;
+                createInvoiceData.purchase_price = totalPurchaseOfSheet1;
+
+                createInvoiceData.quantity = (totalNumberOfSheet1).toString();
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+                console.log('stampOk2',createInvoiceData)
+                await Master.create(createInvoiceData);
+            }
+            if(totalFaceValue2 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+                createInvoiceData.product_type_two = 'シート(小)'
+                createInvoiceData.interest_rate = (stampRate[0].percent).toString();
+                createInvoiceData.product_price = totalFaceValue2;
+                createInvoiceData.purchase_price = totalPurchaseOfSheet2;
+
+                createInvoiceData.quantity = (totalNumberOfSheet2).toString();
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+                await Master.create(createInvoiceData);
+            }
+
+        }
+        if(roseIds.length !== 0) {
+            // console.log('====');
+            const createData = {};
+            createData.date = currentDay;
+            createData.in_charge = username;
+            createData.inorout = '人庫';
+            createData.stamp_type = '切手バラ';
+            createData.stamp_ids = roseIds.toString();
+            createData.stamp_numbers = roseValues.toString();
+            createData.totalFaceValue = Number(totalRoseFaceValue1) + Number(totalRoseFaceValue2);
+            createData.five_up_facevalue = Number(totalRoseFaceValue1);
+            createData.five_down_facevalue = Number(totalRoseFaceValue2);
+            createData.in_charge_id = userId;
+            createData.store_name = storeName;
+            // console.log('====',createData);
+            await StampsTransaction.create(createData);
+
+            if(totalRoseFaceValue1 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+                createInvoiceData.product_type_two = 'バラ(高)';
+                createInvoiceData.interest_rate = (stampRate[1].percent).toString();
+                createInvoiceData.product_price = totalRoseFaceValue1;
+                createInvoiceData.purchase_price = totalPurchaseOfRose1;
+
+                createInvoiceData.quantity = totalNumberOfRose1;
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+
+                await Master.create(createInvoiceData);
+            }
+            if(totalRoseFaceValue2 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+                createInvoiceData.product_type_two = 'バラ(小)'
+                createInvoiceData.interest_rate = (stampRate[1].percent).toString();
+                createInvoiceData.product_price = totalRoseFaceValue2;
+                createInvoiceData.purchase_price = totalPurchaseOfRose2;
+
+                createInvoiceData.quantity = totalNumberOfRose2;
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+
+                await Master.create(createInvoiceData);
+            }
+        }
+        if(packIds.length !== 0) {
+            // console.log('====');
+            const createData = {};
+            createData.date = currentDay;
+            createData.in_charge = username;
+            createData.inorout = '人庫';
+            createData.stamp_type = 'レ夕一パック';
+            createData.stamp_ids = packIds.toString();
+            createData.stamp_numbers = packValues.toString();
+            createData.totalFaceValue = Number(totalPackFaceValue1) + Number(totalPackFaceValue2);
+            createData.five_up_facevalue = Number(totalPackFaceValue1);
+            createData.five_down_facevalue = Number(totalPackFaceValue2);
+            createData.in_charge_id = userId;
+            createData.store_name = storeName;
+            // console.log('====',createData);
+            await StampsTransaction.create(createData);
+
+            if(totalPackFaceValue1 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+
+                createInvoiceData.interest_rate = (stampRate[2].percent).toString();
+                createInvoiceData.product_price = totalPackFaceValue1;
+                createInvoiceData.purchase_price = totalPurchaseOfPack1;
+
+                createInvoiceData.quantity = totalNumberOfPack1;
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+
+                await Master.create(createInvoiceData);
+            }
+            if(totalPackFaceValue2 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+
+                createInvoiceData.interest_rate = (stampRate[2].percent).toString();
+                createInvoiceData.product_price = totalPackFaceValue2;
+                createInvoiceData.purchase_price = totalPurchaseOfPack2;
+
+                createInvoiceData.quantity = totalNumberOfPack2;
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+
+                await Master.create(createInvoiceData);
+            }
+        }
+        if(cardIds.length !== 0) {
+            // console.log('====');
+            const createData = {};
+            createData.date = currentDay;
+            createData.in_charge = username;
+            createData.inorout = '人庫';
+            createData.stamp_type = 'レ夕一パック';
+            createData.stamp_ids = cardIds.toString();
+            createData.stamp_numbers = cardValues.toString();
+            createData.totalFaceValue = Number(totalCardFaceValue1) + Number(totalCardFaceValue2);
+            createData.five_up_facevalue = Number(totalCardFaceValue1);
+            createData.five_down_facevalue = Number(totalCardFaceValue2);
+            createData.in_charge_id = userId;
+            createData.store_name = storeName;
+            // console.log('====',createData);
+            await StampsTransaction.create(createData);
+
+            if(totalCardFaceValue1 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+
+                createInvoiceData.interest_rate = (stampRate[3].percent).toString();
+                createInvoiceData.product_price = totalCardFaceValue1;
+                createInvoiceData.purchase_price = totalPurchaseOfCard1;
+
+                createInvoiceData.quantity = totalNumberOfCard1;
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+
+                await Master.create(createInvoiceData);
+            }
+            if(totalCardFaceValue2 !== 0) {
+                const createInvoiceData = {};
+                createInvoiceData.trading_date = currentDay;
+                createInvoiceData.purchase_staff = username;
+                createInvoiceData.purchase_staff_id = userId;
+                createInvoiceData.customer_id = customerId;
+                createInvoiceData.store_name = storeName;
+                createInvoiceData.product_type_one = '切手';
+
+                createInvoiceData.interest_rate = (stampRate[3].percent).toString();
+                createInvoiceData.product_price = totalCardFaceValue2;
+                createInvoiceData.purchase_price = totalPurchaseOfCard2;
+
+                createInvoiceData.quantity = totalNumberOfCard2;
+                createInvoiceData.number = '';
+                createInvoiceData.estimate_wholesaler = '{}';
+                createInvoiceData.hearing = '';
+                createInvoiceData.product_type_three = '';
+                createInvoiceData.product_type_four = '';
+                createInvoiceData.product_name = '';
+                createInvoiceData.reason_application = '';
+                createInvoiceData.highest_estimate_vendor = '';
+                createInvoiceData.highest_estimate_price = '0';
+                createInvoiceData.number_of_vendor = '';
+                createInvoiceData.supervisor_direction = '';
+                createInvoiceData.purchase_result = '';
+
+                await Master.create(createInvoiceData);
+            }
+        }
+        res.send({success:true})
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to create a sale."
+        })
+    }
+},
+async getInvoiceList(req, res) {
+    // const { shipping_date,shipping_address,product_status} = req.body.params;
+    try {
+        // const whereClause = [];
+
+        // if (shipping_address!='') {
+        //     whereClause.push ({
+        //         shipping_address: { [Op.like]: `%${shipping_address}%` } 
+        //    });
+        // }
+        // if (shipping_date!='') {
+        //     whereClause.push ({
+        //         shipping_date: { [Op.like]: `%${shipping_date}%` } 
+        //    });
+        // }
+        // if (product_status!='') {
+        //     whereClause.push ({
+        //         product_status: { [Op.like]: `%${product_status}%` } 
+        //    });
+        // }
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
+        console.log('------arrive1------',userId,userStoreName)
+            const salesList = await Master.findAll({
+                include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                    }
+                ],
+                where: {
+                    [Op.and]: [
+                        // ...whereClause,
+                        { invoice_ids: { [Op.ne]: null } } // Add this condition
+                    ], 
+                    store_name:userStoreName             
+                }
+            });
+            // console.log(customers)
+            res.send(salesList);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
 },
 //----------------------------------------------vendor assessment 
 async getCategoryInitialData(req, res) {
@@ -587,10 +1075,13 @@ async updateEstimate(req, res) {
 
     async getSalesByIdForShipping(req,res) {
         try {
-            const salesId = req.body.id;
-            const sales = await Master.findByPk(salesId)
-                // console.log(JSON.stringify(salesWithCustomer, null, 2));
-            // console.log('saleList',salesWithCustomer);
+ 
+            const ids = req.body.id;
+            const sales = await Master.findAll({
+                where: {
+                  id: ids // This will retrieve records with matching IDs
+                }
+              });
             res.send(sales);
         } catch (err) {
             res.status(500).send({
@@ -621,7 +1112,6 @@ async updateEstimate(req, res) {
 
     async getWholeList(req, res) {
         const { shipping_date,shipping_address,product_status} = req.body.params;
-        console.log("asd",req.body)
         try {
             const whereClause = [];
 
