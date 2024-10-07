@@ -225,6 +225,23 @@ module.exports = {
             })
         }
     },
+    //--------------------using for chat------------
+    async getSuperVisorList(req, res) {
+        try {
+            const storeName = req.body.storeName;
+            const userList = await User.findAll({
+                where:{
+                    store_name:storeName,
+                    role_flag:'2'
+                }
+            })
+            res.send(userList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get user list."
+            })
+        }
+    },
     //-------------------admin part------------------------------------------
     async getUserProfileList(req, res) {
         try {

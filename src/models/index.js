@@ -42,6 +42,8 @@ db.OnSitePurchaseMessage              = require("./OnSitePurchaseMessage")(seque
 db.DisposalPermissionMessage              = require("./DisposalPermissionMessage")(sequelize, Sequelize.DataTypes);
 db.GeneralChatMessage              = require("./GeneralChatMessage")(sequelize, Sequelize.DataTypes);
 db.StoreChatMessage              = require("./StoreChatMessage")(sequelize, Sequelize.DataTypes);
+db.PurchaseToRShopMessage              = require("./PurchaseToRShopMessage")(sequelize, Sequelize.DataTypes);
+
 
 db.StampInterestRate              = require("./StampInterestRate")(sequelize, Sequelize.DataTypes);
 db.StampSheet              = require("./StampSheet")(sequelize, Sequelize.DataTypes);

@@ -77,14 +77,11 @@ module.exports = {
     async updateStamp(req, res) {
         try {
             const sheetRows = req.body.sheetRows;
-            console.log('=====iiii=====',req.body.sheetRows)
             const roseRows = req.body.roseRows;
             const packRows = req.body.packRows;
             const cardRows = req.body.cardRows;
             const inorout = req.body.inorout;
-            console.log('=====iiii=====',req.body.inorout)
             const id = req.body.id;
-            console.log('=====iiii=====',req.body.sheetRows,inorout,id)
 
             const updateSheet = sheetRows.map(async (data) => {
                 const { id, ...newData } = data; // Extract id and other fields
@@ -93,12 +90,12 @@ module.exports = {
                 for (const key in newData) {
                     if(inorout === '入庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) + parseInt(newData[key])); // Append new data
                         }
                     }
                     if(inorout === '出庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) - parseInt(newData[key])); // Append new data
                         }
                     }
                 }
@@ -112,12 +109,12 @@ module.exports = {
                 for (const key in newData) {
                     if(inorout === '入庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) + parseInt(newData[key])); // Append new data
                         }
                     }
                     if(inorout === '出庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) - parseInt(newData[key])); // Append new data
                         }
                     }
 
@@ -132,12 +129,12 @@ module.exports = {
                 for (const key in newData) {
                     if(inorout === '入庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) + parseInt(newData[key])); // Append new data
                         }
                     }
                     if(inorout === '出庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) - parseInt(newData[key])); // Append new data
                         }
                     }
 
@@ -152,12 +149,12 @@ module.exports = {
                 for (const key in newData) {
                     if(inorout === '入庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) + parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) + parseInt(newData[key])); // Append new data
                         }
                     }
                     if(inorout === '出庫') {
                         if(key === 'numberOfSheets' || key === 'totalFaceValue' || key === 'purchasePrice'){
-                            updatedData[key] = (parseFloat(existingSheet[key]) - parseFloat(newData[key])).toFixed(2); // Append new data
+                            updatedData[key] = (parseInt(existingSheet[key]) - parseInt(newData[key])); // Append new data
                         }
                     }
                 }

@@ -71,6 +71,7 @@ module.exports = (app) => {
     ]),UserController.updateUserProfile)
     // app.post("/api/user/updateUser", UserController.updateUser)
 
+    app.post("/api/user/getSuperVisorList",  UserController.getSuperVisorList)//get supervisor of this shop
     //==============login or logout timecard
     app.post("/api/logintime", AuthenticationController.loginTime)
     app.post("/api/logouttime", AuthenticationController.logoutTime)
@@ -128,6 +129,10 @@ module.exports = (app) => {
     app.post("/api/purchaseinvoice/stamps", MasterContoller.purchaseStamp)
 
     app.post("/api/purchaseinvoice/getinvoicelist", MasterContoller.getInvoiceList)
+    app.post("/api/purchaseinvoice/invoicedetail", MasterContoller.getInvoiceDetail)
+    app.post("/api/purchaseinvoice/confirm", MasterContoller.purchaseInvoiceConfirm)//by customer
+    app.post("/api/purchaseinvoice/getinvoicenumber", MasterContoller.getInvoiceNumber)//calculate invoice count(no need)
+
     //==============shipping=======
     app.post("/api/sales/getSalesById", MasterContoller.getSalesByIdForShipping)
     app.post("/api/sales/purchaserequestfromwholesaler", MasterContoller.savePurchaseRequestFromwholeSaler)

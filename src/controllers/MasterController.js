@@ -629,7 +629,7 @@ async purchaseReceiptPermit(req,res) {
 },
 async purchaseStamp(req,res){
     try {
-        console.log('=======arrive==========')
+
         const {currentDay,customerId,username,storeName,userId,stampRate,
             sheetIds,sheetValues,roseIds,roseValues,packIds,packValues,cardIds,cardValues,
             totalNumberOfSheet1,totalNumberOfSheet2,totalNumberOfRose1,totalNumberOfRose2,totalNumberOfPack1,totalNumberOfPack2,totalNumberOfCard1,totalNumberOfCard2,
@@ -642,7 +642,7 @@ async purchaseStamp(req,res){
             totalFaceValue1,totalFaceValue2,totalRoseFaceValue1,totalRoseFaceValue2,totalPackFaceValue1,totalPackFaceValue2,totalCardFaceValue1,totalCardFaceValue2,
             totalPurchaseOfSheet1,totalPurchaseOfSheet2,totalPurchaseOfRose1,totalPurchaseOfRose2,totalPurchaseOfPack1,totalPurchaseOfPack2,totalPurchaseOfCard1,totalPurchaseOfCard2,
         }
-         console.log('=======arrive==========',aaa)
+        //  console.log('=======arrive==========',aaa)
         if(sheetIds.length !== 0) {
             // console.log('====');
             const createData = {};
@@ -976,7 +976,6 @@ async getInvoiceList(req, res) {
         // }
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
-        console.log('------arrive1------',userId,userStoreName)
             const salesList = await Master.findAll({
                 include: [
                     {
@@ -990,10 +989,200 @@ async getInvoiceList(req, res) {
                         { invoice_ids: { [Op.ne]: null } } // Add this condition
                     ], 
                     store_name:userStoreName             
-                }
+                },
+                order: [['createdAt', 'DESC']]
             });
             // console.log(customers)
             res.send(salesList);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
+},
+async getInvoiceDetail(req,res) {
+    try {
+        const invoiceId = req.body.id;
+        const invoiceIds = await Master.findOne({
+            where: {
+              id: invoiceId // Assuming `id` is the primary key
+            },
+            attributes: ['invoice_ids'] // Replace with the name of the column you want to select
+          });
+          const invoiceids = invoiceIds.invoice_ids;
+          if(invoiceids != null) {
+            const ids = invoiceids.split(',').map(id => id.trim())
+            const sales = await Master.findAll({
+                where: {
+                id: ids // Assuming `id` is the primary key
+                },
+            });
+            res.send(sales);
+          } else {
+            console.log('-0k2-')
+            const sales = await Master.findAll({
+                where: {
+                  id: invoiceId // Assuming `id` is the primary key
+                },
+              });
+              res.send(sales);
+          }
+
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
+},
+//by customer
+async purchaseInvoiceConfirm (req,res) {
+    try {
+        const {dataUrl,payload} = req.body;
+        const purchaseData = payload;
+        console.log("dataurl,purchaseData",purchaseData)
+
+        if (!dataUrl) {
+            return res.status(400).json({ error: 'No data URL provided' });
+          }
+        const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+        const thistime = Date.now();
+        const dirPath = path.join(__dirname, '../uploads/signatures');
+        const filename = `signature_${thistime}.png`;
+        const filePath = path.join(dirPath, `${filename}`);
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+          }
+        
+            // Save the file
+        fs.writeFile(filePath, base64Data, 'base64', (err) => {
+            if (err) {
+            console.error('Error saving file:', err);
+            return res.status(500).json({ error: 'Failed to save signature' });
+            }
+        });
+        // console.log('aa===========')
+        try {
+            for (let index = 0; index < purchaseData.length; index++) {
+                const masterData = purchaseData[index];
+                masterData.signature = filename;
+                const id = masterData.id;
+                delete masterData.id;
+                // console.log('bb===============')
+                // console.log("salesData",masterData)
+                const updateField = {};
+                updateField.product_status = '買取済';
+                await Master.update(updateField,{
+                    where:{
+                        id:id
+                    }
+                });
+                //----------save at Monthly income table-------------------------------- 
+                const now = new Date();
+                // Format the date as YYYY-MM-DD
+                const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+                const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+        
+                // Format the time as HH:mm:ss
+                const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
+                const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
+        
+                let todayPurchase_amount = await SafeMoney.findOne({
+                    where: {
+                    store_name:masterData.store_name,
+                    date: currentDay,
+                    }
+                });
+                // console.log('workingTimeRecord',workingTimeRecord)
+                if (todayPurchase_amount === null) {
+                    // console.log()
+                    await SafeMoney.create({
+                    date:currentDay,
+                    total_purchase_price:masterData.purchase_price,
+                    store_name:masterData.store_name
+                    });
+                } else {
+                    const totalPurchaseAmount = parseFloat(todayPurchase_amount.total_purchase_price) + parseFloat(masterData.purchase_price);
+                    await SafeMoney.update(
+                        {total_purchase_price:totalPurchaseAmount},
+                        { where: {
+                            store_name: masterData.store_name,
+                        date:currentDay,
+                        }}
+                    );
+                }
+                //-------------------------------------------
+                //save customer past visit history--------------
+                const customerPastVisitHistory = {
+                    visit_date: masterData.trading_date,
+                    customerId: masterData.customer_id,
+                    applicable: masterData.reason_application,
+                    category:masterData.product_type_one,
+                    product_name:masterData.product_name,
+                    total_purchase_price:masterData.purchase_price,
+                };
+
+                const customerpastvistoryhistory = await CustomerPastVisitHistory.create(customerPastVisitHistory);
+            }
+            //-------------------------------------------------------
+            res.send({"success":true})
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to create a sale."
+            })
+        }
+
+    } catch (err) {
+        res.status(500).send({
+            error: 'An error occured when trying to delete a sales.'
+        })
+    }
+},
+async rShopShippingConfirm (req,res) {
+    try {
+        console.log('hello')
+        const ids = req.body.ids;
+        const payload = req.body.payload;
+        const updateField = {};
+        updateField.product_status = '約定済';
+
+        for (let index = 0; index < payload.length; index++) {
+            const element = payload[index];
+            updateField.shipping_address = element.shipping_address;
+            updateField.sales_amount = element.sales_amount;
+            await Master.update(updateField,{
+                where: {
+                    id:element.id
+                }
+            });
+        }
+        delete updateField.shipping_address;
+        delete updateField.sales_amount;
+        updateField.invoice_ids = ids.toString();
+        await Master.update(updateField,{
+            where: {
+                id:ids[0]
+            }
+        });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send({success:true});
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+//get the invoice number
+async getInvoiceNumber(req, res) {
+    try {
+        const userStoreName = req.body.userStoreName;
+        const totalCount = await Master.count({
+            where: {
+                [Op.and]: [
+                    { invoice_ids: { [Op.ne]: null } }, // Ensure invoice_ids is not null
+                ],
+                store_name: userStoreName
+            }
+        });
+            // console.log(customers)
+            res.send(totalCount);
     } catch (err) {
         res.status(500).send({
             error: "An error occured when trying to get sales list."
@@ -1004,13 +1193,16 @@ async getInvoiceList(req, res) {
 async getCategoryInitialData(req, res) {
     try {
         const category = req.body.category;
+        // console.log('saleList',category);
         const salesList = await Master.findAll({
             where: {
                 product_type_one: category,
-                product_status:'買取済',
-            }
+                product_status: {
+                    [Op.not]: ['査定中']
+                },
+            },
+            order: [['createdAt', 'DESC']]
         });
-        // console.log('saleList',salesList);
         res.send(salesList);
     } catch (err) {
         res.status(500).send({
@@ -1024,10 +1216,12 @@ async getCategoryData(req, res) {
         const salesList = await Master.findAll({
             where: {
                 product_type_one: category,
-                product_status:'買取済',
-            }
+                product_status: {
+                    [Op.not]: ['査定中']
+                } 
+            },
+            order: [['createdAt', 'DESC']]
         });
-        // console.log('saleList',salesList);
         res.send(salesList);
     } catch (err) {
         res.status(500).send({
