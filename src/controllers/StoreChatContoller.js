@@ -74,9 +74,8 @@ module.exports = {
 // Create a new reply
     async createReply (req, res) {
         try {
-            console.log('het---------------------')
-            const { thread_name,store_name,time, title, content, senderId, parentMessageId } = req.body;
-            const newMessage = {thread_name,store_name,time, title, content, senderId, parentMessageId };
+            const { thread_name,time, title, content, senderId, parentMessageId,status,store_name } = req.body;
+            const newMessage = {thread_name,time, title, content, senderId, parentMessageId,status,store_name };
             if (req.files['fileUrl']) {
                 const uploadfile = req.files['fileUrl'][0];
                 newMessage.fileUrl = uploadfile.filename; // Adjust field name based on your model
@@ -118,6 +117,60 @@ module.exports = {
           res.status(500).json({ error: 'An error occurred while fetching messages' });
         }
       },
+//----------------------------------
+async getAlerts(req,res) {
+  try{
+    const userId = req.body.userId;
+    const store_name = req.body.storeName;
+    console.log('store_name',store_name)
+    const threadNames = await StoreChatMessage.findAll({
+          where: {
+            status: {
+                [Op.or]: [
+                    { [Op.like]: `${userId},%` },    
+                    { [Op.like]: `%,${userId},%` },  
+                    { [Op.like]: `%,${userId}` },    
+                    { [Op.eq]: userId.toString() }    
+                ]
+            },
+            store_name:store_name,
+          },
+          attributes: ['thread_name'],
+      });
+      // console.log('threadNames',threadNames);
+      res.send(threadNames);
+  }catch(error){
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ error: 'An error occurred while fetching messages' });
+  } 
+},
 
+  async removeAlerts(req,res) {
+    try{
+      const userId = req.body.userId;
+      const messageId = req.body.messageId;
+
+      const status = await StoreChatMessage.findOne({
+          where: {
+            id:messageId
+          },
+          attributes: ['status'],
+      });
+      const numberArray = status.status.split(',').map(Number);
+      const userIds = numberArray.filter((id) => id !== Number(userId));
+      const updatedField = {};
+      updatedField.status = userIds.toString();
+      await StoreChatMessage.update(updatedField, {
+          where:{
+            id:messageId
+          }
+      })
+        // console.log('threadNames',threadNames);
+        res.send({success:true});
+    }catch(error){
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ error: 'An error occurred while fetching messages' });
+    } 
+  },
     upload
 }

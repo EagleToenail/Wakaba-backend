@@ -1,4 +1,4 @@
-const { PurchaseToRShopMessage } = require('../models')
+const { TodoMessage } = require('../models')
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
@@ -22,7 +22,7 @@ const upload = multer({ storage });
 
 const fetchReplies = async (parentId) => {
     // Fetch replies for a given parent message ID
-    const replies = await PurchaseToRShopMessage.findAll({
+    const replies = await TodoMessage.findAll({
       where: { parentMessageId: parentId }
     });
   
@@ -42,8 +42,8 @@ module.exports = {
    // Fetch all root messages related to a user and their replies
 	async getMessagesAndRepliesForUser  (req, res) {
         try {
-            const AllMessages = await PurchaseToRShopMessage.findAll();
-            const rootMessages = await PurchaseToRShopMessage.findAll({
+            const AllMessages = await TodoMessage.findAll();
+            const rootMessages = await TodoMessage.findAll({
               where: {
                 [Op.or]: [
                   { senderId: req.params.userId },
@@ -53,7 +53,7 @@ module.exports = {
               }
             });
             const rootMessageIds = rootMessages.map(msg => msg.id);
-            const replies = await PurchaseToRShopMessage.findAll({
+            const replies = await TodoMessage.findAll({
               where: {
                 parentMessageId: {
                   [Op.in]: rootMessageIds
@@ -74,15 +74,15 @@ module.exports = {
 // Create a new reply
     async createReply (req, res) {
         try {
-            const { time, title, content, senderId, receiverId, parentMessageId } = req.body;
-            const newMessage = {time, title, content, senderId, receiverId, parentMessageId };
+            const {store_name, time, title, content, senderId, receiverId, parentMessageId } = req.body;
+            const newMessage = {store_name, time, title, content, senderId, receiverId, parentMessageId };
             if (req.files['fileUrl']) {
                 const uploadfile = req.files['fileUrl'][0];
                 newMessage.fileUrl = uploadfile.filename; // Adjust field name based on your model
               }
-           await PurchaseToRShopMessage.create(newMessage);
-            const newMessageContent = await PurchaseToRShopMessage.findAll();
-            res.send(newMessageContent);
+           await TodoMessage.create(newMessage);
+            // const newMessageContent = await TodoMessage.findAll();
+            res.send({success:true});
           } catch (error) {
             res.status(500).send(error.message);
           }
@@ -93,14 +93,15 @@ module.exports = {
           const userId = req.params.userId; // Assuming userId is provided in route parameters
     
           // Fetch root messages
-          const rootMessages = await PurchaseToRShopMessage.findAll({
+          const rootMessages = await TodoMessage.findAll({
             where: {
                 [Op.or]: [
                   { senderId: req.params.userId },
-                  { receiverId: req.params.userId }
+                  // { receiverId: req.params.userId }
                 ],
                 parentMessageId: ''
-              }
+              },
+              order: [['createdAt', 'DESC']]
             });
     
           // Fetch replies for each root message
@@ -119,5 +120,49 @@ module.exports = {
         }
       },
 
+    async permitOk(req,res) {
+          try {
+            console.log('amount-------------------')
+              const messageId = req.body.messageId;
+              const amount = req.body.amount;
+              const updateField = {};
+              updateField.permission = '1';
+              updateField.read = '1';
+              updateField.confirm_price = amount;
+           await TodoMessage.update(updateField,{
+                where:{
+                    id:messageId,
+                }
+           });
+            res.send({success:true});
+          } catch (error) {
+            res.status(500).send(error.message);
+          }
+    },
+
+    async completeOk(req,res) {
+      try {
+          const messageId = req.body.messageId;
+          const parentMessageId = req.body.parentMessageId;
+          const updateField = {};
+          updateField.complete = '1';
+          updateField.permission = '1';
+          updateField.read = '1';
+      await TodoMessage.update(updateField,{
+            where:{
+                id:messageId,
+            }
+      });
+      await TodoMessage.update(updateField,{
+            where:{
+                id:parentMessageId,
+            }
+      });
+        res.send({success:true});
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+    },
+    
     upload
 }

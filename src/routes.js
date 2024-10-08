@@ -59,6 +59,7 @@ module.exports = (app) => {
     // app.get("/api/user/checkUserName/:userName", UserController.checkUserName)
     // app.delete("/api/user/deleteAccount/:userId", UserController.deleteAccount)
     app.get("/api/user/getUserList",  UserController.getUserList)
+    app.post("/api/user/getStoreUserList",  UserController.getStoreUserList)
     app.get("/api/admin/user/getUserList",  UserController.getUserProfileList)
     app.post("/api/admin/users/search",  UserController.userSearch)
     app.post("/api/admin/profile/getindividualprofile",  UserController.getIndividualProfileById)
@@ -137,6 +138,8 @@ module.exports = (app) => {
     app.post("/api/sales/getSalesById", MasterContoller.getSalesByIdForShipping)
     app.post("/api/sales/purchaserequestfromwholesaler", MasterContoller.savePurchaseRequestFromwholeSaler)
     app.post("/api/sales/wholelist", MasterContoller.getWholeList)
+
+    app.post("/api/wholesalershipping/save", MasterContoller.getWholeSalerShippingSave)
     //===============YahooAcution=======
     app.get("/api/sales/getYahooAcution" ,MasterContoller.getYahooAction)
     //===============salesList==========
@@ -186,6 +189,10 @@ module.exports = (app) => {
     app.post('/api/generalchat/getmessagelist',GeneralChatMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), GeneralChatMessageController.createReply);
+
+  
+    app.post('/api/generalchat/alerts', GeneralChatMessageController.getAlerts);
+    app.post('/api/generalchat/removealert', GeneralChatMessageController.removeAlerts);
     //========StoreChatMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.post('/api/storechat', StoreChatMessaeContorller.getMessages);
@@ -193,6 +200,8 @@ module.exports = (app) => {
       { name: 'fileUrl', maxCount: 1 },
     ]), StoreChatMessaeContorller.createReply);
 
+    app.post('/api/storechat/alerts', StoreChatMessaeContorller.getAlerts);
+    app.post('/api/storechat/removealert', StoreChatMessaeContorller.removeAlerts);
     //========InvoiceFOrPurchaseMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/invoicepurchasemessages/:userId', InvoiceForPurchaseMessageController.getMessages);
@@ -228,6 +237,8 @@ module.exports = (app) => {
       { name: 'fileUrl', maxCount: 1 },
     ]), PurchaseToRShopMessageController.createReply);
 
+    app.post('/api/purchasetorshop/permitok', PurchaseToRShopMessageController.permitOk);
+    app.post('/api/purchasetorshop/completeok', PurchaseToRShopMessageController.completeOk);
     //========OnSitePurchase
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/onsitepurchasemessages/:userId', OnSitePurchaseMessageController.getMessages);

@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         shipping_ids: DataTypes.STRING(20),
         shipping_address: {
             type: DataTypes.STRING, // 
-            defaultValue:''
+            defaultValue:'オークション'
           },
         trading_date: DataTypes.STRING(15), // the date that the shop bought the items from customer
         assessment_date: DataTypes.STRING(15), // the date that the shop received assesment (estimate) from wholesaler vendor

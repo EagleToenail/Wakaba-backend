@@ -10,10 +10,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(50),
             allowNull: false
           },
-        store_name: {
-            type: DataTypes.STRING(50),
-            allowNull: false
-          },
         time: {
             type: DataTypes.STRING(30),
             allowNull: false
@@ -44,9 +40,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         status: {
-            type: DataTypes.ENUM,
-            values: ['unread', 'read'],
-            defaultValue: 'unread',
+            type: DataTypes.STRING,
+        },
+        store_name: {
+            type: DataTypes.STRING(30),
         },
 
     })

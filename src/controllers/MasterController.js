@@ -51,7 +51,8 @@ module.exports = {
                         model: Customer,
                         attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
                     }
-                ]
+                ],
+                order: [['createdAt', 'DESC']]
             });
                 // console.log(JSON.stringify(salesWithCustomer, null, 2));
             // console.log('saleList',salesList);
@@ -186,8 +187,8 @@ module.exports = {
                     categoryIds: {
                         [Op.or]: [
                             { [Op.like]: `${categoryId},%` },    
-                            { [Op.like]: `%, ${categoryId},%` },  
-                            { [Op.like]: `%, ${categoryId}` },    
+                            { [Op.like]: `%,${categoryId},%` },  
+                            { [Op.like]: `%,${categoryId}` },    
                             { [Op.eq]: categoryId.toString() }    
                         ]
                     }
@@ -371,16 +372,17 @@ async createInvoice(req, res) {
             purchase_result,purchase_price,estimate_wholesaler};
     
         if (req.files['product_photo']) {
-            const uploadfile = req.files['product_photo'][0];
+            const uploadfile = req.files['product_photo'][0];0
             createData.product_photo = uploadfile.filename; // Adjust field name based on your model
           }
         console.log('createData------',createData)
        await Master.create(createData);
        const invoiceData = await Master.findAll({
             where: {
-                product_status: {
-                    [Op.or]: ['査定中', '成約済','お預かり']
-                },
+                // product_status: {
+                //     [Op.or]: ['査定中', '成約済','お預かり']
+                // },
+                product_status:'査定中',
                 store_name:userStoreName,
                 customer_id:createData.customer_id,
                 purchase_staff_id:createData.purchase_staff_id
@@ -416,9 +418,10 @@ async updateInvoice(req, res) {
        });
        const invoiceData = await Master.findAll({
             where: {
-                product_status: {
-                    [Op.or]: ['査定中', '成約済','お預かり']
-                },
+                // product_status: {
+                //     [Op.or]: ['査定中', '成約済','お預かり']
+                // },
+                product_status:'査定中',
                 store_name:userStoreName,
                 customer_id:updateData.customer_id,
                 purchase_staff_id:updateData.purchase_staff_id
@@ -431,12 +434,12 @@ async updateInvoice(req, res) {
       }
 },
 async deleteInvoice(req,res) {
-    try {
         console.log('deleteinvoice')
         const id = req.body.id;
         const userStoreName = req.body.userStoreName;
         const userId = req.body.userId;
-        console.log('deleteinvoice',id)
+        const customerId = req.body.customerId;
+        console.log('deleteinvoice',id,customerId)
         await Master.destroy({
             where: {
                 id:id
@@ -444,17 +447,16 @@ async deleteInvoice(req,res) {
         });
        const invoiceData = await Master.findAll({
             where: {
-                product_status: {
-                    [Op.or]: ['査定中', '成約済','お預かり']
-                },
+                // product_status: {
+                //     [Op.or]: ['査定中', '成約済','お預かり']
+                // },
+                product_status:'査定中',
                 store_name: userStoreName,
-                purchase_staff_id: userId
+                purchase_staff_id: userId,
+                customer_id:customerId,
             }
         });
         res.send(invoiceData);
-      } catch (error) {
-        res.status(500).send(error.message);
-      }
 },
 async getRegisteredData(req,res) {
     try {
@@ -514,9 +516,10 @@ async commentSave(req,res) {
         });
        const invoiceData = await Master.findAll({
             where: {
-                product_status: {
-                    [Op.or]: ['査定中', '成約済','お預かり']
-                },
+                // product_status: {
+                //     [Op.or]: ['査定中', '成約済','お預かり']
+                // },
+                product_status:'査定中',
                 store_name:userStoreName,
                 purchase_staff_id: userId,
                 customer_id:customer_id
@@ -586,6 +589,7 @@ async purchasePermission(req,res) {
                 product_status: {
                     [Op.or]: ['査定中', '成約済','お預かり']
                 },
+                // product_status:'査定中',
                 customer_id:customerId,
                 purchase_staff_id:userId,
                 store_name:userStoreName
@@ -1306,6 +1310,8 @@ async updateEstimate(req, res) {
 
     async getWholeList(req, res) {
         const { shipping_date,shipping_address,product_status} = req.body.params;
+        const storeName = req.body.storeName;
+        console.log('sfasfdasd',storeName)
         try {
             const whereClause = [];
 
@@ -1332,8 +1338,9 @@ async updateEstimate(req, res) {
                             ...whereClause,
                             { shipping_ids: { [Op.ne]: null } } // Add this condition
                         ],
-                         product_status:'発送中'               
-                    }
+                         store_name:storeName,          
+                    },
+                    order: [['createdAt', 'DESC']]
                 });
 
                 // console.log(customers)
@@ -1341,8 +1348,81 @@ async updateEstimate(req, res) {
             }else{
                 const salesList = await Master.findAll({
                     where: {
-                        product_status:'発送中'   
-                    }
+                        [Op.and]: [
+                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                        ],
+                         store_name:storeName,              
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                    // console.log(JSON.stringify(salesWithCustomer, null, 2));
+                // console.log('saleList',salesList);
+                res.send(salesList);
+            }
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
+    async getWholeSalerShippingSave(req, res) {
+        const { shipping_date,shipping_address,product_status} = req.body.params;
+        const storeName = req.body.storeName;
+        const payload = req.body.payload;
+
+        const updateField = {};
+        const id = payload.id;
+        updateField.expected_deposit_date = payload.expected_deposit_date;
+        updateField.deposit_date = payload.deposit_date;
+        updateField.final_assessment_amount = payload.final_assessment_amount;
+        await Master.update(updateField,{
+            where:{
+                id:id
+            }
+        });
+
+        try {
+            const whereClause = [];
+
+            if (shipping_address!='') {
+                whereClause.push ({
+                    shipping_address: { [Op.like]: `%${shipping_address}%` } 
+               });
+            }
+            if (shipping_date!='') {
+                whereClause.push ({
+                    shipping_date: { [Op.like]: `%${shipping_date}%` } 
+               });
+            }
+            if (product_status!='') {
+                whereClause.push ({
+                    product_status: { [Op.like]: `%${product_status}%` } 
+               });
+            }
+
+            if(whereClause.length!=0){
+                const salesList = await Master.findAll({
+                    where: {
+                        [Op.and]: [
+                            ...whereClause,
+                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                        ],
+                         store_name:storeName,          
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+
+                // console.log(customers)
+                res.send(salesList);
+            }else{
+                const salesList = await Master.findAll({
+                    where: {
+                        [Op.and]: [
+                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                        ],
+                         store_name:storeName,              
+                    },
+                    order: [['createdAt', 'DESC']]
                 });
                     // console.log(JSON.stringify(salesWithCustomer, null, 2));
                 // console.log('saleList',salesList);

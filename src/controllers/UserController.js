@@ -225,6 +225,23 @@ module.exports = {
             })
         }
     },
+    async getStoreUserList(req, res) {
+        try {
+            // console.log('aaaaaaaaaaaa------------')
+            const store_name = req.body.storeName;
+            // console.log('storename',store_name)
+            const userList = await User.findAll({
+                where:{
+                    store_name:store_name
+                }
+            })
+            res.send(userList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get user list."
+            })
+        }
+    },
     //--------------------using for chat------------
     async getSuperVisorList(req, res) {
         try {
