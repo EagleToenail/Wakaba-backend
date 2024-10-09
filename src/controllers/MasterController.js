@@ -456,7 +456,11 @@ async deleteInvoice(req,res) {
                 customer_id:customerId,
             }
         });
-        res.send(invoiceData);
+        if(invoiceData === null) {
+            res.send({success:true});
+        } else {
+            res.send(invoiceData);
+        }
 },
 async getRegisteredData(req,res) {
     try {

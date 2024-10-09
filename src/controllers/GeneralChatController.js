@@ -155,14 +155,16 @@ module.exports = {
               attributes: ['status'],
           });
           const numberArray = status.status.split(',').map(Number);
-          const userIds = numberArray.filter((id) => id !== Number(userId));
-          const updatedField = {};
-          updatedField.status = userIds.toString();
-          await GeneralChatMessage.update(updatedField, {
-              where:{
-                id:messageId
-              }
-          })
+          if(numberArray?.length>0) {
+            const userIds = numberArray.filter((id) => id !== Number(userId));
+            const updatedField = {};
+            updatedField.status = userIds.toString();
+            await GeneralChatMessage.update(updatedField, {
+                where:{
+                  id:messageId
+                }
+            })
+          }
             // console.log('threadNames',threadNames);
             res.send({success:true});
         }catch(error){

@@ -17,7 +17,6 @@ const CashRegisterController = require('./controllers/CashRegisterController')
 const TodoMessageConroller = require("./controllers/TodoMessageController")
 const GeneralChatMessageController = require('./controllers/GeneralChatController');
 const StoreChatMessaeContorller = require('./controllers/StoreChatContoller');
-const InvoiceForPurchaseMessageController = require("./controllers/InvoiceForPurchaseMessageController")
 const WithdrawalBankATMMessageController = require("./controllers/WithdrawalBankATMMessageController")
 const WithdrawalVariousPurchaseMessageController = require("./controllers/WithdrawalVariousPurchaseMessageController")
 const WithdrawalApplyController = require("./controllers/WithdrawalApplyController")
@@ -183,6 +182,11 @@ module.exports = (app) => {
     app.post('/api/todomessages/getmessagelist',TodoMessageConroller.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), TodoMessageConroller.createReply);
+
+    app.post('/api/todomessage/permitok', TodoMessageConroller.permitOk);
+    app.post('/api/todomessage/completeok', TodoMessageConroller.completeOk);
+
+    app.post('/api/todochat/alerts', TodoMessageConroller.getAlerts);
     //========GeneralChatMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.post('/api/generalchat', GeneralChatMessageController.getMessages);
@@ -202,12 +206,6 @@ module.exports = (app) => {
 
     app.post('/api/storechat/alerts', StoreChatMessaeContorller.getAlerts);
     app.post('/api/storechat/removealert', StoreChatMessaeContorller.removeAlerts);
-    //========InvoiceFOrPurchaseMessage
-    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
-    app.get('/api/invoicepurchasemessages/:userId', InvoiceForPurchaseMessageController.getMessages);
-    app.post('/api/invoicepurchasemessages/getmessagelist',InvoiceForPurchaseMessageController.upload.fields([
-      { name: 'fileUrl', maxCount: 1 },
-    ]), InvoiceForPurchaseMessageController.createReply);
 
     //========WithdrawalBankATMMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
@@ -218,7 +216,7 @@ module.exports = (app) => {
 
     //========Withdrawal Various purchase
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
-    app.get('/api/withdrawalvariouspurchasemessages/:userId', WithdrawalVariousPurchaseMessageController.getMessages);
+    app.post('/api/withdrawalvariouspurchasemessages', WithdrawalVariousPurchaseMessageController.getMessages);
     app.post('/api/withdrawalvariouspurchasemessages/getmessagelist',WithdrawalVariousPurchaseMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), WithdrawalVariousPurchaseMessageController.createReply);
@@ -232,13 +230,10 @@ module.exports = (app) => {
 
     //========PurchaseToRShop
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
-    app.get('/api/purchasetorshopmessages/:userId', PurchaseToRShopMessageController.getMessages);
+    app.post('/api/purchasetorshopmessages', PurchaseToRShopMessageController.getMessages);
     app.post('/api/purchasetorshopmessages/getmessagelist',PurchaseToRShopMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), PurchaseToRShopMessageController.createReply);
-
-    app.post('/api/purchasetorshop/permitok', PurchaseToRShopMessageController.permitOk);
-    app.post('/api/purchasetorshop/completeok', PurchaseToRShopMessageController.completeOk);
     //========OnSitePurchase
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/onsitepurchasemessages/:userId', OnSitePurchaseMessageController.getMessages);

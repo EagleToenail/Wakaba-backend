@@ -1,4 +1,4 @@
-const { WithdrawalVariousPurchaseMessage } = require('../models')
+const { TodoMessage } = require('../models')
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
@@ -22,7 +22,7 @@ const upload = multer({ storage });
 
 const fetchReplies = async (parentId) => {
     // Fetch replies for a given parent message ID
-    const replies = await WithdrawalVariousPurchaseMessage.findAll({
+    const replies = await TodoMessage.findAll({
       where: { parentMessageId: parentId }
     });
   
@@ -42,8 +42,8 @@ module.exports = {
    // Fetch all root messages related to a user and their replies
 	async getMessagesAndRepliesForUser  (req, res) {
         try {
-            const AllMessages = await WithdrawalVariousPurchaseMessage.findAll();
-            const rootMessages = await WithdrawalVariousPurchaseMessage.findAll({
+            const AllMessages = await TodoMessage.findAll();
+            const rootMessages = await TodoMessage.findAll({
               where: {
                 [Op.or]: [
                   { senderId: req.params.userId },
@@ -53,7 +53,7 @@ module.exports = {
               }
             });
             const rootMessageIds = rootMessages.map(msg => msg.id);
-            const replies = await WithdrawalVariousPurchaseMessage.findAll({
+            const replies = await TodoMessage.findAll({
               where: {
                 parentMessageId: {
                   [Op.in]: rootMessageIds
@@ -74,15 +74,14 @@ module.exports = {
 // Create a new reply
     async createReply (req, res) {
         try {
-            const { time, title, content, senderId, receiverId, parentMessageId } = req.body;
-            const newMessage = {time, title, content, senderId, receiverId, parentMessageId };
+            const {invoice_id,store_name,time, title, content, senderId, receiverId, parentMessageId ,permission,read} = req.body;
+            const newMessage = {invoice_id,store_name,time, title, content, senderId, receiverId, parentMessageId ,permission,read };
             if (req.files['fileUrl']) {
                 const uploadfile = req.files['fileUrl'][0];
                 newMessage.fileUrl = uploadfile.filename; // Adjust field name based on your model
               }
-           await WithdrawalVariousPurchaseMessage.create(newMessage);
-            const newMessageContent = await WithdrawalVariousPurchaseMessage.findAll();
-            res.send(newMessageContent);
+           await TodoMessage.create(newMessage);
+            res.send({success:true});
           } catch (error) {
             res.status(500).send(error.message);
           }
@@ -90,17 +89,19 @@ module.exports = {
 
     async getMessages(req, res) {
         try {
-          const userId = req.params.userId; // Assuming userId is provided in route parameters
-    
+          const userId = req.body.userId; // Assuming userId is provided in route parameters
+          const invoiceId = req.body.invoiceId.toString(); 
           // Fetch root messages
-          const rootMessages = await WithdrawalVariousPurchaseMessage.findAll({
+          const rootMessages = await TodoMessage.findAll({
             where: {
                 [Op.or]: [
-                  { senderId: req.params.userId },
-                  { receiverId: req.params.userId }
+                  { senderId: userId },
+                  // { receiverId: req.params.userId }
                 ],
+                invoice_id: invoiceId,
                 parentMessageId: ''
-              }
+              },
+              order: [['createdAt', 'DESC']]
             });
     
           // Fetch replies for each root message

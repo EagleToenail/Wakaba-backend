@@ -63,7 +63,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
-
         store_name: {
             type: DataTypes.STRING(30),
             allowNull: true,

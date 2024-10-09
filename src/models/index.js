@@ -33,13 +33,14 @@ db.Master                   = require("./Master")(sequelize, Sequelize.DataTypes
 db.SafeMoney                   = require("./SafeMoney")(sequelize, Sequelize.DataTypes);
 db.CashRegister                   = require("./CashRegister")(sequelize, Sequelize.DataTypes);
 
+
+// db.WithdrawalBankATMMessage              = require("./WithdrawalBankATMMessage")(sequelize, Sequelize.DataTypes);
+// db.WithdrawalVariousPurchaseMessage              = require("./WithdrawalVariousPurchaseMessage")(sequelize, Sequelize.DataTypes);
+// db.WithdrawalApplyMessage              = require("./WithdrawalApplyMessage")(sequelize, Sequelize.DataTypes);
+// db.OnSitePurchaseMessage              = require("./OnSitePurchaseMessage")(sequelize, Sequelize.DataTypes);
+// db.DisposalPermissionMessage              = require("./DisposalPermissionMessage")(sequelize, Sequelize.DataTypes);
+
 db.TodoMessage              = require("./TodoMessage")(sequelize, Sequelize.DataTypes);
-db.InvoiceForPurchaseMessage              = require("./InvoiceForPurchaseMessage")(sequelize, Sequelize.DataTypes);
-db.WithdrawalBankATMMessage              = require("./WithdrawalBankATMMessage")(sequelize, Sequelize.DataTypes);
-db.WithdrawalVariousPurchaseMessage              = require("./WithdrawalVariousPurchaseMessage")(sequelize, Sequelize.DataTypes);
-db.WithdrawalApplyMessage              = require("./WithdrawalApplyMessage")(sequelize, Sequelize.DataTypes);
-db.OnSitePurchaseMessage              = require("./OnSitePurchaseMessage")(sequelize, Sequelize.DataTypes);
-db.DisposalPermissionMessage              = require("./DisposalPermissionMessage")(sequelize, Sequelize.DataTypes);
 db.GeneralChatMessage              = require("./GeneralChatMessage")(sequelize, Sequelize.DataTypes);
 db.StoreChatMessage              = require("./StoreChatMessage")(sequelize, Sequelize.DataTypes);
 db.PurchaseToRShopMessage              = require("./PurchaseToRShopMessage")(sequelize, Sequelize.DataTypes);
