@@ -60,6 +60,11 @@ module.exports = (sequelize, DataTypes) => {
             values: ['査定中','成約済', 'お預かり','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],
             defaultValue: '査定中',
         },
+        shipping_status: {
+            type: DataTypes.ENUM,
+            values: ['申請中','発送中','約定済', '約定済＋返送依頼','返送依頼','入金待ち','入金済'],
+            defaultValue: '申請中',
+        },
 
         fixed_checkout: DataTypes.STRING(20),//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese
         product_detail: DataTypes.TEXT,

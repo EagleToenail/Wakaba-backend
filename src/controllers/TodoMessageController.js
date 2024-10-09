@@ -193,6 +193,7 @@ module.exports = {
         console.log('userId',userId)
         const unreadCount = await TodoMessage.count({
               where: {
+                parentMessageId:'',
                 receiverId: userId,
                 read:'0'
               },

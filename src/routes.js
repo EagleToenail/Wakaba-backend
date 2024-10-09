@@ -91,6 +91,7 @@ module.exports = (app) => {
     app.get("/api/customer/getCustomerById/:customerId", CustomerController.getCustomerById)
     app.get("/api/customer/customerpastvisithistory/:customerId", CustomerController.getCustomerPastVisitHistory)
     app.post("/api/customer/customerItem",CustomerController.addCustomerItem)
+    app.post("/api/customer/createcustomeritem",CustomerController.createCustomerInvoice)
     app.post("/api/customer/updatecustomeritem",CustomerController.updateCustomerInvoice)
     // //============sales
     app.get("/api/sales/getSalesList", MasterContoller.getSalesList)
@@ -209,11 +210,16 @@ module.exports = (app) => {
 
     //========WithdrawalBankATMMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
-    app.get('/api/withdrawalbankatmmessages/:userId', WithdrawalBankATMMessageController.getMessages);
+    app.post('/api/withdrawalbankatmmessages', WithdrawalBankATMMessageController.getMessages);
     app.post('/api/withdrawalbankatmmessages/getmessagelist',WithdrawalBankATMMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), WithdrawalBankATMMessageController.createReply);
 
+    app.post('/api/withdrawbankatmmessage/permitok', WithdrawalBankATMMessageController.permitOk);
+    app.post('/api/withdrawbankatmmessage/completeok', WithdrawalBankATMMessageController.completeOk);
+
+
+    app.post('/api/withdrawbankatmmessage/alerts', WithdrawalBankATMMessageController.getAlerts);
     //========Withdrawal Various purchase
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.post('/api/withdrawalvariouspurchasemessages', WithdrawalVariousPurchaseMessageController.getMessages);
@@ -221,6 +227,14 @@ module.exports = (app) => {
       { name: 'fileUrl', maxCount: 1 },
     ]), WithdrawalVariousPurchaseMessageController.createReply);
 
+    //========Withdrawal Various purchase approval
+    //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
+    app.post('/api/withdrawalvariouspurchaseapprovalmessages', WithdrawalVariousPurchaseMessageController.getMessagesApproval);
+    
+    app.post('/api/withdrawvariouspurchaseapprovalmessage/permitok', WithdrawalVariousPurchaseMessageController.permitOk);
+    app.post('/api/withdrawvariouspurchaseapprovalmessage/completeok', WithdrawalVariousPurchaseMessageController.completeOk);
+
+    app.post('/api/withdrawvariouspurchaseapproval/alerts', WithdrawalVariousPurchaseMessageController.getAlerts);
     //========WithdrawalApplyMessage
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/withdrawalapplymessages/:userId', WithdrawalApplyController.getMessages);
@@ -236,11 +250,15 @@ module.exports = (app) => {
     ]), PurchaseToRShopMessageController.createReply);
     //========OnSitePurchase
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
-    app.get('/api/onsitepurchasemessages/:userId', OnSitePurchaseMessageController.getMessages);
+    app.post('/api/onsitepurchasemessages', OnSitePurchaseMessageController.getMessages);
     app.post('/api/onsitepurchasemessages/getmessagelist',OnSitePurchaseMessageController.upload.fields([
       { name: 'fileUrl', maxCount: 1 },
     ]), OnSitePurchaseMessageController.createReply);
 
+    app.post('/api/onsitepurchasemessages/permitok', OnSitePurchaseMessageController.permitOk);
+    app.post('/api/onsitepurchasemessages/completeok', OnSitePurchaseMessageController.completeOk);
+
+    app.post('/api/onsitepurchasemessages/alerts', OnSitePurchaseMessageController.getAlerts);
     //========Disposal Permission
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.get('/api/disposalpermissionmessages/:userId', DisposalPermissionMessageController.getMessages);

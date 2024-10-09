@@ -70,19 +70,46 @@ module.exports = {
               if (req.files['idcard']) {
                 const idCard = req.files['idcard'][0];
                 updateFields.idCard_url = idCard.filename; // Adjust field name based on your model
-              }
+                updateFields.avatar_url = idCard.filename;
+            }
             // console.log("customer file",updateFields)
-            await Customer.update(updateFields, {
+           const customer =  await Customer.update(updateFields, {
                 where: {
                     id: req.body.id
                 }
             })
 
-            res.send({"success":true});
+            res.send(customer);
         } catch (err) {
             res.status(500).send({
                 error: "An error occured when trying to update customer information"
             })
+        }
+    },
+    async createCustomerInvoice(req, res) {
+        try {
+            console.log("Customer update request received", req.body);
+            console.log('customerData',req.body)
+            const {item1, item2, item3, item4, item5 } = req.body;
+    
+            const createFields = { item1, item2, item3, item4, item5 };
+            delete createFields.id;
+            Object.keys(createFields).forEach(key => {
+                if (createFields[key] === undefined) {
+                    delete createFields[key];
+                }
+            });
+            createFields.item1 = (createFields.item1).toString();
+            console.log("create fields:", createFields);
+    
+            const newCustomer = await Customer.create(createFields);
+            console.log('newCustomer',newCustomer)
+            res.send(newCustomer);
+        } catch (err) {
+            console.error("Error updating customer:", err); // Log the error for debugging
+            res.status(500).send({
+                error: "An error occurred when trying to update customer information"
+            });
         }
     },
     async updateCustomerInvoice(req, res) {

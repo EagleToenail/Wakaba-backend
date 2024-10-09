@@ -1313,7 +1313,7 @@ async updateEstimate(req, res) {
     },
 
     async getWholeList(req, res) {
-        const { shipping_date,shipping_address,product_status} = req.body.params;
+        const { shipping_date,shipping_address,shipping_status} = req.body.params;
         const storeName = req.body.storeName;
         console.log('sfasfdasd',storeName)
         try {
@@ -1329,9 +1329,9 @@ async updateEstimate(req, res) {
                     shipping_date: { [Op.like]: `%${shipping_date}%` } 
                });
             }
-            if (product_status!='') {
+            if (shipping_status!='') {
                 whereClause.push ({
-                    product_status: { [Op.like]: `%${product_status}%` } 
+                    shipping_status: { [Op.like]: `%${shipping_status}%` } 
                });
             }
 

@@ -1,4 +1,4 @@
-const { OnSitePurchaseMessage } = require('../models')
+const { TodoMessage } = require('../models')
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
@@ -22,7 +22,7 @@ const upload = multer({ storage });
 
 const fetchReplies = async (parentId) => {
     // Fetch replies for a given parent message ID
-    const replies = await OnSitePurchaseMessage.findAll({
+    const replies = await TodoMessage.findAll({
       where: { parentMessageId: parentId }
     });
   
@@ -42,8 +42,8 @@ module.exports = {
    // Fetch all root messages related to a user and their replies
 	async getMessagesAndRepliesForUser  (req, res) {
         try {
-            const AllMessages = await OnSitePurchaseMessage.findAll();
-            const rootMessages = await OnSitePurchaseMessage.findAll({
+            const AllMessages = await TodoMessage.findAll();
+            const rootMessages = await TodoMessage.findAll({
               where: {
                 [Op.or]: [
                   { senderId: req.params.userId },
@@ -53,7 +53,7 @@ module.exports = {
               }
             });
             const rootMessageIds = rootMessages.map(msg => msg.id);
-            const replies = await OnSitePurchaseMessage.findAll({
+            const replies = await TodoMessage.findAll({
               where: {
                 parentMessageId: {
                   [Op.in]: rootMessageIds
@@ -74,15 +74,14 @@ module.exports = {
 // Create a new reply
     async createReply (req, res) {
         try {
-            const { time, title, content, senderId, receiverId, parentMessageId } = req.body;
-            const newMessage = {time, title, content, senderId, receiverId, parentMessageId };
+            const {onsitepurchase_id, time,store_name, title, content, senderId, receiverId, parentMessageId ,permission,read} = req.body;
+            const newMessage = {onsitepurchase_id, time,store_name, title, content, senderId, receiverId, parentMessageId,permission,read };
             if (req.files['fileUrl']) {
                 const uploadfile = req.files['fileUrl'][0];
                 newMessage.fileUrl = uploadfile.filename; // Adjust field name based on your model
               }
-           await OnSitePurchaseMessage.create(newMessage);
-            const newMessageContent = await OnSitePurchaseMessage.findAll();
-            res.send(newMessageContent);
+           await TodoMessage.create(newMessage);
+            res.send({success:true});
           } catch (error) {
             res.status(500).send(error.message);
           }
@@ -90,15 +89,18 @@ module.exports = {
 
     async getMessages(req, res) {
         try {
-          const userId = req.params.userId; // Assuming userId is provided in route parameters
+          const userId = req.body.userId; // Assuming userId is provided in route parameters
     
           // Fetch root messages
-          const rootMessages = await OnSitePurchaseMessage.findAll({
+          const rootMessages = await TodoMessage.findAll({
             where: {
                 [Op.or]: [
-                  { senderId: req.params.userId },
-                  { receiverId: req.params.userId }
+                  { senderId: userId },
+                  { receiverId: userId }
                 ],
+                onsitepurchase_id: {
+                  [Op.ne]: ''  // Using Sequelize operator to check for not null
+                },
                 parentMessageId: ''
               }
             });
@@ -118,6 +120,69 @@ module.exports = {
           res.status(500).json({ error: 'An error occurred while fetching messages' });
         }
       },
+      //---------------------------------------
+      async permitOk(req,res) {
+        try {
+            const messageId = req.body.messageId;
+            const updateField = {};
+            updateField.permission = '1';
+            updateField.read = '1';
+            console.log('fronend information',updateField,messageId)
+        await TodoMessage.update(updateField,{
+              where:{
+                  id:messageId,
+              }
+        });
+          res.send({success:true});
+        } catch (error) {
+          res.status(500).send(error.message);
+        }
+      },
+
+    async completeOk(req,res) {
+      try {
+          const messageId = req.body.messageId;
+          const parentMessageId = req.body.parentMessageId;
+          const updateField = {};
+          updateField.complete = '1';
+          updateField.permission = '1';
+          updateField.read = '1';
+      await TodoMessage.update(updateField,{
+            where:{
+                id:messageId,
+            }
+      });
+      await TodoMessage.update(updateField,{
+            where:{
+                id:parentMessageId,
+            }
+      });
+        res.send({success:true});
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+    },
+    //--------------------------------------------
+    async getAlerts(req,res) {
+      try{
+        const userId = req.body.userId;
+        console.log('userId',userId)
+        const unreadCount = await TodoMessage.count({
+              where: {
+                parentMessageId:'',
+                receiverId: userId,
+                read:'0',
+                onsitepurchase_id: {
+                  [Op.ne]: ''  // Using Sequelize operator to check for not null
+                }
+              },
+          });
+          res.send({unreadCount});
+      }catch(error){
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'An error occurred while fetching messages' });
+      } 
+    },
 
     upload
 }

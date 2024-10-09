@@ -120,5 +120,102 @@ module.exports = {
         }
       },
 
+    async getMessagesApproval(req, res) {
+        try {
+          const userId = req.body.userId; // Assuming userId is provided in route parameters
+          // Fetch root messages
+          const rootMessages = await TodoMessage.findAll({
+            where: {
+                [Op.or]: [
+                  { senderId: userId },
+                  { receiverId: userId }
+                ],
+                invoice_id: {
+                  [Op.ne]: ''  // Using Sequelize operator to check for not null
+                },
+                parentMessageId: ''
+              },
+              order: [['createdAt', 'DESC']]
+            });
+    
+          // Fetch replies for each root message
+          const result = await Promise.all(rootMessages.map(async (root) => {
+            const nestedReplies = await fetchReplies(root.id.toString());
+            return {
+              ...root.dataValues,
+              replies: nestedReplies
+            };
+          }));
+        //   console.log('result+++++++++++++++++++',result)
+          res.send(result);
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+          res.status(500).json({ error: 'An error occurred while fetching messages' });
+        }
+      },
+      //---------------------------------------
+      async permitOk(req,res) {
+        try {
+            const messageId = req.body.messageId;
+            const updateField = {};
+            updateField.permission = '1';
+            updateField.read = '1';
+            console.log('fronend information',updateField,messageId)
+        await TodoMessage.update(updateField,{
+              where:{
+                  id:messageId,
+              }
+        });
+          res.send({success:true});
+        } catch (error) {
+          res.status(500).send(error.message);
+        }
+  },
+
+  async completeOk(req,res) {
+    try {
+        const messageId = req.body.messageId;
+        const parentMessageId = req.body.parentMessageId;
+        const updateField = {};
+        updateField.complete = '1';
+        updateField.permission = '1';
+        updateField.read = '1';
+    await TodoMessage.update(updateField,{
+          where:{
+              id:messageId,
+          }
+    });
+    await TodoMessage.update(updateField,{
+          where:{
+              id:parentMessageId,
+          }
+    });
+      res.send({success:true});
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  },
+    //--------------------------------------------
+    async getAlerts(req,res) {
+      try{
+        const userId = req.body.userId;
+        console.log('userId',userId)
+        const unreadCount = await TodoMessage.count({
+              where: {
+                parentMessageId:'',
+                receiverId: userId,
+                read:'0',
+                invoice_id: {
+                  [Op.ne]: ''  // Using Sequelize operator to check for not null
+                }
+              },
+          });
+          res.send({unreadCount});
+      }catch(error){
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'An error occurred while fetching messages' });
+      } 
+    },
+
     upload
 }
