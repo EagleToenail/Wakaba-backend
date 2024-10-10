@@ -64,6 +64,7 @@ module.exports = {
         username,
         email,
         password: encryptedPassword,
+        role_flag:'1',
       });
       // console.log(username, email, password, 'User');
       const setting = await Setting.create({

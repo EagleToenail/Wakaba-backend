@@ -110,7 +110,7 @@ module.exports = {
             })
         }
     },
-    async createUserProfile(req, res) {
+    async upadateRegisterUserProfile(req, res) {
         try {
             console.log('adfasdfasdf',req.body)
             const {store_name, type, fullname,katakana_name, phone, birthday,age, gender, card_type, prefeature, city, address,staff_terms,guarantor } = req.body;
@@ -135,8 +135,26 @@ module.exports = {
             const pledge_image = req.files['pledge_image'][0];
             updateFields.pledge_image = pledge_image.filename; // Adjust field name based on your model
             }
+            const profileId = req.body.id;
             // console.log('adfasdfasdf',updateFields)
-            const profile = await Profile.create(updateFields)
+            const profile = await Profile.update(updateFields,{
+                where: {
+                    id:profileId
+                }
+            })
+            
+            const userId = req.body.user_id; 
+
+            const userUpdateField = {};
+            userUpdateField.full_name = fullname;
+            userUpdateField.store_name = store_name;
+             console.log('userUpdateField',userUpdateField,userId)
+            const user = await User.update(userUpdateField,{
+                where:{
+                    id:userId
+                }
+            });
+
             res.send({"success":true});
         } catch (err) {
             res.status(500).send({
@@ -344,7 +362,7 @@ module.exports = {
             console.log('userId--------',userId)
             const profile = await Profile.findOne({
                 where: {
-                    id: userId
+                    user_id: userId
                 }
             })
 

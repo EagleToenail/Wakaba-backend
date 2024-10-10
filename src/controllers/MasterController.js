@@ -607,14 +607,13 @@ async purchasePermission(req,res) {
 },
 async purchaseReceiptPermit(req,res) {
     try {
-        console.log('hello')
         const ids = req.body.ids;
         const customerId = req.body.customerId;
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
         const updateField = {};
         updateField.product_status = 'お預かり';
-        console.log('bbbbbb',customerId,userId,userStoreName,ids.length)
+        // console.log('bbbbbb',customerId,userId,userStoreName,ids.length)
         for (let index = 0; index < ids.length; index++) {
             const element = ids[index];
             await Master.update(updateField,{
@@ -1296,6 +1295,12 @@ async updateEstimate(req, res) {
             const {payload} = req.body;
            for (let index = 0; index < payload.length; index++) {
                 const element = payload[index];
+                if(element.shipping_status === '発送中'){
+                    element.product_status = '発送中';
+                }
+                if(element.shipping_status === '約定済'){
+                    element.product_status = '約定済';
+                }
                 const id = element.id;
                 delete element.id;
                 await Master.update(element, {
@@ -1340,7 +1345,7 @@ async updateEstimate(req, res) {
                     where: {
                         [Op.and]: [
                             ...whereClause,
-                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                            { shipping_ids: { [Op.ne]: '' } } // Add this condition
                         ],
                          store_name:storeName,          
                     },
@@ -1353,7 +1358,7 @@ async updateEstimate(req, res) {
                 const salesList = await Master.findAll({
                     where: {
                         [Op.and]: [
-                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                            { shipping_ids: { [Op.ne]: '' } } // Add this condition
                         ],
                          store_name:storeName,              
                     },
@@ -1370,15 +1375,23 @@ async updateEstimate(req, res) {
         }
     },
     async getWholeSalerShippingSave(req, res) {
-        const { shipping_date,shipping_address,product_status} = req.body.params;
+        const { shipping_date,shipping_address,shipping_status} = req.body.params;
         const storeName = req.body.storeName;
         const payload = req.body.payload;
 
         const updateField = {};
         const id = payload.id;
         updateField.expected_deposit_date = payload.expected_deposit_date;
+        updateField.shipping_status = payload.shipping_status;
+        if(payload.expected_deposit_date !== ''){
+            updateField.shipping_status = '入金待ち'
+        }
         updateField.deposit_date = payload.deposit_date;
-        updateField.final_assessment_amount = payload.final_assessment_amount;
+        if(payload.deposit_date !== ''){
+            updateField.shipping_status = '入金済'
+        }
+        updateField.sales_amount = payload.sales_amount;
+        console.log('updatedField',updateField)
         await Master.update(updateField,{
             where:{
                 id:id
@@ -1398,9 +1411,9 @@ async updateEstimate(req, res) {
                     shipping_date: { [Op.like]: `%${shipping_date}%` } 
                });
             }
-            if (product_status!='') {
+            if (shipping_status!='') {
                 whereClause.push ({
-                    product_status: { [Op.like]: `%${product_status}%` } 
+                    shipping_status: { [Op.like]: `%${shipping_status}%` } 
                });
             }
 
@@ -1409,7 +1422,7 @@ async updateEstimate(req, res) {
                     where: {
                         [Op.and]: [
                             ...whereClause,
-                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                            { shipping_ids: { [Op.ne]: '' } } // Add this condition
                         ],
                          store_name:storeName,          
                     },
@@ -1422,7 +1435,7 @@ async updateEstimate(req, res) {
                 const salesList = await Master.findAll({
                     where: {
                         [Op.and]: [
-                            { shipping_ids: { [Op.ne]: null } } // Add this condition
+                            { shipping_ids: { [Op.ne]: '' } } // Add this condition
                         ],
                          store_name:storeName,              
                     },
