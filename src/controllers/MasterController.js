@@ -588,6 +588,12 @@ async purchasePermission(req,res) {
                 }
             });
         }
+        updateField.invoice_ids = ids.toString();
+        await Master.update(updateField,{
+            where: {
+                id:ids[0]
+            }
+        });
        const invoiceData = await Master.findAll({
             where: {
                 product_status: {

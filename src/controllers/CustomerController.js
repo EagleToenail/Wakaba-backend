@@ -61,8 +61,8 @@ module.exports = {
     async updateCustomer(req, res) {
         try {
             // console.log("profile update",req.body)
-            const {visit_type, full_name, katakana_name, phone_number,job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city, address,item1,item2,item3,item4,item5 } = req.body;
-            const updateFields = {visit_type, full_name, katakana_name, phone_number, job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city,address,item1,item2,item3,item4,item5};
+            const {shop, visit_type, full_name, katakana_name, phone_number,job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city, address,item1,item2,item3,item4,item5 } = req.body;
+            const updateFields = {shop, visit_type, full_name, katakana_name, phone_number, job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city,address,item1,item2,item3,item4,item5};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 updateFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -73,12 +73,16 @@ module.exports = {
                 updateFields.avatar_url = idCard.filename;
             }
             // console.log("customer file",updateFields)
-           const customer =  await Customer.update(updateFields, {
+           await Customer.update(updateFields, {
                 where: {
                     id: req.body.id
                 }
             })
-
+            const customer = await Customer.findOne({
+                where:{
+                    id:req.body.id
+                }
+            });
             res.send(customer);
         } catch (err) {
             res.status(500).send({
