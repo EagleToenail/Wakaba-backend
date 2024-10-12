@@ -25,7 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue:       ''
       },
       cardType:             DataTypes.STRING,
-      avatar_url:           DataTypes.STRING,
+      avatar_url:            {
+        type: DataTypes.STRING,
+        defaultValue: ''
+      },
       prefeature:           DataTypes.STRING,
       birthday:             DataTypes.STRING,
       age:                  DataTypes.STRING,

@@ -45,7 +45,10 @@ module.exports = (sequelize, DataTypes) => {
         signature: DataTypes.STRING(50),
 
         hearing: DataTypes.STRING(5),
-        product_photo: DataTypes.STRING(50),
+        product_photo: {
+          type:  DataTypes.STRING(50),
+          defaultValue: '',
+        },
         reason_application: DataTypes.STRING(50),
         interest_rate: DataTypes.STRING(5),
         product_price: DataTypes.INTEGER,
@@ -116,8 +119,14 @@ module.exports = (sequelize, DataTypes) => {
         // Fields from Kimono------------------------------------
         // Fields from SmartPhoneAndTablet-------------------------------
         // Vendors-----------------------------------------------
-        entire_items_url: DataTypes.STRING(100),
-        document_url: DataTypes.STRING(100),
+        entire_items_url: { 
+            type:DataTypes.STRING(100),
+            defaultValue: ''
+        },
+        document_url: {
+          type: DataTypes.STRING(100),
+          defaultValue: ''
+        },
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 
