@@ -73,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
         product_detail: DataTypes.TEXT,
         //----------------shipping related data
         shipper: DataTypes.STRING(30),
-        shipper_manager: DataTypes.STRING(30),
+        payment_staff: DataTypes.STRING(30),
         final_assessment_amount: DataTypes.STRING(20),
         //---------------yahoo auction related data
         successful_bider: DataTypes.STRING(50),

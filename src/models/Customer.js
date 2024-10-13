@@ -1,4 +1,4 @@
-const { STRING } = require("sequelize")
+const { STRING, TEXT } = require("sequelize")
 
 module.exports = (sequelize, DataTypes) => {
     const Customer = sequelize.define('Customer', {
@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         values: ['男', '女'], // Enum values
         defaultValue:       '男'
       },
+      special_note :        DataTypes.TEXT,
       item1:                DataTypes.STRING,
       item2:                DataTypes.STRING,
       item3:                DataTypes.STRING,

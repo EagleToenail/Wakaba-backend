@@ -572,6 +572,47 @@ async uploadItemsImage(req,res) {
         res.status(500).send(error.message);
       }
 },
+async changePurchasePaymentStaff(req,res) {
+    try {
+        const {payload} = req.body;
+        const customer_id = payload[0].customer_id;
+        const purchase_staff_id = payload[0].purchase_staff_id;
+        const store_name = payload[0].store_name;
+       for (let index = 0; index < payload.length; index++) {
+            const element = payload[index];
+            const updateField = {};
+            if(element.purchase_staff !== null) {
+                updateField.purchase_staff = element.purchase_staff;
+            }
+            if(element.payment_staff !== null) {
+                updateField.payment_staff = element.payment_staff;
+            }
+            const id = element.id;
+            delete element.id;
+            console.log('payload',updateField,id)
+            await Master.update(updateField, {
+                where: {
+                    id: id
+                }
+            })
+       }
+       console.log('success',customer_id,store_name,purchase_staff_id)
+       const invoiceData = await Master.findAll({
+        where: {
+            product_status:'査定中',
+            store_name:store_name,
+            purchase_staff_id: purchase_staff_id,
+            customer_id:customer_id
+        }
+    });
+    console.log('updatedata',invoiceData)
+    res.send(invoiceData);
+    } catch (err) {
+        res.status(500).send({
+            error: "An error occured when trying to get sales list."
+        })
+    }
+},
 async purchasePermission(req,res) {
     try {
         const ids = req.body.ids;

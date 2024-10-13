@@ -260,6 +260,21 @@ module.exports = {
             })
         }
     },
+    async getStoreProfileList(req, res) {
+        try {
+            const storeName = req.body.storeName;
+            const userList = await Profile.findAll({
+                where: {
+                    store_name:storeName
+                }
+            })
+            res.send(userList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get user list."
+            })
+        }
+    },
     //--------------------using for chat------------
     async getSuperVisorList(req, res) {
         try {
