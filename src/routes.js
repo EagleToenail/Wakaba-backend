@@ -98,9 +98,12 @@ module.exports = (app) => {
     app.get("/api/sales/getSalesList", MasterContoller.getSalesList)
     app.get("/api/sales/getSalesById/:id", MasterContoller.getSalesById)
     app.post("/api/sales/filter", MasterContoller.getSalesFilter)
+    app.post("/api/sales/filterDate", MasterContoller.getSalesFilterByDate)
+    app.post("/api/sales/filterDateTerminal", MasterContoller.getSalesFilterByPeriod)
     app.post("/api/sales/vendorfilter", MasterContoller.getSalesVendorFilter)
     app.post("/api/sales/createSales", MasterContoller.createSales)
     app.post("/api/sales/updateSales", MasterContoller.updateSales)
+    app.post("/api/sales/eidtSales", MasterContoller.editSales)
     app.get("/api/sales/deleteSales", MasterContoller.deleteSales)
 
     app.post("/api/vendor/getVendorList",MasterContoller.getVendorList)

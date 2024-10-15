@@ -76,7 +76,8 @@ module.exports = {
                 ],
                 where:  {
                     [Op.or]:{product_type_one: { [Op.like]: `%${value}%` } }
-                }
+                },
+                order: [['createdAt', 'DESC']]
             });
             // console.log('saleList',salesWithCustomer);
             res.send(salesWithCustomer);
@@ -85,6 +86,155 @@ module.exports = {
                 error: "An error occured when trying to get sales list."
             })
         }
+    },
+    async getSalesFilterByDate(req, res) {
+        const type = req.body.type;
+        const date = req.body.date;
+        if(type === '買取日') {
+            try {
+                const salesData = await Master.findAll({
+                    include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                    }
+                    ],
+                    where:  {
+                        [Op.or]:{trading_date: { [Op.like]: `%${date}%` } }
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                // console.log('saleList',salesWithCustomer);
+                res.send(salesData);
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to get sales list."
+                })
+            }
+        }
+        if(type === '卸日') {
+            try {
+                const salesData = await Master.findAll({
+                    include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                    }
+                    ],
+                    where:  {
+                        [Op.or]:{shipping_date: { [Op.like]: `%${date}%` } }
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                // console.log('saleList',salesWithCustomer);
+                res.send(salesData);
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to get sales list."
+                })
+            }
+        }
+        if(type === '入金日') {
+            try {
+                const salesData = await Master.findAll({
+                    include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                    }
+                    ],
+                    where:  {
+                        [Op.or]:{deposit_date: { [Op.like]: `%${date}%` } }
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                // console.log('saleList',salesWithCustomer);
+                res.send(salesData);
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to get sales list."
+                })
+            }
+        }
+
+    },
+    async getSalesFilterByPeriod(req, res) {
+        const type = req.body.type;
+        const startDate = req.body.startDate;
+        const endDate = req.body.endDate;
+        if(type === '買取日') {
+            try {
+                const salesData = await Master.findAll({
+                    include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                    }
+                    ],
+                    where: {
+                        trading_date: {
+                            [Op.between]: [startDate, endDate] // Date range filter
+                        },
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                // console.log('saleList',salesWithCustomer);
+                res.send(salesData);
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to get sales list."
+                })
+            }
+        }
+        if(type === '卸日') {
+            try {
+                const salesData = await Master.findAll({
+                    include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                    }
+                    ],
+                    where: {
+                        shipping_date: {
+                            [Op.between]: [startDate, endDate] // Date range filter
+                        },
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                // console.log('saleList',salesWithCustomer);
+                res.send(salesData);
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to get sales list."
+                })
+            }
+        }
+        if(type === '入金日') {
+            try {
+                const salesData = await Master.findAll({
+                    include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address'] // Specify the attributes you want to include
+                    }
+                    ],
+                    where: {
+                        deposit_date: {
+                            [Op.between]: [startDate, endDate] // Date range filter
+                        },
+                    },
+                    order: [['createdAt', 'DESC']]
+                });
+                // console.log('saleList',salesWithCustomer);
+                res.send(salesData);
+            } catch (err) {
+                res.status(500).send({
+                    error: "An error occured when trying to get sales list."
+                })
+            }
+        }
+
     },
     async getSalesVendorFilter(req, res) {
         const value = req.body.value;
@@ -161,6 +311,37 @@ module.exports = {
             }
 
             res.send({"success":true});
+    },
+    async editSales(req, res) {
+        try {
+            console.log('id name vlaue')
+            const id = req.body.id;
+            const name = req.body.name;
+            const value = req.body.value;
+            console.log('id name vlaue',id,name,value)
+            const updateField = {};
+            updateField[name] = value
+            console.log('updateField',updateField)
+            await Master.update(updateField,{
+                where: {
+                    id:id
+                }
+            });
+            const salesList = await Master.findAll({
+                include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                    }
+                ],
+                order: [['createdAt', 'DESC']]
+            });
+                // console.log(JSON.stringify(salesWithCustomer, null, 2));
+            // console.log('saleList',salesList);
+            res.send(salesList);
+          } catch (error) {
+            res.status(500).send(error.message);
+          }
     },
     async deleteSales(req, res) {
 		try {
@@ -399,17 +580,24 @@ async updateInvoice(req, res) {
         const id = req.body.id;
         const userStoreName = req.body.userStoreName;
         const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
-            purchase_result,purchase_price,estimate_wholesaler} = req.body;
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+            purchase_result,purchase_price,estimate_wholesaler,gold_type,gross_weight, price_gram, action_type, movable, tester,model_number_one, box_guarantee,rank,brand, capacity,
+            percent, notes,} = req.body;
 
         const updateData = {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
-            purchase_result,purchase_price,estimate_wholesaler};
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+            purchase_result,purchase_price,estimate_wholesaler,gold_type,gross_weight, price_gram, action_type, movable, tester,model_number_one, box_guarantee,rank,brand, capacity,
+            percent, notes,};
     
         if (req.files['product_photo']) {
             const uploadfile = req.files['product_photo'][0];
             updateData.product_photo = uploadfile.filename; // Adjust field name based on your model
           }
+        Object.keys(updateData).forEach(key => {
+            if (updateData[key] === 'null') {
+                delete updateData[key];
+            }
+        });
         console.log('updateData',updateData,id)
        await Master.update(updateData,{
             where: {
@@ -509,7 +697,7 @@ async commentSave(req,res) {
         const id = payload.id;
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
-        const comment = payload.comment;
+        const comment = req.body.commentData;
         const customer_id = payload.customer_id;
         const updateField = {};
         updateField.comment = comment;

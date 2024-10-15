@@ -69,7 +69,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: '申請中',
         },
 
-        fixed_checkout: DataTypes.STRING(20),//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese
+        fixed_checkout: {
+          type: DataTypes.ENUM,
+          values:['real','unreal'],
+          defaultValue: 'real',
+        } ,//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese
         product_detail: DataTypes.TEXT,
         //----------------shipping related data
         shipper: DataTypes.STRING(30),
@@ -86,13 +90,13 @@ module.exports = (sequelize, DataTypes) => {
 
         // Fields from PreciousMetals--------------------------------------
         gold_type: DataTypes.STRING(20),
-        gross_weight: DataTypes.FLOAT,
-        bullion_weight: DataTypes.FLOAT,
+        gross_weight: DataTypes.STRING(20),
+        price_per_gram: DataTypes.STRING(20),
         // Fields from OldCoin----------------------------------------
         // Fields from Clock-----------------------------------------
         model_number_one: DataTypes.STRING(20),
         model_number_two: DataTypes.STRING(20),
-        automatic_quartz: DataTypes.STRING(20),
+        action_type: DataTypes.STRING(20),
         movable: DataTypes.STRING(20),
         tester: DataTypes.STRING(20),
         box_guarantee: DataTypes.STRING(20),
@@ -111,7 +115,7 @@ module.exports = (sequelize, DataTypes) => {
         kinds: DataTypes.STRING(15),
         brand: DataTypes.STRING(15),
         capacity: DataTypes.STRING(15),
-        frequency: DataTypes.STRING(15),
+        percent: DataTypes.STRING(15),
         yahoo_auctions_highest_price: DataTypes.INTEGER,
         auction_id: DataTypes.STRING(10),
         estimate_wholesaler: DataTypes.TEXT,
@@ -127,6 +131,7 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.STRING(100),
           defaultValue: ''
         },
+        notes: DataTypes.STRING(50),
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 
