@@ -544,18 +544,24 @@ module.exports = {
 async createInvoice(req, res) {
     try {
         const userStoreName = req.body.userStoreName;
-        const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+        const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
             purchase_result,purchase_price,estimate_wholesaler} = req.body;
 
-        const createData = {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
-            comment,quantity,metal_type,price_per_gram,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
+        const createData = {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
+            comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
             purchase_result,purchase_price,estimate_wholesaler};
     
         if (req.files['product_photo']) {
             const uploadfile = req.files['product_photo'][0];0
             createData.product_photo = uploadfile.filename; // Adjust field name based on your model
           }
+
+        Object.keys(createData).forEach(key => {
+            if (createData[key] === 'null' || createData[key] === 'undefined') {
+                delete createData[key];
+            }
+        });
         console.log('createData------',createData)
        await Master.create(createData);
        const invoiceData = await Master.findAll({
@@ -569,7 +575,7 @@ async createInvoice(req, res) {
                 purchase_staff_id:createData.purchase_staff_id
             }
        });
-        // const newMessageContent = await TodoMessage.findAll();
+        console.log('dafasfasd',invoiceData);
         res.send(invoiceData);
       } catch (error) {
         res.status(500).send(error.message);

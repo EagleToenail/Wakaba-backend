@@ -1,4 +1,5 @@
 const { Customer } = require('../models')
+const { Master } = require('../models')
 const { CustomerPastVisitHistory } = require('../models')
 
 const { Op } = require('sequelize');
@@ -36,6 +37,12 @@ module.exports = {
             const idCard = req.files['idcard'][0];
             createFields.idCard_url = idCard.filename; // Adjust field name based on your model
             } 
+
+            Object.keys(createFields).forEach(key => {
+                if (createFields[key] === '' || createFields[key] === undefined) {
+                    delete createFields[key];
+                }
+            });
             console.log("cusotmer data",createFields)
             const customer = await Customer.create(createFields)
             res.send(customer)
@@ -93,9 +100,12 @@ module.exports = {
     async createCustomerInvoice(req, res) {
         try {
             console.log("Customer update request received", req.body);
-            console.log('customerData',req.body)
-            const {item1, item2, item3, item4, item5 } = req.body;
-    
+            
+            const id = req.body.id;
+            const {item1, item2, item3, item4, item5 } = req.body.customer;
+            const invoiceIDs = req.body.invoiceIds;
+
+            console.log('customerData',item1, item2, item3, item4, item5)
             const createFields = { item1, item2, item3, item4, item5 };
             delete createFields.id;
             Object.keys(createFields).forEach(key => {
@@ -106,7 +116,23 @@ module.exports = {
             createFields.item1 = (createFields.item1).toString();
             console.log("create fields:", createFields);
     
-            const newCustomer = await Customer.create(createFields);
+            const newCustomer = await Customer.update(createFields,{
+                where:{
+                    id:id
+                }
+            });
+
+            const updateField = {};
+            updateField.customer_id = id;
+            for (let index = 0; index < invoiceIDs.length; index++) {
+                const element = invoiceIDs[index];
+                await Master.update(updateField,{
+                    where: {
+                        id:element
+                    }
+                });
+            }
+
             console.log('newCustomer',newCustomer)
             res.send(newCustomer);
         } catch (err) {
