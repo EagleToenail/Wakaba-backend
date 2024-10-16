@@ -63,6 +63,30 @@ module.exports = {
             })
         }
     },
+    async getSalesListByCategory1(req, res) {
+        const cat1 = req.body.cat1;
+        try {
+            const salesList = await Master.findAll({
+                include: [
+                    {
+                        model: Customer,
+                        attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                    }
+                ],
+                where:  {
+                    [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
+                },
+                order: [['createdAt', 'DESC']]
+            });
+                // console.log(JSON.stringify(salesWithCustomer, null, 2));
+            // console.log('saleList',salesList);
+            res.send(salesList);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
     async getSalesFilter(req, res) {
         const value = req.body.value;
         console.log('zxczxczcx',value)
@@ -318,13 +342,14 @@ module.exports = {
             const id = req.body.id;
             const name = req.body.name;
             const value = req.body.value;
+            const cat1 = req.body.cat1;
             console.log('id name vlaue',id,name,value)
             const updateField = {};
             updateField[name] = value
             console.log('updateField',updateField)
             await Master.update(updateField,{
                 where: {
-                    id:id
+                    id:id,
                 }
             });
             const salesList = await Master.findAll({
@@ -334,6 +359,9 @@ module.exports = {
                         attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
                     }
                 ],
+                where: {
+                    product_type_one:cat1,
+                },
                 order: [['createdAt', 'DESC']]
             });
                 // console.log(JSON.stringify(salesWithCustomer, null, 2));

@@ -96,6 +96,7 @@ module.exports = (app) => {
     app.post("/api/customer/updatecustomeritem",CustomerController.updateCustomerInvoice)
     // //============sales
     app.get("/api/sales/getSalesList", MasterContoller.getSalesList)
+    app.post("/api/sales/getSalesListByCategory1", MasterContoller.getSalesListByCategory1)
     app.get("/api/sales/getSalesById/:id", MasterContoller.getSalesById)
     app.post("/api/sales/filter", MasterContoller.getSalesFilter)
     app.post("/api/sales/filterDate", MasterContoller.getSalesFilterByDate)
