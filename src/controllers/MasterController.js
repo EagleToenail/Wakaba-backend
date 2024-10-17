@@ -359,8 +359,8 @@ module.exports = {
                         attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
                     }
                 ],
-                where: {
-                    product_type_one:cat1,
+                where:  {
+                    [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
                 },
                 order: [['createdAt', 'DESC']]
             });
@@ -581,10 +581,15 @@ async createInvoice(req, res) {
             purchase_result,purchase_price,estimate_wholesaler};
     
         if (req.files['product_photo']) {
-            const uploadfile = req.files['product_photo'][0];0
+            const uploadfile = req.files['product_photo'][0];
             createData.product_photo = uploadfile.filename; // Adjust field name based on your model
           }
 
+          if(product_type_one === '古銭等' || product_type_one === '洋酒' || product_type_one === 'カメラ'
+            || product_type_one === '楽器' || product_type_one === 'スマホタブレット' || product_type_one === '着物'
+          ) {
+            createData.shipping_address = 'オークション';
+          }
         Object.keys(createData).forEach(key => {
             if (createData[key] === 'null' || createData[key] === 'undefined') {
                 delete createData[key];
@@ -595,7 +600,7 @@ async createInvoice(req, res) {
        const invoiceData = await Master.findAll({
             where: {
                 // product_status: {
-                //     [Op.or]: ['査定中', '成約済','お預かり']
+                //     [Op.or]: ['査定中','お預かり']
                 // },
                 product_status:'査定中',
                 store_name:userStoreName,
@@ -632,6 +637,13 @@ async updateInvoice(req, res) {
                 delete updateData[key];
             }
         });
+
+        if(product_type_one === '古銭等' || product_type_one === '洋酒' || product_type_one === 'カメラ'
+            || product_type_one === '楽器' || product_type_one === 'スマホタブレット' || product_type_one === '着物'
+          ) {
+            createData.shipping_address = 'オークション';
+          }
+
         console.log('updateData',updateData,id)
        await Master.update(updateData,{
             where: {
@@ -641,7 +653,7 @@ async updateInvoice(req, res) {
        const invoiceData = await Master.findAll({
             where: {
                 // product_status: {
-                //     [Op.or]: ['査定中', '成約済','お預かり']
+                //     [Op.or]: ['査定中','お預かり']
                 // },
                 product_status:'査定中',
                 store_name:userStoreName,
@@ -670,7 +682,7 @@ async deleteInvoice(req,res) {
        const invoiceData = await Master.findAll({
             where: {
                 // product_status: {
-                //     [Op.or]: ['査定中', '成約済','お預かり']
+                //     [Op.or]: ['査定中', 'お預かり']
                 // },
                 product_status:'査定中',
                 store_name: userStoreName,
@@ -693,7 +705,7 @@ async getRegisteredData(req,res) {
        const invoiceData = await Master.findAll({
             where: {
                 product_status: {
-                    [Op.or]: ['査定中', '成約済','お預かり']
+                    [Op.or]: ['査定中']
                 },
                 customer_id:customerId,
                 purchase_staff_id:userId,
@@ -743,7 +755,7 @@ async commentSave(req,res) {
        const invoiceData = await Master.findAll({
             where: {
                 // product_status: {
-                //     [Op.or]: ['査定中', '成約済','お預かり']
+                //     [Op.or]: ['査定中','お預かり']
                 // },
                 product_status:'査定中',
                 store_name:userStoreName,
@@ -835,14 +847,14 @@ async changePurchasePaymentStaff(req,res) {
         })
     }
 },
-async purchasePermission(req,res) {
+async purchasePermissionWaiting(req,res) {
     try {
         const ids = req.body.ids;
         const customerId = req.body.id;
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
         const updateField = {};
-        updateField.product_status = '成約済';
+        updateField.product_status = '承認待ち';
         for (let index = 0; index < ids.length; index++) {
             const element = ids[index];
             await Master.update(updateField,{
@@ -859,13 +871,41 @@ async purchasePermission(req,res) {
         });
        const invoiceData = await Master.findAll({
             where: {
-                product_status: {
-                    [Op.or]: ['査定中', '成約済','お預かり']
-                },
-                // product_status:'査定中',
-                customer_id:customerId,
-                purchase_staff_id:userId,
-                store_name:userStoreName
+                id:ids
+            }
+       });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
+async purchasePermission(req,res) {
+    try {
+        const ids = req.body.ids;
+        const customerId = req.body.id;
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
+        const updateField = {};
+        updateField.product_status = '承認された';
+        for (let index = 0; index < ids.length; index++) {
+            const element = ids[index];
+            console.log('updateField',updateField.wakana_number);
+            await Master.update(updateField,{
+                where: {
+                    id:element
+                }
+            });
+        }
+        updateField.invoice_ids = ids.toString();
+        await Master.update(updateField,{
+            where: {
+                id:ids[0]
+            }
+        });
+       const invoiceData = await Master.findAll({
+            where: {
+                id:ids
             }
        });
         // const newMessageContent = await TodoMessage.findAll();
@@ -1337,16 +1377,24 @@ async purchaseInvoiceConfirm (req,res) {
             }
         });
         // console.log('aa===========')
+        const maxWakabaNumber = await Master.max('wakaba_number');
+        if(maxWakabaNumber === null){
+            updateField.wakana_number = '0';
+            maxWakabaNumber = 0;
+        } 
+        console.log('maxWakabaNumber')
+        console.log('maxWakabaNumber',maxWakabaNumber)
+
         try {
             for (let index = 0; index < purchaseData.length; index++) {
                 const masterData = purchaseData[index];
                 masterData.signature = filename;
                 const id = masterData.id;
                 delete masterData.id;
-                // console.log('bb===============')
-                // console.log("salesData",masterData)
+               
                 const updateField = {};
                 updateField.product_status = '買取済';
+                updateField.wakaba_number = (maxWakabaNumber + index + 1).toString();
                 await Master.update(updateField,{
                     where:{
                         id:id

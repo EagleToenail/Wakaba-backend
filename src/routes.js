@@ -130,6 +130,7 @@ module.exports = (app) => {
       { name: 'document_url', maxCount: 1 },
     ]), MasterContoller.uploadItemsImage)
     
+    app.post("/api/purchaseinvoice/approveWaiting", MasterContoller.purchasePermissionWaiting)
     app.post("/api/purchaseinvoice/purchasepermit", MasterContoller.purchasePermission)
     app.post("/api/purchaseinvoice/customerreceiptpermit", MasterContoller.purchaseReceiptPermit)
     app.post("/api/purchaseinvoice/stamps", MasterContoller.purchaseStamp)

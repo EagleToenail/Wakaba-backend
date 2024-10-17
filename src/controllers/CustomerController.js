@@ -27,8 +27,8 @@ module.exports = {
 	async createCustomer(req, res) {
         try{
             console.log("customer create",req.body)
-            const {visit_type, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger,brand_type} = req.body;
-            const createFields = {visit_type, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger,brand_type};
+            const {visit_type, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger,brand_type,special_note} = req.body;
+            const createFields = {visit_type, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger,brand_type,special_note};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 createFields.avatar_url = avatarImage.filename; // Adjust field name based on your model

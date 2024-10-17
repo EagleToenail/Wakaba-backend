@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         shipping_ids: DataTypes.STRING(20),
         shipping_address: {
             type: DataTypes.STRING, // 
-            defaultValue:'オークション'
+            defaultValue:''
           },
         trading_date: DataTypes.STRING(15), // the date that the shop bought the items from customer
         assessment_date: DataTypes.STRING(15), // the date that the shop received assesment (estimate) from wholesaler vendor
@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
 
         product_status: {
             type: DataTypes.ENUM,
-            values: ['査定中','成約済', 'お預かり','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],
+            values: ['査定中','お預かり','承認待ち','承認された','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],
             defaultValue: '査定中',
         },
         shipping_status: {
