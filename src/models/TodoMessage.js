@@ -58,6 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         parentMessageId: {
             type: DataTypes.STRING,
             allowNull: true,
+            defaultValue:'',
         },
         fileUrl: {
             type: DataTypes.STRING,

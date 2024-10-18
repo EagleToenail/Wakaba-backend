@@ -74,6 +74,7 @@ module.exports = {
 // Create a new reply
     async createReply (req, res) {
         try {
+          //console.log('-----------assafdsdfasfafadf')
             const {invoice_id,store_name,time, title, content, senderId, receiverId, parentMessageId ,permission,read} = req.body;
             const newMessage = {invoice_id,store_name,time, title, content, senderId, receiverId, parentMessageId ,permission,read };
             if (req.files['fileUrl']) {
@@ -86,11 +87,33 @@ module.exports = {
             res.status(500).send(error.message);
           }
     },
-
+//create template reply
+async createTemplateReply (req, res) {
+  try {
+     const invoiceid = req.body.invoiceid;
+     const time = req.body.time;
+     const templateTitle = req.body.templateTitle;
+     const content = req.body.content;
+     const senderId = req.body.senderId;
+    //  console.log('receivedata--------------',invoiceid,time,templateTitle,content,senderId)
+    const newMessage = {};
+    newMessage.invoice_id = invoiceid;
+    newMessage.time = time;
+    newMessage.title = templateTitle;
+    newMessage.content = content;
+    newMessage.senderId = senderId;
+    console.log(newMessage)
+     await TodoMessage.create(newMessage);
+      res.send({success:true});
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+},
     async getMessages(req, res) {
         try {
           const userId = req.body.userId; // Assuming userId is provided in route parameters
-          const invoiceId = req.body.invoiceId.toString(); 
+          const invoiceId = (req.body.invoiceId).toString();
+          //console.log('sdfasdf------',userId,invoiceId) 
           // Fetch root messages
           const rootMessages = await TodoMessage.findAll({
             where: {
@@ -103,7 +126,7 @@ module.exports = {
               },
               order: [['createdAt', 'DESC']]
             });
-    
+            // console.log('rootMessages------',rootMessages) 
           // Fetch replies for each root message
           const result = await Promise.all(rootMessages.map(async (root) => {
             const nestedReplies = await fetchReplies(root.id.toString());
@@ -160,7 +183,7 @@ module.exports = {
             const updateField = {};
             updateField.permission = '1';
             updateField.read = '1';
-            console.log('fronend information',updateField,messageId)
+           // console.log('fronend information',updateField,messageId)
         await TodoMessage.update(updateField,{
               where:{
                   id:messageId,
@@ -199,7 +222,7 @@ module.exports = {
     async getAlerts(req,res) {
       try{
         const userId = req.body.userId;
-        console.log('userId',userId)
+        //console.log('userId',userId)
         const unreadCount = await TodoMessage.count({
               where: {
                 parentMessageId:'',

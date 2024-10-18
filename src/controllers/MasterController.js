@@ -299,7 +299,7 @@ module.exports = {
                 salesSlipData.gross_profit = salesSlipData.sales_amount - (salesSlipData.purchase_price - salesSlipData.shipping_cost);
                 salesSlipData.product_status = '約定済';
                 delete salesSlipData.id;
-                console.log("salesData",salesSlipData,id)
+                //console.log("salesData",salesSlipData,id)
                 await Master.update(salesSlipData, {
                     where: {
                         id: id
@@ -338,15 +338,15 @@ module.exports = {
     },
     async editSales(req, res) {
         try {
-            console.log('id name vlaue')
+            //console.log('id name vlaue')
             const id = req.body.id;
             const name = req.body.name;
             const value = req.body.value;
             const cat1 = req.body.cat1;
-            console.log('id name vlaue',id,name,value)
+            //console.log('id name vlaue',id,name,value)
             const updateField = {};
             updateField[name] = value
-            console.log('updateField',updateField)
+           // console.log('updateField',updateField)
             await Master.update(updateField,{
                 where: {
                     id:id,
@@ -574,11 +574,11 @@ async createInvoice(req, res) {
         const userStoreName = req.body.userStoreName;
         const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
             comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
-            purchase_result,purchase_price,estimate_wholesaler} = req.body;
+            purchase_result,purchase_price,estimate_wholesaler,invoiceID} = req.body;
 
         const createData = {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
             comment,quantity,reason_application,interest_rate,product_price,highest_estimate_vendor,highest_estimate_price,number_of_vendor,supervisor_direction,
-            purchase_result,purchase_price,estimate_wholesaler};
+            purchase_result,purchase_price,estimate_wholesaler,invoiceID};
     
         if (req.files['product_photo']) {
             const uploadfile = req.files['product_photo'][0];
@@ -595,7 +595,7 @@ async createInvoice(req, res) {
                 delete createData[key];
             }
         });
-        console.log('createData------',createData)
+        //console.log('createData------',createData)
        await Master.create(createData);
        const invoiceData = await Master.findAll({
             where: {
@@ -608,7 +608,7 @@ async createInvoice(req, res) {
                 purchase_staff_id:createData.purchase_staff_id
             }
        });
-        console.log('dafasfasd',invoiceData);
+        //console.log('dafasfasd',invoiceData);
         res.send(invoiceData);
       } catch (error) {
         res.status(500).send(error.message);
@@ -616,6 +616,7 @@ async createInvoice(req, res) {
 },
 async updateInvoice(req, res) {
     try {
+        console.log(req.body)
         const id = req.body.id;
         const userStoreName = req.body.userStoreName;
         const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
@@ -633,7 +634,7 @@ async updateInvoice(req, res) {
             updateData.product_photo = uploadfile.filename; // Adjust field name based on your model
           }
         Object.keys(updateData).forEach(key => {
-            if (updateData[key] === 'null') {
+            if (updateData[key] === 'null'|| updateData[key] === 'undefined') {
                 delete updateData[key];
             }
         });
@@ -641,10 +642,10 @@ async updateInvoice(req, res) {
         if(product_type_one === '古銭等' || product_type_one === '洋酒' || product_type_one === 'カメラ'
             || product_type_one === '楽器' || product_type_one === 'スマホタブレット' || product_type_one === '着物'
           ) {
-            createData.shipping_address = 'オークション';
+            updateData.shipping_address = 'オークション';
           }
 
-        console.log('updateData',updateData,id)
+        //console.log('updateData',updateData,id)
        await Master.update(updateData,{
             where: {
                 id:id
@@ -668,12 +669,12 @@ async updateInvoice(req, res) {
       }
 },
 async deleteInvoice(req,res) {
-        console.log('deleteinvoice')
+        //console.log('deleteinvoice')
         const id = req.body.id;
         const userStoreName = req.body.userStoreName;
         const userId = req.body.userId;
         const customerId = req.body.customerId;
-        console.log('deleteinvoice',id,customerId)
+        //console.log('deleteinvoice',id,customerId)
         await Master.destroy({
             where: {
                 id:id
@@ -701,7 +702,7 @@ async getRegisteredData(req,res) {
         const customerId = req.body.id;
         const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
-        console.log('aaaaaa',customerId,userId,userStoreName)
+        //console.log('aaaaaa',customerId,userId,userStoreName)
        const invoiceData = await Master.findAll({
             where: {
                 product_status: {
@@ -720,9 +721,9 @@ async getRegisteredData(req,res) {
 },
 async allInvoiceClear(req,res) {
     try {
-        console.log('deleteinvoice')
+        //console.log('deleteinvoice')
         const payload = req.body.payload;
-        console.log('payload',payload)
+        //console.log('payload',payload)
         for (let index = 0; index < payload.length; index++) {
             const element = payload[index];
             id = element.id;
@@ -782,10 +783,10 @@ async uploadItemsImage(req,res) {
           }
           
           const itemIds = ids.split(',').map(Number);
-          console.log('-------------updateField',updateField,itemIds.length)
+          //console.log('-------------updateField',updateField,itemIds.length)
         for (let index = 0; index < itemIds.length; index++) {
             const element = itemIds[index];
-            console.log(element)
+           // console.log(element)
             await Master.update(updateField,{
                 where: {
                     id:element
@@ -823,14 +824,14 @@ async changePurchasePaymentStaff(req,res) {
             }
             const id = element.id;
             delete element.id;
-            console.log('payload',updateField,id)
+            //console.log('payload',updateField,id)
             await Master.update(updateField, {
                 where: {
                     id: id
                 }
             })
        }
-       console.log('success',customer_id,store_name,purchase_staff_id)
+       //console.log('success',customer_id,store_name,purchase_staff_id)
        const invoiceData = await Master.findAll({
         where: {
             product_status:'査定中',
@@ -839,7 +840,7 @@ async changePurchasePaymentStaff(req,res) {
             customer_id:customer_id
         }
     });
-    console.log('updatedata',invoiceData)
+    //console.log('updatedata',invoiceData)
     res.send(invoiceData);
     } catch (err) {
         res.status(500).send({
@@ -890,7 +891,7 @@ async purchasePermission(req,res) {
         updateField.product_status = '承認された';
         for (let index = 0; index < ids.length; index++) {
             const element = ids[index];
-            console.log('updateField',updateField.wakana_number);
+           // console.log('updateField',updateField.wakana_number);
             await Master.update(updateField,{
                 where: {
                     id:element
@@ -974,9 +975,9 @@ async purchaseStamp(req,res){
             createData.in_charge_id = userId;
             createData.store_name = storeName;
             await StampsTransaction.create(createData);
-            console.log('stampOk1')
+            //console.log('stampOk1')
 
-            if(totalFaceValue1 !== 0) {
+            if(totalFaceValue1 !== 0 || totalFaceValue2 !== 0) {
                 const createInvoiceData = {};
                 createInvoiceData.trading_date = currentDay;
                 createInvoiceData.purchase_staff = username;
@@ -984,12 +985,11 @@ async purchaseStamp(req,res){
                 createInvoiceData.customer_id = customerId;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
-                createInvoiceData.product_type_two = 'シート(高)';
                 createInvoiceData.interest_rate = (stampRate[0].percent).toString();
-                createInvoiceData.product_price = totalFaceValue1;
-                createInvoiceData.purchase_price = totalPurchaseOfSheet1;
+                createInvoiceData.product_price = (parseInt(totalFaceValue1) + parseInt(totalFaceValue2)).toString();
+                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfSheet1) + parseInt(totalPurchaseOfSheet2)).toString();
 
-                createInvoiceData.quantity = (totalNumberOfSheet1).toString();
+                createInvoiceData.quantity = (parseInt(totalNumberOfSheet1) + parseInt(totalNumberOfSheet2)).toString();
                 createInvoiceData.number = '';
                 createInvoiceData.estimate_wholesaler = '{}';
                 createInvoiceData.hearing = '';
@@ -1002,35 +1002,7 @@ async purchaseStamp(req,res){
                 createInvoiceData.number_of_vendor = '';
                 createInvoiceData.supervisor_direction = '';
                 createInvoiceData.purchase_result = '';
-                console.log('stampOk2',createInvoiceData)
-                await Master.create(createInvoiceData);
-            }
-            if(totalFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-                createInvoiceData.product_type_two = 'シート(小)'
-                createInvoiceData.interest_rate = (stampRate[0].percent).toString();
-                createInvoiceData.product_price = totalFaceValue2;
-                createInvoiceData.purchase_price = totalPurchaseOfSheet2;
-
-                createInvoiceData.quantity = (totalNumberOfSheet2).toString();
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
+                //console.log('stampOk2',createInvoiceData)
                 await Master.create(createInvoiceData);
             }
 
@@ -1052,7 +1024,7 @@ async purchaseStamp(req,res){
             // console.log('====',createData);
             await StampsTransaction.create(createData);
 
-            if(totalRoseFaceValue1 !== 0) {
+            if(totalRoseFaceValue1 !== 0 || totalRoseFaceValue2 !== 0) {
                 const createInvoiceData = {};
                 createInvoiceData.trading_date = currentDay;
                 createInvoiceData.purchase_staff = username;
@@ -1060,41 +1032,11 @@ async purchaseStamp(req,res){
                 createInvoiceData.customer_id = customerId;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
-                createInvoiceData.product_type_two = 'バラ(高)';
                 createInvoiceData.interest_rate = (stampRate[1].percent).toString();
-                createInvoiceData.product_price = totalRoseFaceValue1;
-                createInvoiceData.purchase_price = totalPurchaseOfRose1;
+                createInvoiceData.product_price = (parseInt(totalRoseFaceValue1) + parseInt(totalRoseFaceValue2)).toString();
+                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfRose1) + parseInt(totalPurchaseOfRose2)).toString();
 
-                createInvoiceData.quantity = totalNumberOfRose1;
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-
-                await Master.create(createInvoiceData);
-            }
-            if(totalRoseFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-                createInvoiceData.product_type_two = 'バラ(小)'
-                createInvoiceData.interest_rate = (stampRate[1].percent).toString();
-                createInvoiceData.product_price = totalRoseFaceValue2;
-                createInvoiceData.purchase_price = totalPurchaseOfRose2;
-
-                createInvoiceData.quantity = totalNumberOfRose2;
+                createInvoiceData.quantity = (parseInt(totalNumberOfRose1) + parseInt(totalNumberOfRose2)).toString();
                 createInvoiceData.number = '';
                 createInvoiceData.estimate_wholesaler = '{}';
                 createInvoiceData.hearing = '';
@@ -1128,7 +1070,7 @@ async purchaseStamp(req,res){
             // console.log('====',createData);
             await StampsTransaction.create(createData);
 
-            if(totalPackFaceValue1 !== 0) {
+            if(totalPackFaceValue1 !== 0 || totalPackFaceValue2 !== 0) {
                 const createInvoiceData = {};
                 createInvoiceData.trading_date = currentDay;
                 createInvoiceData.purchase_staff = username;
@@ -1136,41 +1078,11 @@ async purchaseStamp(req,res){
                 createInvoiceData.customer_id = customerId;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
-
                 createInvoiceData.interest_rate = (stampRate[2].percent).toString();
-                createInvoiceData.product_price = totalPackFaceValue1;
-                createInvoiceData.purchase_price = totalPurchaseOfPack1;
+                createInvoiceData.product_price = (parseInt(totalPackFaceValue1) + parseInt(totalPackFaceValue2)).toString();
+                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfPack1) + parseInt(totalPurchaseOfPack2)).toString();
 
-                createInvoiceData.quantity = totalNumberOfPack1;
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-
-                await Master.create(createInvoiceData);
-            }
-            if(totalPackFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-
-                createInvoiceData.interest_rate = (stampRate[2].percent).toString();
-                createInvoiceData.product_price = totalPackFaceValue2;
-                createInvoiceData.purchase_price = totalPurchaseOfPack2;
-
-                createInvoiceData.quantity = totalNumberOfPack2;
+                createInvoiceData.quantity = (parseInt(totalNumberOfPack1) + parseInt(totalNumberOfPack2)).toString();
                 createInvoiceData.number = '';
                 createInvoiceData.estimate_wholesaler = '{}';
                 createInvoiceData.hearing = '';
@@ -1204,7 +1116,7 @@ async purchaseStamp(req,res){
             // console.log('====',createData);
             await StampsTransaction.create(createData);
 
-            if(totalCardFaceValue1 !== 0) {
+            if(totalCardFaceValue1 !== 0 || totalCardFaceValue2 !== 0) {
                 const createInvoiceData = {};
                 createInvoiceData.trading_date = currentDay;
                 createInvoiceData.purchase_staff = username;
@@ -1214,39 +1126,10 @@ async purchaseStamp(req,res){
                 createInvoiceData.product_type_one = '切手';
 
                 createInvoiceData.interest_rate = (stampRate[3].percent).toString();
-                createInvoiceData.product_price = totalCardFaceValue1;
-                createInvoiceData.purchase_price = totalPurchaseOfCard1;
+                createInvoiceData.product_price = (parseInt(totalCardFaceValue1) + parseInt(totalCardFaceValue2)).toString();
+                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfCard1) + parseInt(totalPurchaseOfCard2)).toString();
 
-                createInvoiceData.quantity = totalNumberOfCard1;
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-
-                await Master.create(createInvoiceData);
-            }
-            if(totalCardFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-
-                createInvoiceData.interest_rate = (stampRate[3].percent).toString();
-                createInvoiceData.product_price = totalCardFaceValue2;
-                createInvoiceData.purchase_price = totalPurchaseOfCard2;
-
-                createInvoiceData.quantity = totalNumberOfCard2;
+                createInvoiceData.quantity = (parseInt(totalNumberOfCard1) + parseInt(totalNumberOfCard2)).toString();
                 createInvoiceData.number = '';
                 createInvoiceData.estimate_wholesaler = '{}';
                 createInvoiceData.hearing = '';
@@ -1335,7 +1218,7 @@ async getInvoiceDetail(req,res) {
             });
             res.send(sales);
           } else {
-            console.log('-0k2-')
+            //console.log('-0k2-')
             const sales = await Master.findAll({
                 where: {
                   id: invoiceId // Assuming `id` is the primary key
@@ -1355,7 +1238,7 @@ async purchaseInvoiceConfirm (req,res) {
     try {
         const {dataUrl,payload} = req.body;
         const purchaseData = payload;
-        console.log("dataurl,purchaseData",purchaseData)
+        //console.log("dataurl,purchaseData",purchaseData)
 
         if (!dataUrl) {
             return res.status(400).json({ error: 'No data URL provided' });
@@ -1382,8 +1265,8 @@ async purchaseInvoiceConfirm (req,res) {
             updateField.wakana_number = '0';
             maxWakabaNumber = 0;
         } 
-        console.log('maxWakabaNumber')
-        console.log('maxWakabaNumber',maxWakabaNumber)
+       // console.log('maxWakabaNumber')
+        //console.log('maxWakabaNumber',maxWakabaNumber)
 
         try {
             for (let index = 0; index < purchaseData.length; index++) {
@@ -1463,7 +1346,7 @@ async purchaseInvoiceConfirm (req,res) {
 },
 async rShopShippingConfirm (req,res) {
     try {
-        console.log('hello')
+        //console.log('hello')
         const ids = req.body.ids;
         const payload = req.body.payload;
         const updateField = {};
@@ -1496,21 +1379,23 @@ async rShopShippingConfirm (req,res) {
 //get the invoice number
 async getInvoiceNumber(req, res) {
     try {
-        const userStoreName = req.body.userStoreName;
-        const totalCount = await Master.count({
-            where: {
-                [Op.and]: [
-                    { invoice_ids: { [Op.ne]: null } }, // Ensure invoice_ids is not null
-                ],
-                store_name: userStoreName
-            }
-        });
-            // console.log(customers)
-            res.send(totalCount);
+        //console.log('------------------maxinvoiceNumber--------------------');
+        let maxinvoiceNumber = await Master.max('invoiceID'); // Change const to let
+
+        // Set to 1 if maxinvoiceNumber is null or 0
+        if (maxinvoiceNumber === null || maxinvoiceNumber === 0) {
+            maxinvoiceNumber = 1;
+        } else {
+            maxinvoiceNumber = parseInt(maxinvoiceNumber) + 1;
+        }
+
+        //console.log('------------------maxinvoiceNumber--------------------', maxinvoiceNumber);
+        res.send({ invoiceID: maxinvoiceNumber });
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(500).send({
-            error: "An error occured when trying to get sales list."
-        })
+            error: "An error occurred when trying to get the invoice number."
+        });
     }
 },
 //----------------------------------------------vendor assessment 
@@ -1567,7 +1452,7 @@ async updateEstimate(req, res) {
                 id:id
             }
         });
-        console.log('success')
+        //console.log('success')
         const updateField = {};
         updateField.estimate_wholesaler = payload;
         await Master.update(updateField,{

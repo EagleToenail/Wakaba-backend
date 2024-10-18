@@ -138,7 +138,7 @@ module.exports = (app) => {
     app.post("/api/purchaseinvoice/getinvoicelist", MasterContoller.getInvoiceList)
     app.post("/api/purchaseinvoice/invoicedetail", MasterContoller.getInvoiceDetail)
     app.post("/api/purchaseinvoice/confirm", MasterContoller.purchaseInvoiceConfirm)//by customer
-    app.post("/api/purchaseinvoice/getinvoicenumber", MasterContoller.getInvoiceNumber)//calculate invoice count(no need)
+    app.get("/api/purchaseinvoice/getinvoicenumber", MasterContoller.getInvoiceNumber)//calculate invoice count(no need)
 
     app.post("/api/purchaseinvoice/changePurchasePaymentStaff", MasterContoller.changePurchasePaymentStaff)
     //==============shipping=======
@@ -234,6 +234,7 @@ module.exports = (app) => {
       { name: 'fileUrl', maxCount: 1 },
     ]), WithdrawalVariousPurchaseMessageController.createReply);
 
+    app.post('/api/withdrawalvariouspurchasemessages/create',WithdrawalVariousPurchaseMessageController.createTemplateReply)
     //========Withdrawal Various purchase approval
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.post('/api/withdrawalvariouspurchaseapprovalmessages', WithdrawalVariousPurchaseMessageController.getMessagesApproval);
