@@ -87,28 +87,65 @@ module.exports = {
             res.status(500).send(error.message);
           }
     },
-//create template reply
-async createTemplateReply (req, res) {
-  try {
-     const invoiceid = req.body.invoiceid;
-     const time = req.body.time;
-     const templateTitle = req.body.templateTitle;
-     const content = req.body.content;
-     const senderId = req.body.senderId;
-    //  console.log('receivedata--------------',invoiceid,time,templateTitle,content,senderId)
-    const newMessage = {};
-    newMessage.invoice_id = invoiceid;
-    newMessage.time = time;
-    newMessage.title = templateTitle;
-    newMessage.content = content;
-    newMessage.senderId = senderId;
-    console.log(newMessage)
-     await TodoMessage.create(newMessage);
-      res.send({success:true});
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-},
+    //create template reply
+    async createTemplateReply (req, res) {
+      try {
+        const invoiceid = req.body.invoiceid;
+        const time = req.body.time;
+        const templateTitle = req.body.templateTitle;
+        const content = req.body.content;
+        const senderId = req.body.senderId;
+        //  console.log('receivedata--------------',invoiceid,time,templateTitle,content,senderId)
+        const newMessage = {};
+        newMessage.invoice_id = invoiceid;
+        newMessage.time = time;
+        newMessage.title = templateTitle;
+        newMessage.content = content;
+        newMessage.senderId = senderId;
+        await TodoMessage.create(newMessage);
+          res.send({success:true});
+        } catch (error) {
+          res.status(500).send(error.message);
+        }
+    },
+    //delete
+    async deleteTemplate(req, res) {
+      try {
+              const id = req.body.ID;
+              await TodoMessage.destroy({
+                where: {
+                    id:id
+                }
+            });
+              res.send({success:true})
+        
+            } catch (err) {
+              res.status(500).send({
+                error: 'An error occured when trying to delete a customer.'
+              })
+            }
+    },
+    //update
+    async updateTemplate(req, res) {
+      try {
+              const id = req.body.ID;
+              const content = req.body.content;
+              const updateField = {};
+              updateField.content = content;
+              await TodoMessage.update(updateField,{
+                where: {
+                    id:id
+                }
+            });
+              res.send({success:true})
+        
+            } catch (err) {
+              res.status(500).send({
+                error: 'An error occured when trying to delete a customer.'
+              })
+            }
+    },
+
     async getMessages(req, res) {
         try {
           const userId = req.body.userId; // Assuming userId is provided in route parameters

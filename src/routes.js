@@ -235,6 +235,8 @@ module.exports = (app) => {
     ]), WithdrawalVariousPurchaseMessageController.createReply);
 
     app.post('/api/withdrawalvariouspurchasemessages/create',WithdrawalVariousPurchaseMessageController.createTemplateReply)
+    app.post('/api/withdrawalvariouspurchasemessages/delete',WithdrawalVariousPurchaseMessageController.deleteTemplate)
+    app.post('/api/withdrawalvariouspurchasemessages/update',WithdrawalVariousPurchaseMessageController.updateTemplate)
     //========Withdrawal Various purchase approval
     //app.get('/api/todomessages/:userId', TodoMessageConroller.getMessagesAndRepliesForUser);
     app.post('/api/withdrawalvariouspurchaseapprovalmessages', WithdrawalVariousPurchaseMessageController.getMessagesApproval);
