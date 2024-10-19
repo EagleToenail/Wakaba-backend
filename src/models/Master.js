@@ -76,11 +76,11 @@ module.exports = (sequelize, DataTypes) => {
           defaultValue: 'real',
         } ,//used to show how the item is checked out. Wholesaler name, Auction, Discard, Cancelled, etc will be here in Japanese
         product_detail: DataTypes.TEXT,
-        //----------------shipping related data
+        //shipping related data---------------------------------
         shipper: DataTypes.STRING(30),
         payment_staff: DataTypes.STRING(30),
         assessment_amount: DataTypes.STRING(20),
-        //---------------yahoo auction related data
+        //yahoo auction related data----------------------------
         successful_bider: DataTypes.STRING(50),
         auction_purchase_price: DataTypes.INTEGER,
         auction_bider_name: DataTypes.STRING(20),
@@ -89,12 +89,12 @@ module.exports = (sequelize, DataTypes) => {
         auction_bider_address: DataTypes.STRING(50),
         auction_bider_evaluation: DataTypes.STRING(30),
 
-        // Fields from PreciousMetals--------------------------------------
+        // Fields from PreciousMetals----------------------------
         gold_type: DataTypes.STRING(20),
         gross_weight: DataTypes.STRING(20),
         price_per_gram: DataTypes.STRING(20),
-        // Fields from OldCoin----------------------------------------
-        // Fields from Clock-----------------------------------------
+        // Fields from OldCoin-----------------------------------
+        // Fields from Clock-------------------------------------
         model_number_one: DataTypes.STRING(20),
         model_number_two: DataTypes.STRING(20),
         action_type: DataTypes.STRING(20),
@@ -102,17 +102,17 @@ module.exports = (sequelize, DataTypes) => {
         tester: DataTypes.STRING(20),
         box_guarantee: DataTypes.STRING(20),
         skype_date: DataTypes.STRING(15),
-        // Fields from Bag----------------------------------------
+        // Fields from Bag--------------------------------------
         manufacturer: DataTypes.STRING(50),
         bb_skype_date: DataTypes.STRING(15), 
         // Fields from Wallet-----------------------------------
         bb_skype_day: DataTypes.STRING(15),
-        // Fields from Accessories-----------------------------------
+        // Fields from Accessories------------------------------
         wakaba_number: DataTypes.STRING(15),
-        // Fields from Camera-------------------------------
+        // Fields from Camera-----------------------------------
         rank: DataTypes.STRING(20),
         // Fields from Antique----------------------------------
-        // Fields from WesternLiquor--------------------------
+        // Fields from WesternLiquor----------------------------
         kinds: DataTypes.STRING(15),
         brand: DataTypes.STRING(15),
         capacity: DataTypes.STRING(15),
@@ -120,9 +120,9 @@ module.exports = (sequelize, DataTypes) => {
         yahoo_auctions_highest_price: DataTypes.INTEGER,
         auction_id: DataTypes.STRING(10),
         estimate_wholesaler: DataTypes.TEXT,
-        // Fields from MusicalInstrument--------------------------
+        // Fields from MusicalInstrument-------------------------
         // Fields from Kimono------------------------------------
-        // Fields from SmartPhoneAndTablet-------------------------------
+        // Fields from SmartPhoneAndTablet-----------------------
         // Vendors-----------------------------------------------
         entire_items_url: { 
             type:DataTypes.STRING(100),
@@ -133,6 +133,7 @@ module.exports = (sequelize, DataTypes) => {
           defaultValue: ''
         },
         notes: DataTypes.STRING(50),
+        serial_number: DataTypes.STRING(10),
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 
