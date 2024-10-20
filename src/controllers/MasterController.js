@@ -851,9 +851,6 @@ async changePurchasePaymentStaff(req,res) {
 async purchasePermissionWaiting(req,res) {
     try {
         const ids = req.body.ids;
-        const customerId = req.body.id;
-        const userId = req.body.userId;
-        const userStoreName = req.body.userStoreName;
         const updateField = {};
         updateField.product_status = '承認待ち';
         for (let index = 0; index < ids.length; index++) {
@@ -918,9 +915,6 @@ async purchasePermission(req,res) {
 async purchaseReceiptPermit(req,res) {
     try {
         const ids = req.body.ids;
-        const customerId = req.body.customerId;
-        const userId = req.body.userId;
-        const userStoreName = req.body.userStoreName;
         const updateField = {};
         updateField.product_status = 'お預かり';
         // console.log('bbbbbb',customerId,userId,userStoreName,ids.length)

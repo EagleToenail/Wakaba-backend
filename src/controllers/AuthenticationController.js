@@ -139,13 +139,14 @@ module.exports = {
       const userId = user.id;
       const storename = user.store_name;
       const role = user.role_flag;
+      const fullname = user.full_name;
 
       // // Send response;
       response({
         res,
         statusCode: 200,
         message: 'Successfully logged in',
-        payload: { token: token, userId: userId, username: username, storename: storename, role: role }, // -> send token to store in localStorage
+        payload: { token: token, userId: userId, username: username, storename: storename, role: role,fullname:fullname}, // -> send token to store in localStorage
       });
     } catch (error0) {
       response({
