@@ -18,7 +18,14 @@ module.exports = (sequelize, DataTypes) => {
       brand_type:          DataTypes.STRING(20), 
       shop:                DataTypes.TEXT,
 
-      // opportunity:          DataTypes.STRING,
+      customer_type:     {
+        type: DataTypes.STRING(50),
+        defaultValue: 'VIP'
+      },     
+      idcard_number:          DataTypes.STRING(50),
+      visit_number:          DataTypes.STRING(10),
+      last_visit_date:          DataTypes.STRING(20),
+    
       job:                  DataTypes.STRING,
       idCard_url:  {
         type: DataTypes.STRING,
@@ -38,7 +45,10 @@ module.exports = (sequelize, DataTypes) => {
         values: ['男', '女'], // Enum values
         defaultValue:       '男'
       },
-      special_note :        DataTypes.TEXT,
+      special_note :       {
+        type: DataTypes.STRING,
+        defaultValue: ''
+      },
       item1:                DataTypes.STRING,
       item2:                DataTypes.STRING,
       item3:                DataTypes.STRING,

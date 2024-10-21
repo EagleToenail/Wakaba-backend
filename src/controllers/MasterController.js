@@ -89,7 +89,6 @@ module.exports = {
     },
     async getSalesFilter(req, res) {
         const value = req.body.value;
-        console.log('zxczxczcx',value)
         try {
             const salesWithCustomer = await Master.findAll({
                 include: [
@@ -360,7 +359,8 @@ module.exports = {
                     }
                 ],
                 where:  {
-                    [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
+                    // [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
+                    product_type_one:cat1
                 },
                 order: [['createdAt', 'DESC']]
             });
@@ -1324,6 +1324,24 @@ async purchaseInvoiceConfirm (req,res) {
 
                 const customerpastvistoryhistory = await CustomerPastVisitHistory.create(customerPastVisitHistory);
             }
+            //----------------custoemr visit_number and last_visit_date 
+                const customer = Customer.findOne({
+                    where: {
+                        id:purchaseData[0].customer_id
+                    }
+                });
+                const updateCustomerField = {};
+                updateCustomerField.visit_number = (parseInt(customer.visit_number) + 1).toString();
+                const now = new Date();
+                // Format the date as YYYY-MM-DD
+                const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+                const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+                updateCustomerField.last_visit_date = currentDay.toString();
+                await Customer.update(updateCustomerField,
+                    { where: {
+                        id:purchaseData[0].customer_id
+                    }}
+                );
             //-------------------------------------------------------
             res.send({"success":true})
         } catch (err) {

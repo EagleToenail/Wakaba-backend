@@ -27,8 +27,8 @@ module.exports = {
 	async createCustomer(req, res) {
         try{
             console.log("customer create",req.body)
-            const {visit_type, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, prefeature, city, address ,shop,trigger,brand_type,special_note} = req.body;
-            const createFields = {visit_type, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, prefeature, city, address,shop,trigger,brand_type,special_note};
+            const {visit_type, full_name, katakana_name, phone_number, birthday, job,email,age, gender, cardType, idcard_number, prefeature, city, address ,shop,trigger,brand_type,special_note} = req.body;
+            const createFields = {visit_type, full_name, katakana_name, phone_number,job,email, birthday,age, gender, cardType, idcard_number, prefeature, city, address,shop,trigger,brand_type,special_note};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 createFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -68,8 +68,8 @@ module.exports = {
     async updateCustomer(req, res) {
         try {
             // console.log("profile update",req.body)
-            const {shop, visit_type, full_name, katakana_name, phone_number,job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city, address,special_note,item1,item2,item3,item4,item5 } = req.body;
-            const updateFields = {shop, visit_type, full_name, katakana_name, phone_number, job,email,trigger,brand_type, birthday,age, gender, cardType, prefeature, city,address,special_note,item1,item2,item3,item4,item5};
+            const {shop, visit_type, full_name, katakana_name, phone_number,job,email,trigger,brand_type, birthday,age, gender, cardType,idcard_number, prefeature, city, address,special_note,item1,item2,item3,item4,item5 } = req.body;
+            const updateFields = {shop, visit_type, full_name, katakana_name, phone_number, job,email,trigger,brand_type, birthday,age, gender, cardType, idcard_number, prefeature, city,address,special_note,item1,item2,item3,item4,item5};
             if (req.files['avatarimage']) {
                 const avatarImage = req.files['avatarimage'][0];
                 updateFields.avatar_url = avatarImage.filename; // Adjust field name based on your model
@@ -90,6 +90,28 @@ module.exports = {
                     id:req.body.id
                 }
             });
+            res.send(customer);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to update customer information"
+            })
+        }
+    },
+    async editCardTypeCustomer(req, res) {
+        try {
+            // console.log("profile update",req.body)
+            const id = req.body.id;
+            const name = req.body.name;
+            const value = req.body.value;
+            const updateField = {};
+            updateField[name] = value
+            // console.log("customer file",updateFields)
+           await Customer.update(updateField, {
+                where: {
+                    id: id
+                }
+            })
+            const customer = await Customer.findAll();
             res.send(customer);
         } catch (err) {
             res.status(500).send({
@@ -202,7 +224,7 @@ module.exports = {
 	},
     async searchCustomer(req, res) {
        
-        const { name, address, tel } = req.body.params;
+        const { name, address, tel ,birthday} = req.body.params;
         const phone_number = tel;
         console.log("asd",req.body)
         try {
@@ -222,6 +244,11 @@ module.exports = {
             if (phone_number!='') {
                 whereClause.push ({
                     phone_number: { [Op.like]: `%${phone_number}%` } 
+               });
+            }
+            if (birthday!='') {
+                whereClause.push ({
+                    birthday: { [Op.like]: `%${birthday}%` } 
                });
             }
             // console.log('ccc',whereClause.length)

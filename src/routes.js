@@ -87,6 +87,7 @@ module.exports = (app) => {
       { name: 'avatarimage', maxCount: 1 },
       { name: 'idcard', maxCount: 1 }
     ]), CustomerController.updateCustomer)
+    app.post("/api/customer/eidtcardtypecustomer", CustomerController.editCardTypeCustomer)
     app.post("/api/customer/deleteCustomer", CustomerController.deleteCustomer)
     app.post("/api/customer/search", CustomerController.searchCustomer)
     app.get("/api/customer/getCustomerById/:customerId", CustomerController.getCustomerById)
