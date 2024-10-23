@@ -134,6 +134,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         notes: DataTypes.STRING(50),
         serial_number: DataTypes.STRING(10),
+        customer_receipt: {
+          type: DataTypes.ENUM,
+          values:['0','1'],
+          defaultValue: '0',
+        } 
     });
     Master.associate = (models) => {
         Master.belongsTo(models.Customer, { foreignKey: 'customer_id'}); 

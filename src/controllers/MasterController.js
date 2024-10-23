@@ -113,6 +113,7 @@ module.exports = {
     async getSalesFilterByDate(req, res) {
         const type = req.body.type;
         const date = req.body.date;
+        const cat1 = req.body.cat1;
         if(type === '買取日') {
             try {
                 const salesData = await Master.findAll({
@@ -185,6 +186,7 @@ module.exports = {
         const type = req.body.type;
         const startDate = req.body.startDate;
         const endDate = req.body.endDate;
+        const cat1 = req.body.cat1;
         if(type === '買取日') {
             try {
                 const salesData = await Master.findAll({
@@ -344,7 +346,15 @@ module.exports = {
             const cat1 = req.body.cat1;
             //console.log('id name vlaue',id,name,value)
             const updateField = {};
-            updateField[name] = value
+            updateField[name] = value;
+            const maxWakabaNumber = await Master.max('wakaba_number');
+            if(name === 'product_status' && value === '買取済' ) {
+                if(maxWakabaNumber === null){
+                    updateField.wakaba_number = '0';
+                } else {
+                    updateField.wakaba_number = (parseInt(maxWakabaNumber) + 1).toString();
+                } 
+            }
            // console.log('updateField',updateField)
             await Master.update(updateField,{
                 where: {
@@ -359,13 +369,12 @@ module.exports = {
                     }
                 ],
                 where:  {
-                    // [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
-                    product_type_one:cat1
+                    [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
                 },
                 order: [['createdAt', 'DESC']]
             });
                 // console.log(JSON.stringify(salesWithCustomer, null, 2));
-            // console.log('saleList',salesList);
+            console.log('saleList',salesList,cat1);
             res.send(salesList);
           } catch (error) {
             res.status(500).send(error.message);
@@ -691,11 +700,7 @@ async deleteInvoice(req,res) {
                 customer_id:customerId,
             }
         });
-        if(invoiceData === null) {
-            res.send({success:true});
-        } else {
-            res.send(invoiceData);
-        }
+        res.send(invoiceData);
 },
 async getRegisteredData(req,res) {
     try {
@@ -917,6 +922,7 @@ async purchaseReceiptPermit(req,res) {
         const ids = req.body.ids;
         const updateField = {};
         updateField.product_status = 'お預かり';
+        updateField.customer_receipt = '1';
         // console.log('bbbbbb',customerId,userId,userStoreName,ids.length)
         for (let index = 0; index < ids.length; index++) {
             const element = ids[index];
@@ -1148,45 +1154,37 @@ async purchaseStamp(req,res){
     }
 },
 async getInvoiceList(req, res) {
-    // const { shipping_date,shipping_address,product_status} = req.body.params;
     try {
-        // const whereClause = [];
-
-        // if (shipping_address!='') {
-        //     whereClause.push ({
-        //         shipping_address: { [Op.like]: `%${shipping_address}%` } 
-        //    });
-        // }
-        // if (shipping_date!='') {
-        //     whereClause.push ({
-        //         shipping_date: { [Op.like]: `%${shipping_date}%` } 
-        //    });
-        // }
-        // if (product_status!='') {
-        //     whereClause.push ({
-        //         product_status: { [Op.like]: `%${product_status}%` } 
-        //    });
-        // }
-        const userId = req.body.userId;
         const userStoreName = req.body.userStoreName;
-            const salesList = await Master.findAll({
-                include: [
-                    {
-                        model: Customer,
-                        attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
-                    }
-                ],
-                where: {
-                    [Op.and]: [
-                        // ...whereClause,
-                        { invoice_ids: { [Op.ne]: null } } // Add this condition
-                    ], 
-                    store_name:userStoreName             
-                },
-                order: [['createdAt', 'DESC']]
-            });
-            // console.log(customers)
-            res.send(salesList);
+        const subQuery = await Master.findAll({
+            attributes: [
+                'invoiceID',
+                [fn('MIN', col('id')), 'firstId'] // Get the minimum id
+            ],
+            where: {
+                invoiceID: { [Op.ne]: null }
+            },
+            group: ['invoiceID'],
+            raw: true // Get plain objects
+        });
+        
+        // Extract the firstIds for the main query
+        const firstIds = subQuery.map(item => item.firstId);
+        
+        // Main query to get all attributes for the first ids
+        const salesList = await Master.findAll({
+            include: [
+                {
+                    model: Customer,
+                    attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                }
+            ],
+            where: {
+                id: { [Op.in]: firstIds }
+            }
+        });
+        
+        res.send(salesList);
     } catch (err) {
         res.status(500).send({
             error: "An error occured when trying to get sales list."
@@ -1256,7 +1254,7 @@ async purchaseInvoiceConfirm (req,res) {
         // console.log('aa===========')
         const maxWakabaNumber = await Master.max('wakaba_number');
         if(maxWakabaNumber === null){
-            updateField.wakana_number = '0';
+            updateField.wakaba_number = '0';
             maxWakabaNumber = 0;
         } 
        // console.log('maxWakabaNumber')
@@ -1271,7 +1269,7 @@ async purchaseInvoiceConfirm (req,res) {
                
                 const updateField = {};
                 updateField.product_status = '買取済';
-                updateField.wakaba_number = (maxWakabaNumber + index + 1).toString();
+                updateField.wakaba_number = (parseInt(maxWakabaNumber) + index + 1).toString();
                 await Master.update(updateField,{
                     where:{
                         id:id

@@ -68,6 +68,7 @@ module.exports = (sequelize, DataTypes) => {
       novelty_item_number:  DataTypes.STRING,
       cupon_item:           DataTypes.STRING,
       cupon_item_number:   DataTypes.STRING,
+      wakaba_point:   DataTypes.STRING(20),
     })
     Customer.associate = (models) => {
       Customer.hasMany(models.Sales, { foreignKey: 'customer_id'});
