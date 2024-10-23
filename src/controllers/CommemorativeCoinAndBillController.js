@@ -1,4 +1,4 @@
-
+ 
 const {Profile} = require('../models');
 const {Coin} = require('../models');
 const {Bill} = require('../models');
@@ -119,7 +119,23 @@ module.exports = {
             })
         }
     },
-    
+    async coinExchangeHistory(req, res) {
+        try {
+            const date = req.body.payload;
+            const stamphistory = await CoinAndBillExchange.findAll({
+                where: {
+                    exchange_date: {
+                        [Op.like]: `%${date}%` // Replace 'yourFieldName' with the actual field you want to search
+                    },
+                }
+            });
+            res.send(stamphistory);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get sales list."
+            })
+        }
+    },
     async searchExchange(req, res) {
         try {
             const { start_date, end_date, status ,staff_name} = req.body.params;

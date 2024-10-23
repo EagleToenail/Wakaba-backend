@@ -1663,6 +1663,27 @@ async updateEstimate(req, res) {
             })
         }
     },
+    async editShipping(req, res) {
+        try {
+            //console.log('id name vlaue')
+            const id = req.body.id;
+            const name = req.body.name;
+            const value = req.body.value;
+            //console.log('id name vlaue',id,name,value)
+            const updateField = {};
+            updateField[name] = value;
+
+           // console.log('updateField',updateField)
+            await Master.update(updateField,{
+                where: {
+                    id:id,
+                }
+            });
+            res.send({success:true});
+          } catch (error) {
+            res.status(500).send(error.message);
+          }
+    },
 //---------------------------------------------yahooAcution-----------------------------------
     async getYahooAction(req,res) {
         try {

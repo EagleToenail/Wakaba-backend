@@ -29,6 +29,7 @@ const SchedulerController = require("./controllers/SchedulerController")
 const StampController = require("./controllers/StampsController")
 const CommemorativeCoinAndBillController = require('./controllers/CommemorativeCoinAndBillController')
 const MasterController = require("./controllers/MasterController")
+const PreciousMetalsPriceController = require("./controllers/PreciousMetalsPriceController")
 
 module.exports = (app) => {
   // =========authentication
@@ -148,6 +149,7 @@ module.exports = (app) => {
     app.post("/api/sales/wholelist", MasterContoller.getWholeList)
 
     app.post("/api/wholesalershipping/save", MasterContoller.getWholeSalerShippingSave)
+    app.post("/api/wholesalershipping/eidtShipping", MasterContoller.editShipping)
     //===============YahooAcution=======
     app.get("/api/sales/getYahooAcution" ,MasterContoller.getYahooAction)
     //===============salesList==========
@@ -331,6 +333,8 @@ app.post('/api/coinandbillhistorydetail',CommemorativeCoinAndBillController.getE
 app.get('/api/coinandbillexchange',CommemorativeCoinAndBillController.getExchangeHistory)
 app.post('/api/coinandbillexchange/create',CommemorativeCoinAndBillController.createExchange)
 app.post('/api/coinandbillexchange/search',CommemorativeCoinAndBillController.searchExchange)
-
+app.post('/api/coinexchangehistorybydate',CommemorativeCoinAndBillController.coinExchangeHistory)
+//----------------precious metal---------------------
+app.post('/api/preciousmetalprice/autosave',PreciousMetalsPriceController.autoSave)
 
 }

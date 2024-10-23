@@ -26,6 +26,19 @@ module.exports = {
     } catch (error) {
       console.error(error);
     }
+  },
+  async autoSave(req,res) {
+    const payload = req.body.payload;
+    console.log(payload,'payload')
+    try {
+      await PreciousMetalsPrice.create(payload);
+      res.send({success:true});
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   }
+
+
+
 };
 
