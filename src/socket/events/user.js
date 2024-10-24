@@ -1,4 +1,4 @@
-const {Profile} = require('../../models');
+const { Profile } = require('../../models');
 
 module.exports = (socket) => {
   // user connect
@@ -14,7 +14,7 @@ module.exports = (socket) => {
     try {
       // Update user's online status in the database
       await Profile.update({ online: 1 }, {
-        where: { user_id:userId }
+        where: { user_id: userId }
       });
 
       // Notify other clients about the user connection
@@ -22,25 +22,9 @@ module.exports = (socket) => {
     } catch (error) {
       console.error('Error updating user status on connect:', error);
     }
-
   });
 
   socket.on('disconnect', async () => {
-    const { userId } = socket;
-    try {
-      // Update user's online status in the database
-      await Profile.update({ online: 0 }, {
-        where: { user_id:userId }
-      });
-
-      // Notify other clients about the user disconnection
-      socket.broadcast.emit('user/disconnect', userId);
-    } catch (error) {
-      console.error('Error updating user status on explicit disconnect:', error);
-    }
-  });
-
-  socket.on('user/disconnect', async () => {
     const { userId } = socket;
     try {
       // Update user's online status in the database
