@@ -29,14 +29,25 @@ module.exports = {
   },
   async autoSave(req,res) {
     const payload = req.body.payload;
-    console.log(payload,'payload')
     try {
       await PreciousMetalsPrice.create(payload);
-      res.send({success:true});
+      const preciousMetalList = await PreciousMetalsPrice.findAll();
+      res.send(preciousMetalList);
     } catch (error) {
       res.status(500).send(error.message);
     }
-  }
+  },
+  async getPreciousMetalList(req,res){
+    try {
+      const preciousMetalList = await PreciousMetalsPrice.findAll({
+        order: [['createdAt', 'DESC']], 
+        limit: 7, 
+      });
+      res.send(preciousMetalList);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  } 
 
 
 

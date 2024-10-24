@@ -336,5 +336,6 @@ app.post('/api/coinandbillexchange/search',CommemorativeCoinAndBillController.se
 app.post('/api/coinexchangehistorybydate',CommemorativeCoinAndBillController.coinExchangeHistory)
 //----------------precious metal---------------------
 app.post('/api/preciousmetalprice/autosave',PreciousMetalsPriceController.autoSave)
+app.post('/api/preciousmetalprice/getList',PreciousMetalsPriceController.getPreciousMetalList)
 
 }
