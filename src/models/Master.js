@@ -59,6 +59,11 @@ module.exports = (sequelize, DataTypes) => {
         supervisor_direction: DataTypes.STRING(50),
         purchase_result: DataTypes.STRING(20),           
 
+        invoice_status: {
+          type: DataTypes.ENUM,
+          values: ['追加','編集'],
+          defaultValue: '追加',
+      },
         product_status: {
             type: DataTypes.ENUM,
             values: ['査定中','お預かり','承認待ち','承認された','買取済','発送中','約定済','オークション出品済','オークション発送済','廃棄','基準外','返品・返金'],

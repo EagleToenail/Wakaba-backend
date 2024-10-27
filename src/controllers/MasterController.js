@@ -611,6 +611,8 @@ async createInvoice(req, res) {
                 // product_status: {
                 //     [Op.or]: ['査定中','お預かり']
                 // },
+                invoiceID:invoiceID,
+                invoice_status:'追加',
                 product_status:'査定中',
                 store_name:userStoreName,
                 customer_id:createData.customer_id,
@@ -625,7 +627,11 @@ async createInvoice(req, res) {
 },
 async updateInvoice(req, res) {
     try {
-        console.log(req.body)
+        const now = new Date();
+        // Format the date as YYYY-MM-DD
+        const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+        const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+
         const id = req.body.id;
         const userStoreName = req.body.userStoreName;
         const {trading_date,number,purchase_staff,purchase_staff_id,customer_id,store_name,hearing,product_type_one,product_type_two,product_type_three,product_type_four,product_name,
@@ -638,6 +644,16 @@ async updateInvoice(req, res) {
             purchase_result,purchase_price,estimate_wholesaler,gold_type,gross_weight, price_gram, action_type, movable, tester,model_number_one, box_guarantee,rank,brand, capacity,
             percent, notes,};
     
+        const updateInvoice = await Master.findOne({
+            where:{
+                id:id
+            }
+        });
+        console.log('assessment_date',estimate_wholesaler,updateInvoice.estimate_wholesaler)
+        if(estimate_wholesaler !== '{}' && estimate_wholesaler !== updateInvoice.estimate_wholesaler) {
+            updateData.assessment_date = currentDay;
+        }
+
         if (req.files['product_photo']) {
             const uploadfile = req.files['product_photo'][0];
             updateData.product_photo = uploadfile.filename; // Adjust field name based on your model
@@ -655,16 +671,20 @@ async updateInvoice(req, res) {
           }
 
         //console.log('updateData',updateData,id)
-       await Master.update(updateData,{
+      await Master.update(updateData,{
             where: {
                 id:id
             }
        });
+
+       const invoiceId = updateInvoice.invoiceID;
+    //    console.log('updateInvoice',updateInvoice,invoiceId)
        const invoiceData = await Master.findAll({
             where: {
                 // product_status: {
                 //     [Op.or]: ['査定中','お預かり']
                 // },
+                invoiceID:invoiceId,
                 product_status:'査定中',
                 store_name:userStoreName,
                 customer_id:updateData.customer_id,
@@ -683,7 +703,14 @@ async deleteInvoice(req,res) {
         const userStoreName = req.body.userStoreName;
         const userId = req.body.userId;
         const customerId = req.body.customerId;
-        //console.log('deleteinvoice',id,customerId)
+        
+        const deleteData = await Master.findOne({
+            where:{
+                id:id
+            }
+        });
+        const invoiceId = deleteData.invoiceID;
+        console.log('invoiceId',invoiceId)
         await Master.destroy({
             where: {
                 id:id
@@ -694,6 +721,7 @@ async deleteInvoice(req,res) {
                 // product_status: {
                 //     [Op.or]: ['査定中', 'お預かり']
                 // },
+                invoiceID:invoiceId,
                 product_status:'査定中',
                 store_name: userStoreName,
                 purchase_staff_id: userId,
@@ -712,6 +740,9 @@ async getRegisteredData(req,res) {
             where: {
                 product_status: {
                     [Op.or]: ['査定中']
+                },
+                invoice_status: {
+                    [Op.or]: ['追加']
                 },
                 customer_id:customerId,
                 purchase_staff_id:userId,
@@ -758,11 +789,13 @@ async commentSave(req,res) {
                 id:id
             }
         });
+        const invoicId = payload.invoiceID;
        const invoiceData = await Master.findAll({
             where: {
                 // product_status: {
                 //     [Op.or]: ['査定中','お預かり']
                 // },
+                invoiceID:invoicId,
                 product_status:'査定中',
                 store_name:userStoreName,
                 purchase_staff_id: userId,
@@ -788,6 +821,13 @@ async uploadItemsImage(req,res) {
           }
           
           const itemIds = ids.split(',').map(Number);
+
+          const invoice = await Master.findOne({
+                where:{
+                    id:itemIds[0]
+                }
+          });
+          const invoiceId = invoice.invoiceID;
           //console.log('-------------updateField',updateField,itemIds.length)
         for (let index = 0; index < itemIds.length; index++) {
             const element = itemIds[index];
@@ -801,6 +841,7 @@ async uploadItemsImage(req,res) {
 
        const invoiceData = await Master.findAll({
             where: {
+                invoiceID:invoiceId,
                 product_status:'査定中',
                 store_name:store_name,
                 purchase_staff_id: purchase_staff_id,
@@ -818,6 +859,7 @@ async changePurchasePaymentStaff(req,res) {
         const customer_id = payload[0].customer_id;
         const purchase_staff_id = payload[0].purchase_staff_id;
         const store_name = payload[0].store_name;
+        const invoiceId = payload[0].invoiceID;
        for (let index = 0; index < payload.length; index++) {
             const element = payload[index];
             const updateField = {};
@@ -839,6 +881,7 @@ async changePurchasePaymentStaff(req,res) {
        //console.log('success',customer_id,store_name,purchase_staff_id)
        const invoiceData = await Master.findAll({
         where: {
+            invoiceID:invoiceId,
             product_status:'査定中',
             store_name:store_name,
             purchase_staff_id: purchase_staff_id,
@@ -1401,6 +1444,35 @@ async getInvoiceNumber(req, res) {
 
         //console.log('------------------maxinvoiceNumber--------------------', maxinvoiceNumber);
         res.send({ invoiceID: maxinvoiceNumber });
+    } catch (err) {
+        console.error(err); // Log the error for debugging
+        res.status(500).send({
+            error: "An error occurred when trying to get the invoice number."
+        });
+    }
+},
+//set the invoice status
+async setInvoiceStatus(req, res) {
+    try {
+        console.log('invoiceData-----------------------')
+        const userId = req.body.userId;
+        let invoiceData = await Master.findAll({
+            where: {
+                purchase_staff_id:userId
+            }
+        });
+        const updateField = {};
+        updateField.invoice_status = '編集'; 
+        for (let index = 0; index < invoiceData.length; index++) {
+            const element = invoiceData[index];
+            await Master.update(updateField,{
+                where: {
+                    id:element.id
+                }
+            });
+        }
+
+        res.send({ success: true });
     } catch (err) {
         console.error(err); // Log the error for debugging
         res.status(500).send({

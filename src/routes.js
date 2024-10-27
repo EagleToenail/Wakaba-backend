@@ -141,6 +141,7 @@ module.exports = (app) => {
     app.post("/api/purchaseinvoice/invoicedetail", MasterContoller.getInvoiceDetail)
     app.post("/api/purchaseinvoice/confirm", MasterContoller.purchaseInvoiceConfirm)//by customer
     app.get("/api/purchaseinvoice/getinvoicenumber", MasterContoller.getInvoiceNumber)//calculate invoice count(no need)
+    app.post("/api/purchaseinvoice/setinvoicestatus", MasterContoller.setInvoiceStatus)//set invoice status
 
     app.post("/api/purchaseinvoice/changePurchasePaymentStaff", MasterContoller.changePurchasePaymentStaff)
     //==============shipping=======
