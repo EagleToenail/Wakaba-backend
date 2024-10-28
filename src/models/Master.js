@@ -126,6 +126,7 @@ module.exports = (sequelize, DataTypes) => {
         yahoo_auctions_highest_price: DataTypes.INTEGER,
         auction_id: DataTypes.STRING(10),
         estimate_wholesaler: DataTypes.TEXT,
+        final_estimate_wholesaler: DataTypes.TEXT,
         // Fields from MusicalInstrument-------------------------
         // Fields from Kimono------------------------------------
         // Fields from SmartPhoneAndTablet-----------------------
