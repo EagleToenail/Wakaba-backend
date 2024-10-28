@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         trading_date: DataTypes.STRING(15), // the date that the shop bought the items from customer
         assessment_date: DataTypes.STRING(15), // the date that the shop received assesment (estimate) from wholesaler vendor
+        signature_date_time: DataTypes.STRING(30),
         shipping_date: DataTypes.STRING(15), // the date to send items to wholesaler
         expected_deposit_date: DataTypes.STRING(15),
         deposit_date: DataTypes.STRING(15), //the date that the payment from wholesaler confirmed

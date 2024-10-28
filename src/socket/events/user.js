@@ -25,7 +25,12 @@ module.exports = (socket) => {
   });
 
   socket.on('disconnect', async () => {
-    const { userId } = socket;
+    const userId = socket.userId; // Retrieve userId from socket
+    if (!userId) {
+      console.warn('User ID is undefined on disconnect. Cannot update status.');
+      return; // Exit early if userId is undefined
+    }
+
     try {
       // Update user's online status in the database
       await Profile.update({ online: 0 }, {

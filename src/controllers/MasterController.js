@@ -1031,7 +1031,7 @@ async purchaseStamp(req,res){
             const createData = {};
             createData.date = currentDay;
             createData.in_charge = username;
-            createData.inorout = '人庫';
+            createData.inorout = '入庫';
             createData.stamp_type = '切手シート';
             createData.stamp_ids = sheetIds.toString();
             createData.stamp_numbers = sheetValues.toString();
@@ -1079,7 +1079,7 @@ async purchaseStamp(req,res){
             const createData = {};
             createData.date = currentDay;
             createData.in_charge = username;
-            createData.inorout = '人庫';
+            createData.inorout = '入庫';
             createData.stamp_type = '切手バラ';
             createData.stamp_ids = roseIds.toString();
             createData.stamp_numbers = roseValues.toString();
@@ -1126,7 +1126,7 @@ async purchaseStamp(req,res){
             const createData = {};
             createData.date = currentDay;
             createData.in_charge = username;
-            createData.inorout = '人庫';
+            createData.inorout = '入庫';
             createData.stamp_type = 'レ夕一パック';
             createData.stamp_ids = packIds.toString();
             createData.stamp_numbers = packValues.toString();
@@ -1173,7 +1173,7 @@ async purchaseStamp(req,res){
             const createData = {};
             createData.date = currentDay;
             createData.in_charge = username;
-            createData.inorout = '人庫';
+            createData.inorout = '入庫';
             createData.stamp_type = 'レ夕一パック';
             createData.stamp_ids = cardIds.toString();
             createData.stamp_numbers = cardValues.toString();
@@ -1315,10 +1315,22 @@ async purchaseInvoiceConfirm (req,res) {
             updateField.wakaba_number = '0';
             maxWakabaNumber = 0;
         } 
-       // console.log('maxWakabaNumber')
-        //console.log('maxWakabaNumber',maxWakabaNumber)
 
         try {
+
+            // date and time
+        const now = new Date();
+
+        // Format the date as YYYY-MM-DD
+        const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
+        const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
+    
+        // Format the time as HH:mm:ss
+        const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
+        const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
+        // Combine date and time
+        const currentDateTime = `${currentDay} ${currentTime}`;
+
             for (let index = 0; index < purchaseData.length; index++) {
                 const masterData = purchaseData[index];
                 masterData.signature = filename;
@@ -1327,6 +1339,7 @@ async purchaseInvoiceConfirm (req,res) {
                
                 const updateField = {};
                 updateField.product_status = '買取済';
+                updateField.signature_date_time = currentDateTime;
                 updateField.wakaba_number = (parseInt(maxWakabaNumber) + index + 1).toString();
                 await Master.update(updateField,{
                     where:{
@@ -1334,14 +1347,6 @@ async purchaseInvoiceConfirm (req,res) {
                     }
                 });
                 //----------save at Monthly income table-------------------------------- 
-                const now = new Date();
-                // Format the date as YYYY-MM-DD
-                const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
-                const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
-        
-                // Format the time as HH:mm:ss
-                const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Tokyo' };
-                const currentTime = new Intl.DateTimeFormat('ja-JP', optionsTime).format(now);
         
                 let todayPurchase_amount = await SafeMoney.findOne({
                     where: {
@@ -1388,10 +1393,6 @@ async purchaseInvoiceConfirm (req,res) {
                 });
                 const updateCustomerField = {};
                 updateCustomerField.visit_number = (parseInt(customer.visit_number) + 1).toString();
-                const now = new Date();
-                // Format the date as YYYY-MM-DD
-                const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' };
-                const currentDay = new Intl.DateTimeFormat('ja-JP', optionsDate).format(now).replace(/\//g, '-');
                 updateCustomerField.last_visit_date = currentDay.toString();
                 await Customer.update(updateCustomerField,
                     { where: {
