@@ -755,6 +755,29 @@ async getRegisteredData(req,res) {
         res.status(500).send(error.message);
       }
 },
+async getRegisteredDataBlank(req,res) {
+    try {
+        const userId = req.body.userId;
+        const userStoreName = req.body.userStoreName;
+        //console.log('aaaaaa',customerId,userId,userStoreName)
+       const invoiceData = await Master.findAll({
+            where: {
+                product_status: {
+                    [Op.or]: ['査定中']
+                },
+                invoice_status: {
+                    [Op.or]: ['追加']
+                },
+                purchase_staff_id:userId,
+                store_name:userStoreName
+            }
+       });
+        // const newMessageContent = await TodoMessage.findAll();
+        res.send(invoiceData);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+},
 async allInvoiceClear(req,res) {
     try {
         //console.log('deleteinvoice')
@@ -990,13 +1013,13 @@ async purchaseReceiptPermit(req,res) {
 async purchaseStamp(req,res){
     try {
 
-        const {currentDay,customerId,username,storeName,userId,stampRate,
+        const {currentDay,customerId,invoiceID,username,storeName,userId,stampRate,
             sheetIds,sheetValues,roseIds,roseValues,packIds,packValues,cardIds,cardValues,
             totalNumberOfSheet1,totalNumberOfSheet2,totalNumberOfRose1,totalNumberOfRose2,totalNumberOfPack1,totalNumberOfPack2,totalNumberOfCard1,totalNumberOfCard2,
             totalFaceValue1,totalFaceValue2,totalRoseFaceValue1,totalRoseFaceValue2,totalPackFaceValue1,totalPackFaceValue2,totalCardFaceValue1,totalCardFaceValue2,
             totalPurchaseOfSheet1,totalPurchaseOfSheet2,totalPurchaseOfRose1,totalPurchaseOfRose2,totalPurchaseOfPack1,totalPurchaseOfPack2,totalPurchaseOfCard1,totalPurchaseOfCard2,
         } = req.body;
-        const aaa = {currentDay,customerId,username,storeName,userId,stampRate,
+        const aaa = {currentDay,customerId,invoiceID,username,storeName,userId,stampRate,
             sheetIds,sheetValues,roseIds,roseValues,packIds,packValues,cardIds,cardValues,
             totalNumberOfSheet1,totalNumberOfSheet2,totalNumberOfRose1,totalNumberOfRose2,totalNumberOfPack1,totalNumberOfPack2,totalNumberOfCard1,totalNumberOfCard2,
             totalFaceValue1,totalFaceValue2,totalRoseFaceValue1,totalRoseFaceValue2,totalPackFaceValue1,totalPackFaceValue2,totalCardFaceValue1,totalCardFaceValue2,
@@ -1026,6 +1049,7 @@ async purchaseStamp(req,res){
                 createInvoiceData.purchase_staff = username;
                 createInvoiceData.purchase_staff_id = userId;
                 createInvoiceData.customer_id = customerId;
+                createInvoiceData.invoiceID = invoiceID;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
                 createInvoiceData.interest_rate = (stampRate[0].percent).toString();
@@ -1073,6 +1097,7 @@ async purchaseStamp(req,res){
                 createInvoiceData.purchase_staff = username;
                 createInvoiceData.purchase_staff_id = userId;
                 createInvoiceData.customer_id = customerId;
+                createInvoiceData.invoiceID = invoiceID;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
                 createInvoiceData.interest_rate = (stampRate[1].percent).toString();
@@ -1119,6 +1144,7 @@ async purchaseStamp(req,res){
                 createInvoiceData.purchase_staff = username;
                 createInvoiceData.purchase_staff_id = userId;
                 createInvoiceData.customer_id = customerId;
+                createInvoiceData.invoiceID = invoiceID;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
                 createInvoiceData.interest_rate = (stampRate[2].percent).toString();
@@ -1165,6 +1191,7 @@ async purchaseStamp(req,res){
                 createInvoiceData.purchase_staff = username;
                 createInvoiceData.purchase_staff_id = userId;
                 createInvoiceData.customer_id = customerId;
+                createInvoiceData.invoiceID = invoiceID;
                 createInvoiceData.store_name = storeName;
                 createInvoiceData.product_type_one = '切手';
 
@@ -1219,7 +1246,7 @@ async getInvoiceList(req, res) {
             include: [
                 {
                     model: Customer,
-                    attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
+                    attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type','customer_status'] // Specify the attributes you want to include
                 }
             ],
             where: {
@@ -1240,27 +1267,15 @@ async getInvoiceDetail(req,res) {
         const invoiceIds = await Master.findOne({
             where: {
               id: invoiceId // Assuming `id` is the primary key
-            },
-            attributes: ['invoice_ids'] // Replace with the name of the column you want to select
+            }
           });
-          const invoiceids = invoiceIds.invoice_ids;
-          if(invoiceids != null) {
-            const ids = invoiceids.split(',').map(id => id.trim())
-            const sales = await Master.findAll({
-                where: {
-                id: ids // Assuming `id` is the primary key
-                },
-            });
-            res.send(sales);
-          } else {
-            //console.log('-0k2-')
-            const sales = await Master.findAll({
-                where: {
-                  id: invoiceId // Assuming `id` is the primary key
-                },
-              });
-              res.send(sales);
-          }
+          const invoiceID = invoiceIds.invoiceID;
+          const sales = await Master.findAll({
+            where: {
+                invoiceID: invoiceID // Assuming `id` is the primary key
+            },
+          });
+          res.send(sales);
 
     } catch (err) {
         res.status(500).send({

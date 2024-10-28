@@ -43,7 +43,7 @@ module.exports = {
                     delete createFields[key];
                 }
             });
-            console.log("cusotmer data",createFields)
+            createFields.customer_status='created';
             const customer = await Customer.create(createFields)
             res.send(customer)
         }catch (err) {
@@ -56,7 +56,11 @@ module.exports = {
 	},
     async getCustomerList(req, res) {
         try {
-            const customerList = await Customer.findAll({})
+            const customerList = await Customer.findAll({
+                where: {
+                    customer_status:'created'
+                }
+            })
             // console.log("customerList",customerList)
             res.send(customerList);
         } catch (err) {
@@ -79,7 +83,12 @@ module.exports = {
                 updateFields.idCard_url = idCard.filename; // Adjust field name based on your model
                 updateFields.avatar_url = idCard.filename;
             }
-            // console.log("customer file",updateFields)
+            Object.keys(updateFields).forEach(key => {
+                if (updateFields[key] === undefined || updateFields[key] === 'null') {
+                    delete updateFields[key];
+                }
+            });
+            updateFields.customer_status = 'created';
            await Customer.update(updateFields, {
                 where: {
                     id: req.body.id
@@ -168,29 +177,25 @@ module.exports = {
         try {
             console.log("Customer update request received", req.body);
     
-            const { id, item1, item2, item3, item4, item5 } = req.body;
-            if (!id) {
-                return res.status(400).send({ error: "Customer ID is required" });
-            }
-    
+            // const { id, item1, item2, item3, item4, item5 } = req.body;
+            const {item1, item2, item3, item4, item5 } = req.body;
+            // if (!id) {
+            //     return res.status(400).send({ error: "Customer ID is required" });
+            // }
             const updateFields = { item1, item2, item3, item4, item5 };
             Object.keys(updateFields).forEach(key => {
-                if (updateFields[key] === undefined) {
+                if (updateFields[key] === undefined || updateFields[key] === null) {
                     delete updateFields[key];
                 }
             });
             updateFields.item1 = (updateFields.item1).toString();
             console.log("Update fields:", updateFields);
     
-            const [updated] = await Customer.update(updateFields, {
-                where: { id }
-            });
-    
-            if (updated) {
-                res.send({ success: true });
-            } else {
-                res.status(404).send({ error: "Customer not found" });
-            }
+            // const [updated] = await Customer.update(updateFields, {
+            //     where: { id }
+            // });
+            const customerData = await Customer.create(updateFields);
+            res.send(customerData);
         } catch (err) {
             console.error("Error updating customer:", err); // Log the error for debugging
             res.status(500).send({

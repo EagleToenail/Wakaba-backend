@@ -121,6 +121,7 @@ module.exports = (app) => {
     app.post('/api/purchaseinvoice/delete', MasterContoller.deleteInvoice);
     app.post('/api/purchaseinvoice/alldelete', MasterContoller.allInvoiceClear);
     app.post('/api/purchaseinvoice/getregistereddata', MasterContoller.getRegisteredData);
+    app.post('/api/purchaseinvoice/getregistereddatablank', MasterContoller.getRegisteredDataBlank);
     app.post('/api/purchaseinvoice/commentsave', MasterController.commentSave)
 
     app.post("/api/category/initialdata", MasterContoller.getCategoryInitialData)
