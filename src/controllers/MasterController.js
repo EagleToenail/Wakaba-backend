@@ -77,7 +77,9 @@ module.exports = {
                     }
                 ],
                 where:  {
-                    [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } }
+                    [Op.or]:{product_type_one: { [Op.like]: `%${cat1}%` } },
+                     worthy_flag: 'yes'
+                    
                 },
                 order: [['createdAt', 'DESC']]
             });
@@ -101,7 +103,8 @@ module.exports = {
                 }
                 ],
                 where:  {
-                    [Op.or]:{product_type_one: { [Op.like]: `%${value}%` } }
+                    [Op.or]:{product_type_one: { [Op.like]: `%${value}%` } },
+                     worthy_flag: 'yes'
                 },
                 order: [['createdAt', 'DESC']]
             });
@@ -127,7 +130,8 @@ module.exports = {
                     }
                     ],
                     where:  {
-                        [Op.or]:{trading_date: { [Op.like]: `%${date}%` } }
+                        [Op.or]:{trading_date: { [Op.like]: `%${date}%` } },
+                         worthy_flag: 'yes'
                     },
                     order: [['createdAt', 'DESC']]
                 });
@@ -203,6 +207,7 @@ module.exports = {
                         trading_date: {
                             [Op.between]: [startDate, endDate] // Date range filter
                         },
+                         worthy_flag: 'yes'
                     },
                     order: [['createdAt', 'DESC']]
                 });
@@ -276,7 +281,7 @@ module.exports = {
                 }
                 ],
                 where:  {
-                    [Op.or]:{shipping_address: { [Op.like]: `%${value}%` } }
+                    [Op.or]:{shipping_address: { [Op.like]: `%${value}%` } },
                 }
             });
             // console.log('saleList',salesWithCustomer);
@@ -1054,36 +1059,6 @@ async purchaseStamp(req,res){
             await StampsTransaction.create(createData);
             //console.log('stampOk1')
 
-            if(totalFaceValue1 !== 0 || totalFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.invoiceID = invoiceID;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-                createInvoiceData.interest_rate = (stampRate[0].percent).toString();
-                createInvoiceData.product_price = (parseInt(totalFaceValue1) + parseInt(totalFaceValue2)).toString();
-                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfSheet1) + parseInt(totalPurchaseOfSheet2)).toString();
-
-                createInvoiceData.quantity = (parseInt(totalNumberOfSheet1) + parseInt(totalNumberOfSheet2)).toString();
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-                //console.log('stampOk2',createInvoiceData)
-                await Master.create(createInvoiceData);
-            }
-
         }
         if(roseIds.length !== 0) {
             // console.log('====');
@@ -1102,35 +1077,6 @@ async purchaseStamp(req,res){
             // console.log('====',createData);
             await StampsTransaction.create(createData);
 
-            if(totalRoseFaceValue1 !== 0 || totalRoseFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.invoiceID = invoiceID;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-                createInvoiceData.interest_rate = (stampRate[1].percent).toString();
-                createInvoiceData.product_price = (parseInt(totalRoseFaceValue1) + parseInt(totalRoseFaceValue2)).toString();
-                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfRose1) + parseInt(totalPurchaseOfRose2)).toString();
-
-                createInvoiceData.quantity = (parseInt(totalNumberOfRose1) + parseInt(totalNumberOfRose2)).toString();
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-
-                await Master.create(createInvoiceData);
-            }
         }
         if(packIds.length !== 0) {
             // console.log('====');
@@ -1148,36 +1094,6 @@ async purchaseStamp(req,res){
             createData.store_name = storeName;
             // console.log('====',createData);
             await StampsTransaction.create(createData);
-
-            if(totalPackFaceValue1 !== 0 || totalPackFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.invoiceID = invoiceID;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-                createInvoiceData.interest_rate = (stampRate[2].percent).toString();
-                createInvoiceData.product_price = (parseInt(totalPackFaceValue1) + parseInt(totalPackFaceValue2)).toString();
-                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfPack1) + parseInt(totalPurchaseOfPack2)).toString();
-
-                createInvoiceData.quantity = (parseInt(totalNumberOfPack1) + parseInt(totalNumberOfPack2)).toString();
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-
-                await Master.create(createInvoiceData);
-            }
         }
         if(cardIds.length !== 0) {
             // console.log('====');
@@ -1196,37 +1112,51 @@ async purchaseStamp(req,res){
             // console.log('====',createData);
             await StampsTransaction.create(createData);
 
-            if(totalCardFaceValue1 !== 0 || totalCardFaceValue2 !== 0) {
-                const createInvoiceData = {};
-                createInvoiceData.trading_date = currentDay;
-                createInvoiceData.purchase_staff = username;
-                createInvoiceData.purchase_staff_id = userId;
-                createInvoiceData.customer_id = customerId;
-                createInvoiceData.invoiceID = invoiceID;
-                createInvoiceData.store_name = storeName;
-                createInvoiceData.product_type_one = '切手';
-
-                createInvoiceData.interest_rate = (stampRate[3].percent).toString();
-                createInvoiceData.product_price = (parseInt(totalCardFaceValue1) + parseInt(totalCardFaceValue2)).toString();
-                createInvoiceData.purchase_price = (parseInt(totalPurchaseOfCard1) + parseInt(totalPurchaseOfCard2)).toString();
-
-                createInvoiceData.quantity = (parseInt(totalNumberOfCard1) + parseInt(totalNumberOfCard2)).toString();
-                createInvoiceData.number = '';
-                createInvoiceData.estimate_wholesaler = '{}';
-                createInvoiceData.hearing = '';
-                createInvoiceData.product_type_three = '';
-                createInvoiceData.product_type_four = '';
-                createInvoiceData.product_name = '';
-                createInvoiceData.reason_application = '';
-                createInvoiceData.highest_estimate_vendor = '';
-                createInvoiceData.highest_estimate_price = '0';
-                createInvoiceData.number_of_vendor = '';
-                createInvoiceData.supervisor_direction = '';
-                createInvoiceData.purchase_result = '';
-
-                await Master.create(createInvoiceData);
-            }
         }
+
+        if(totalFaceValue1 !== 0 || totalFaceValue2 !== 0 
+             || totalRoseFaceValue1 !== 0 || totalRoseFaceValue2 !== 0  
+             || totalPackFaceValue1 !== 0 || totalPackFaceValue2 !== 0
+             || totalCardFaceValue1 !== 0 || totalCardFaceValue2 !== 0) {
+
+            const createInvoiceData = {};
+            createInvoiceData.trading_date = currentDay;
+            createInvoiceData.purchase_staff = username;
+            createInvoiceData.purchase_staff_id = userId;
+            createInvoiceData.customer_id = customerId;
+            createInvoiceData.invoiceID = invoiceID;
+            createInvoiceData.store_name = storeName;
+            createInvoiceData.product_type_one = '切手';
+
+            createInvoiceData.interest_rate = '0';
+            createInvoiceData.product_price = (parseInt(totalFaceValue1) + parseInt(totalFaceValue2)
+                + parseInt(totalRoseFaceValue1) + parseInt(totalRoseFaceValue2) 
+                + parseInt(totalPackFaceValue1) + parseInt(totalPackFaceValue2)
+                + parseInt(totalCardFaceValue1) + parseInt(totalCardFaceValue2) ).toString();
+
+            createInvoiceData.purchase_price = (parseInt(totalPurchaseOfSheet1) + parseInt(totalPurchaseOfSheet2)
+                + parseInt(totalPurchaseOfRose1) + parseInt(totalPurchaseOfRose2)
+                + parseInt(totalPurchaseOfPack1) + parseInt(totalPurchaseOfPack2)
+                + parseInt(totalPurchaseOfCard1) + parseInt(totalPurchaseOfCard2)).toString();
+
+            createInvoiceData.quantity = (parseInt(totalNumberOfCard1) + parseInt(totalNumberOfCard2)).toString();
+            createInvoiceData.number = '';
+            createInvoiceData.estimate_wholesaler = '{}';
+            createInvoiceData.hearing = '';
+            createInvoiceData.product_type_three = '';
+            createInvoiceData.product_type_four = '';
+            createInvoiceData.product_name = '';
+            createInvoiceData.reason_application = '';
+            createInvoiceData.highest_estimate_vendor = '';
+            createInvoiceData.highest_estimate_price = '0';
+            createInvoiceData.number_of_vendor = '';
+            createInvoiceData.supervisor_direction = '';
+            createInvoiceData.purchase_result = '';
+            createInvoiceData.worthy_flag = 'no';
+
+            await Master.create(createInvoiceData);
+        }
+
         res.send({success:true})
     } catch (err) {
         res.status(500).send({
