@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
         // Common fields-----------------------------
-        invoiceID: DataTypes.STRING(10),
+        invoiceID: DataTypes.INTEGER,
         invoice_ids: DataTypes.STRING(20),
         shipping_ids: DataTypes.STRING(20),
         shipping_address: {
@@ -118,7 +118,7 @@ module.exports = (sequelize, DataTypes) => {
         // Fields from Wallet-----------------------------------
         bb_skype_day: DataTypes.STRING(15),
         // Fields from Accessories------------------------------
-        wakaba_number: DataTypes.STRING(15),
+        wakaba_number: DataTypes.INTEGER,
         // Fields from Camera-----------------------------------
         rank: DataTypes.STRING(20),
         // Fields from Antique----------------------------------

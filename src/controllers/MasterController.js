@@ -360,7 +360,7 @@ module.exports = {
                 if(maxWakabaNumber === null){
                     updateField.wakaba_number = '0';
                 } else {
-                    updateField.wakaba_number = (parseInt(maxWakabaNumber) + 1).toString();
+                    updateField.wakaba_number = parseInt(maxWakabaNumber) + 1;
                 } 
             }
             if(cat1 === '記念硬貨' && name === 'product_type_two' && value === 'その他の記念硬貨・古札') {
@@ -1281,7 +1281,7 @@ async purchaseInvoiceConfirm (req,res) {
                 const updateField = {};
                 updateField.product_status = '買取済';
                 updateField.signature_date_time = currentDateTime;
-                updateField.wakaba_number = (parseInt(maxWakabaNumber) + index + 1).toString();
+                updateField.wakaba_number = parseInt(maxWakabaNumber) + index + 1;
                 await Master.update(updateField,{
                     where:{
                         id:id
@@ -1391,15 +1391,14 @@ async getInvoiceNumber(req, res) {
     try {
         //console.log('------------------maxinvoiceNumber--------------------');
         let maxinvoiceNumber = await Master.max('invoiceID'); // Change const to let
-
+        // console.log('------------------maxinvoiceNumber1--------------------', maxinvoiceNumber);
         // Set to 1 if maxinvoiceNumber is null or 0
         if (maxinvoiceNumber === null || maxinvoiceNumber === 0) {
             maxinvoiceNumber = 1;
         } else {
             maxinvoiceNumber = parseInt(maxinvoiceNumber) + 1;
         }
-
-        //console.log('------------------maxinvoiceNumber--------------------', maxinvoiceNumber);
+        // console.log('------------------maxinvoiceNumber2--------------------', maxinvoiceNumber);
         res.send({ invoiceID: maxinvoiceNumber });
     } catch (err) {
         console.error(err); // Log the error for debugging
