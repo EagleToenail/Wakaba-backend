@@ -75,7 +75,11 @@ module.exports = (sequelize, DataTypes) => {
             values: ['申請中','発送中','約定済', '約定済＋返送依頼','返送依頼','入金待ち','入金済'],
             defaultValue: '申請中',
         },
-
+        worthy_flag: {
+          type: DataTypes.ENUM,
+          values: ['yes','no'],
+          defaultValue: 'yes',
+        },
         fixed_checkout: {
           type: DataTypes.ENUM,
           values:['real','unreal'],

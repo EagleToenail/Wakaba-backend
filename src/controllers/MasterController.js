@@ -52,6 +52,9 @@ module.exports = {
                         attributes: ['full_name', 'phone_number','katakana_name','address','visit_type','brand_type'] // Specify the attributes you want to include
                     }
                 ],
+                where: {
+                    worthy_flag: 'yes'
+                },
                 order: [['createdAt', 'DESC']]
             });
                 // console.log(JSON.stringify(salesWithCustomer, null, 2));
@@ -355,6 +358,9 @@ module.exports = {
                     updateField.wakaba_number = (parseInt(maxWakabaNumber) + 1).toString();
                 } 
             }
+            if(cat1 === '記念硬貨' && name === 'product_type_two' && value === 'その他の記念硬貨・古札') {
+                createData.worthy_flag = 'no';
+            }
            // console.log('updateField',updateField)
             await Master.update(updateField,{
                 where: {
@@ -599,6 +605,9 @@ async createInvoice(req, res) {
           ) {
             createData.shipping_address = 'オークション';
           }
+          if(product_type_one === '記念硬貨' && product_type_two === 'その他の記念硬貨・古札') {
+            createData.worthy_flag = 'no';
+          }
         Object.keys(createData).forEach(key => {
             if (createData[key] === 'null' || createData[key] === 'undefined') {
                 delete createData[key];
@@ -669,7 +678,9 @@ async updateInvoice(req, res) {
           ) {
             updateData.shipping_address = 'オークション';
           }
-
+        if(product_type_one === '記念硬貨' && product_type_two === 'その他の記念硬貨・古札') {
+            createData.worthy_flag = 'no';
+        }
         //console.log('updateData',updateData,id)
       await Master.update(updateData,{
             where: {
