@@ -22,7 +22,7 @@ app.use('/public', express.static('public'));
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 preciousMetalsPriceController.create();
 
-// // require('./passport')
+require('./passport')
 require("./routes")(app)
 
 // store socket on global object

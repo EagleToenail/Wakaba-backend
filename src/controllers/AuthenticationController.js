@@ -135,7 +135,7 @@ module.exports = {
       // decrypt password
       decrypt(password, user.password);
       // generate access token
-      const token = jwt.sign({ username: user.username }, 'shhhhh');
+      const token = jwt.sign({userId:user.id,username: user.username,role:user.role_flag,fullname:user.full_name,storename:user.store_name}, 'shhhhh');
       const userId = user.id;
       const storename = user.store_name;
       const role = user.role_flag;
