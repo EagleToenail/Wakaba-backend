@@ -17,6 +17,19 @@ module.exports = {
             })
         }
     },
+    async getProductType1List1(req, res) {
+        try {
+            const product1List = await Product1.findAll({
+                limit: 12
+            })
+            // console.log("customerList",customerList)
+            res.send(product1List);
+        } catch (err) {
+            res.status(500).send({
+                error: "An error occured when trying to get customer list."
+            })
+        }
+    },
     async getProductType2List(req, res) {
         try {
             const product2List = await Product2.findAll({})

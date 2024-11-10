@@ -185,6 +185,7 @@ module.exports = (app) => {
 
     //==============ProductType
     app.get('/api/ProductType1s',  ProductTypeController.getProductType1List);
+    app.get('/api/ProductType1s1',  ProductTypeController.getProductType1List1);
     app.get('/api/ProductType2s',  ProductTypeController.getProductType2List);
     app.post('/api/ProductType2sfilter',  ProductTypeController.getProductType2FilterList);
     app.get('/api/ProductType3s',  ProductTypeController.getProductType3List);
