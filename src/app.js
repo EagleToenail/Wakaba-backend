@@ -20,10 +20,19 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors(config.cors));
 app.use('/public', express.static('public'));
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, '../build')));
+
 preciousMetalsPriceController.create();
 
 require('./passport')
 require("./routes")(app)
+
+// Catch all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 // store socket on global object
 global.io = new SocketServer(server, {cors: config.cors });
