@@ -7,8 +7,12 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement:    true
       },
       customerId: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Customers',
+          key: 'id'
+        }
       },
       visit_date: {
         type: DataTypes.STRING,

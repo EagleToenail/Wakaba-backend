@@ -28,7 +28,13 @@ module.exports = (sequelize, DataTypes) => {
         quantity: DataTypes.INTEGER,
         remarks: DataTypes.TEXT,
         // Fields from Sales---------------------------------------
-        customer_id:    DataTypes.STRING(15),
+        customer_id: {
+          type: DataTypes.INTEGER,
+          references: {
+            model: 'Customers',
+            key: 'id'
+          }
+        },
         purchase_staff: DataTypes.STRING(50),
         purchase_staff_id: DataTypes.STRING(10),
         store_name: DataTypes.STRING(50),
