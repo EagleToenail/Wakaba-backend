@@ -7,12 +7,20 @@ module.exports = (sequelize, DataTypes) => {
           autoIncrement:    true
         },
         ownersId: {
-            type: DataTypes.JSON, // Use JSONB to store arrays or complex data structures
+            type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+              model: 'Profiles',
+              key: 'id'
+            }
           },
           roomId: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+              model: 'Groups',
+              key: 'id'
+            }
           },
           roomType: {
             type: DataTypes.ENUM('private', 'group'),
@@ -28,8 +36,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
           },
           fileId: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             defaultValue: null,
+            references: {
+              model: 'Files',
+              key: 'id'
+            }
           },
           deletedBy: {
             type: DataTypes.JSON, // Use JSONB for arrays

@@ -8,18 +8,29 @@ module.exports = (sequelize, DataTypes) => {
           autoIncrement:    true
         },
         userId: {
-          
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-          roomId: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-          friendId: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'Profiles',
+            key: 'id'
+          }
+        },
+        roomId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'Groups',
+            key: 'id'
+          }
+        },
+        friendId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'Profiles',
+            key: 'id'
+          }
+        },
   
     }, {
         timestamps: false,     // Optional: disable timestamps if you don't have createdAt/updatedAt fields

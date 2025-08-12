@@ -9,8 +9,12 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement:    true
       },
       userId: {
-        type:              DataTypes.STRING,
-        required:             true
+        type: DataTypes.INTEGER,
+        required: true,
+        references: {
+          model: 'Profiles',
+          key: 'id'
+        }
       },
       roomId: {
         type: DataTypes.STRING,
@@ -35,8 +39,12 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: [],
       },
       fileId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         defaultValue: null,
+        references: {
+          model: 'Files',
+          key: 'id'
+        }
       },
     })
 
