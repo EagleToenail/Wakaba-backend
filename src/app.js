@@ -17,7 +17,14 @@ const app = express();
 const server = http.createServer(app);
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors(config.cors));
+const corsOptions = {
+    origin: "*",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use('/public', express.static('public'));
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
