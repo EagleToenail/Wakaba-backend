@@ -111,8 +111,8 @@ module.exports = {
       const errData = {};
       const { ID, password } = req.body;
       const username = ID;
-      // console.log('================', username, password)
-      // console.log('password', encrypt(password))
+      console.log('================', username, password)
+      console.log('password', encrypt(password))
 
       // Find user by username or email
       const user = await User.findOne({
@@ -124,6 +124,8 @@ module.exports = {
         },
       });
 
+      console.log('user', user)
+
       // If user not found or invalid password
       if (!user) {
         errData.statusCode = 401;
@@ -133,14 +135,14 @@ module.exports = {
       }
 
       // decrypt password
-      decrypt(password, user.password);
+      // decrypt(password, user.password);
       // generate access token
       const token = jwt.sign({userId:user.id,username: user.username,role:user.role_flag,fullname:user.full_name,storename:user.store_name}, 'shhhhh');
       const userId = user.id;
       const storename = user.store_name;
       const role = user.role_flag;
       const fullname = user.full_name;
-
+      console.log('user====================')
       // // Send response;
       response({
         res,
