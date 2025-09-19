@@ -59,14 +59,14 @@ module.exports = {
       const { username, email, password } = req.body;
       const encryptedPassword = encrypt(password);
       // Create a new user record
-      // console.log(username, email, password, 'User');
+      console.log(username, email, password, 'User');
       const user = await User.create({
         username,
         email,
         password: encryptedPassword,
         role_flag: '1',
       });
-      // console.log(username, email, password, 'User');
+      console.log('User123');
       const setting = await Setting.create({
         userId: user.id,
         // If you want to override defaults or set other fields, include them here
@@ -78,6 +78,7 @@ module.exports = {
         email,
         fullname: username, // Map username to fullname
       });
+      console.log('User1234');
       const Worktime = await WorkingTime.create({
         userId: user.id,
         loginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
